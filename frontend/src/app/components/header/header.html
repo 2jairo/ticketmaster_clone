@@ -1,9 +1,53 @@
 <header>
-  THIS IS THE HEADER
+  <a class="noUnderline" routerLink="/">
+    <div class="logo">
+      <i class="fa-solid fa-ticket"></i>
+      <h3>TicketMain</h3>
+    </div>
+  </a>
+
+
+  <div class="routes">
+    <a routerLink="/shop">Shop</a>
+  </div>
 </header>
 
 <style>
   header {
-    background-color: var(--color1);
+    width: 100%;
+    height: 3rem;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: var(--pico-border-width) solid var(--pico-secondary-border);
+  }
+
+  a.noUnderline {
+    text-decoration: none;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 5px;
+    border-radius: var(--pico-border-radius);
+    cursor: pointer;
+
+    h3 {
+      text-decoration: underline var(--pico-underline)
+
+    }
+  }
+  /* .logo:hover {
+    background-color: var(--pico-form-element-background-color);
+  } */
+
+
+  .routes {
+    a {
+      color: var(--pico-h3-color)
+    }
   }
 </style>

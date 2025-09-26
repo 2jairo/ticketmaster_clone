@@ -1,0 +1,25 @@
+<swiper-container #swiper init="false">
+  @for (img of images; track $index) {
+    <swiper-slide>
+      <img [src]="img"/>
+    </swiper-slide>
+  }
+</swiper-container>
+
+
+<style>
+  swiper-container {
+    width: 100%;
+    height: 100%;
+  }
+
+  swiper-slide {
+    background: var(--pico-form-element-background-color);
+  }
+
+  swiper-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain
+  }
+</style>
