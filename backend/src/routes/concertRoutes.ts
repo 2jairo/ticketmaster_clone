@@ -1,9 +1,10 @@
 import { Router } from 'express'
-import { getAllConcerts } from '../controllers/concert'
+import { createConcert, getConcerts } from '../controllers/concert'
 
 const router = Router()
 
-router.get('/concerts', getAllConcerts)
+router.get('/concerts', getConcerts)
+router.post('/concert', createConcert)
 
 
 export default router

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import slugify from "slugify";
 
 const ConcertSchema = new mongoose.Schema({
     title: {
@@ -8,7 +9,6 @@ const ConcertSchema = new mongoose.Schema({
     },
     slug: {
         type: String,
-        required: true,
     },
     dateStart: {
         type: Date,
@@ -20,22 +20,52 @@ const ConcertSchema = new mongoose.Schema({
     },
     description: {
         type: String,
-        trim: true
+        trim: true,
+        required: true
     },
     tickets: {
+        sold: {
+            type: Number,
+            default: 0,
+            required: true
+        },
         available: {
             type: Number,
-            default: 0
+            default: 0,
+            required: true
         },
         price: {
             type: Number,
             required: true
-        }
+        },
     },
     // categories: [{
     //     type: 
     // }]
 })
 
+ConcertSchema.pre('save', function(next) {
+    this.slug = `${slugify(this.title)}-${crypto.randomUUID()}` 
+    return next()
+})
 
-export const ConcertModel = mongoose.model('Concert', ConcertSchema)
+
+
+ConcertSchema.methods.toConcertResponse = function() {
+    return {
+        title: this.title,
+        slug: this.slug,
+        dateStart: this.dateStart,
+        dateEnd: this.dateEnd,
+        description: this.description,
+        tickets: {
+            available: this.tickets.available,
+            price: this.tickets.price,
+            sold: this.tickets.sold
+        }
+    }
+}
+
+export const ConcertModel = mongoose.model<{
+    toConcertResponse: () => any
+}>('Concert', ConcertSchema)
