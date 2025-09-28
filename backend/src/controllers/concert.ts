@@ -7,7 +7,15 @@ export const getConcerts = asyncHandler(async (req, res) => {
 })
 
 export const createConcert = asyncHandler(async (req, res) => {
-    const concerts = req.body.map((data: any) => new ConcertModel(data));
-    const savedConcerts = await ConcertModel.insertMany(concerts);
-    res.status(201).send(savedConcerts.map(c => c.toConcertResponse()));
+    const concert = new ConcertModel(req.body)
+    const savedConcert = await concert.save()
+    res.status(201).send(savedConcert.toConcertResponse())
 })
+
+// export const createConcert = asyncHandler(async (req, res) => {
+//     for (const c of req.body) {
+//         const concert = new ConcertModel(c)
+//         await concert.save()
+//     }
+//     res.send('test')
+// })
