@@ -1,13 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 
-const BASE_URL = 'http://localhost:3000'
+const BASE_URL = 'http://localhost:3000/api'
 
 @Injectable({
   providedIn: 'root'
 })
 export class HttpApiService {
-  http = inject(HttpClient)
+  private http = inject(HttpClient)
 
   get<T>(url: string, options?: Parameters<HttpClient['get']>[1]) {
     return this.http.get<T>(`${BASE_URL}${url}`, options)

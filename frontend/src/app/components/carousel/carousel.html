@@ -1,25 +1,75 @@
-<swiper-container #swiper init="false">
-  @for (img of images; track $index) {
-    <swiper-slide>
-      <img [src]="img"/>
-    </swiper-slide>
-  }
-</swiper-container>
+<div class="relative">
+  <swiper-container #swiper init="false">
+    @for (img of images; track $index) {
+      <swiper-slide [style.background-color]="background" [style.aspect-ratio]="aspectRatio">
+        <div class="imgContainer">
+          <img [src]="img" alt="carousel {{ $index }}"/>
+        </div>
+      </swiper-slide>
+    }
+  </swiper-container>
+
+  <div #next class="navigation next" [hidden]="images.length === 0">
+    <i class="fa-solid fa-chevron-right"></i>
+  </div>
+
+  <div #prev class="navigation prev" [hidden]="images.length === 0">
+    <i class="fa-solid fa-chevron-left"></i>
+  </div>
+</div>
 
 
 <style>
-  swiper-container {
+  swiper-container, .relative {
     width: 100%;
     height: 100%;
   }
+  .relative {
+    position: relative;
+
+    &:hover .navigation {
+      display: flex;
+    }
+  }
+
 
   swiper-slide {
-    background: var(--pico-form-element-background-color);
+    display: flex;
+    align-items: center;
   }
 
-  swiper-slide img {
+  swiper-slide .imgContainer {
     width: 100%;
     height: 100%;
-    object-fit: contain
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      object-fit: contain
+    }
+  }
+
+  .navigation {
+    position: absolute;
+    cursor: pointer;
+    z-index: 999;
+    top: 50%;
+    transform: translateY(-50%);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+
+    & > i {
+      font-size: smaller
+    }
+
+    &.next {
+      right: 5px;
+    }
+    &.prev {
+      left: 5px;
+    }
   }
 </style>

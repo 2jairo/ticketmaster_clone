@@ -8,16 +8,19 @@ import type { SwiperOptions } from 'swiper/types';
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class Carousel implements AfterViewInit {
-  @Input({ required: true }) images = [
+  @Input() background: '#000' | 'var(--pico-form-element-background-color)' = 'var(--pico-form-element-background-color)'
+  @Input() aspectRatio = '16/9'
+
+  @Input({ required: true }) images: string[] = [
     // "https://media.architecturaldigest.com/photos/66a914f1a958d12e0cc94a8e/16:9/w_1280,c_limit/DSC_5903.jpg?mbid=social_retweet",
     // "https://www.carpro.com/hs-fs/hubfs/2023-Chevrolet-Corvette-Z06-credit-chevrolet.jpeg?width=1020&name=2023-Chevrolet-Corvette-Z06-credit-chevrolet.jpeg",
     // "https://i.abcnewsfe.com/a/f43853f3-9eaf-4048-9ae7-757332c5787e/mclaren-1-ht-gmh-240412_1712928561648_hpMain_16x9.jpg?w=1600",
     // "https://etimg.etb2bimg.com/photo/61543962.cms"
   ]
 
-  @Input({ required: true }) render!: 'home' | 'details'
-
   @ViewChild('swiper') swiperElmt!: ElementRef<any>
+  @ViewChild('next') navigationNextElmt!: ElementRef<HTMLDivElement>
+  @ViewChild('prev') navigationPrevElmt!: ElementRef<HTMLDivElement>
 
   ngAfterViewInit(): void {
     const options: SwiperOptions = {
@@ -25,7 +28,11 @@ export class Carousel implements AfterViewInit {
       autoplay: {
         delay: 3000
       },
-      navigation: true,
+      navigation: {
+        nextEl: this.navigationNextElmt.nativeElement,
+        prevEl: this.navigationPrevElmt.nativeElement,
+        enabled: true,
+      },
       loop: true,
       pagination: { clickable: true },
     }

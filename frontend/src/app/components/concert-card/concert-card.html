@@ -1,0 +1,194 @@
+<div class="concertCard">
+  <div class="images">
+    <app-carousel [images]="[]" background="#000" />
+
+    <div class="ticketsAvailable">
+      @if (concert.tickets.available > 0) {
+        <i class="fa-solid fa-ticket"></i>
+        <p>{{ formatViews(concert.tickets.available) }} left</p>
+      } @else {
+        <p>Sold out</p>
+      }
+    </div>
+  </div>
+
+  <div class="text" (click)="navigateToDetails()">
+    <div class="header">
+      <h2>
+        <a routerLink="/details/{{ concert.slug }}">{{ concert.title }}</a>
+      </h2>
+
+      <div class="badge">
+        <i class="fa-solid fa-money-check-dollar"></i>
+        <p>{{ concert.tickets.price.toFixed(2) }}€</p>
+      </div>
+    </div>
+
+    <p class="description">{{ shortenDescription(concert.description, 150) }}</p>
+
+    <div class="footer">
+      <div class="tickets">
+        <p>Tickets</p>
+
+        <div class="ticketsInfo">
+          <div>
+            <i class="fa-solid fa-users"></i>
+            <p>{{ formatViews(concert.tickets.sold) }} sold</p>
+          </div>
+
+          <div>
+            <p>{{ concert.soldPercent().toFixed(0) }}% sold</p>
+          </div>
+        </div>
+
+        <div class="pgBar">
+          <div [style.width.%]="concert.soldPercent()"></div>
+        </div>
+      </div>
+
+      <div class="date">
+        <div class="badge">
+          <i class="fa-solid fa-calendar-days"></i>
+          <p>{{ concert.formattedDateStart() }}</p>
+          <p>-</p>
+          <p>{{ concert.formattedDateEnd() }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .concertCard {
+    width: 100%;
+    border: var(--pico-border-width) solid var(--pico-secondary-border);
+    background-color: var(--pico-form-element-background-color);
+    padding: 20px;
+    border-radius: var(--pico-border-radius);
+    display: flex;
+    gap: 20px;
+    max-width: 1000px;
+  }
+
+  .images {
+    height: 100%;
+    width: 30%;
+    border-radius: var(--pico-border-radius);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+
+    h2 {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+    }
+    h2 > a {
+      color: var(--pico-primary-text);
+    }
+    h2 > a.disabled:hover {
+      --pico-underline: var(--pico-primary-underline);
+    }
+  }
+
+  .footer {
+    display: flex;
+    align-items: end;
+    gap: 20px;
+
+    & > * {
+      width: 50%;
+    }
+  }
+
+
+  .text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .description {
+    color: var(--pico-muted-color);
+    padding-bottom: 20px;
+    flex: 1;
+  }
+
+  .badge {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 5px;
+    background-color: var(--pico-code-background-color);
+    border-radius: var(--pico-border-radius);
+  }
+
+  .tickets > p {
+    font-size: small;
+  }
+  .tickets .ticketsInfo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    & > div {
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+  }
+  .tickets .pgBar {
+    width: 100%;
+    height: 5px;
+    background-color: var(--pico-secondary);
+    border-radius: var(--pico-border-radius);
+
+    & > div {
+      background-color: var(--pico-primary);
+      border-radius: var(--pico-border-radius);
+      height: 100%;
+    }
+  }
+  .tickets .ticketsDown {
+    display: flex;
+    gap: 20px;
+  }
+
+  .ticketsAvailable {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: 999;
+    border-radius: var(--pico-border-radius);
+    background-color: rgba(0, 0, 0, 0.3);
+
+    p {
+      font-size: smaller;
+    }
+  }
+
+  @media (max-width: 850px) {
+    .footer {
+      flex-direction: column;
+
+      & > * {
+        width: 100%;
+      }
+    }
+
+    .concertCard {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .images {
+      width: 80%;
+    }
+  }
+</style>

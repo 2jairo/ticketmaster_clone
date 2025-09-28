@@ -1,0 +1,19 @@
+<div class="concertList">
+  @for (concert of concerts; track concert.slug) {
+    <app-concert-card [concert]="concert"/>
+  }
+</div>
+
+
+<style>
+  .concertList {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+  app-concert-card {
+    display: flex;
+    justify-content: center;
+  }
+</style>
