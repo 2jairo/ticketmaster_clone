@@ -3,6 +3,7 @@ import { CategoryModel } from "../models/category";
 
 export const getCategories = asyncHandler(async (req, res) => {
     const categories = await CategoryModel.find()
+    categories.map(c => c.title)
     res.send(categories.map(c => c.toCategoryResponse()))
 })
 

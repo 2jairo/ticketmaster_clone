@@ -11,7 +11,7 @@ export const shortenDescription = (desc: string, size: number) => {
   return desc
 }
 
-export const formatDate = (date: Date) => {
+export const getTimeAgo = (date: Date) => {
   const minsSinceDate = (Date.now() - date.getTime()) / (1000 * 60)
 
   const formatIfSingular = (num: number, format: string) => {
@@ -33,7 +33,15 @@ export const formatDate = (date: Date) => {
   return formatIfSingular(Math.floor(minsSinceDate / (12 * 30 * 24 * 60)), 'year')
 }
 
-export const formatDateMin = (date: Date) => {
+export const formatDate = (date: Date) => {
+  const day = date.getDate().toString().padStart(2, '0')
+  const month = (date.getMonth() + 1).toString().padStart(2, '0')
+  const year = date.getFullYear()
+
+  return `${day}/${month}/${year}`
+}
+
+export const getTimeAgoMin = (date: Date) => {
   const minsSinceDate = (Date.now() - date.getTime()) / (1000 * 60)
 
   if (minsSinceDate < 1) {

@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import slugify from 'slugify'
 
 const CategorySchema = new mongoose.Schema({
@@ -10,11 +10,15 @@ const CategorySchema = new mongoose.Schema({
     slug: {
         type: String,
     },
-    image: {
-        type: String
-    }
+    images: [{
+        type: String,
+        required: true
+    }],
+    concerts: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Concert'
+    }]
 })
-
 
 CategorySchema.pre('save', function(next)  {
     this.slug = `${slugify(this.title)}-${crypto.randomUUID()}`
@@ -26,11 +30,32 @@ CategorySchema.methods.toCategoryResponse = function() {
     return {
         title: this.title,
         slug: this.slug,
-        image: this.image
+        images: this.images
     }
 }
 
-export const CategoryModel = mongoose.model<{
-    toCategoryResponse: () => any
-}>('Category', CategorySchema)
+CategorySchema.methods.toCategoryConcertDetailsResponse = function() {
+    return {
+        title: this.title,
+        slug: this.slug
+    }
+}
 
+
+
+interface ICategoryModel {
+    title: string
+    slug?: string
+    images: string[]
+
+    toCategoryResponse: () => any,
+    toCategoryConcertDetailsResponse: () => any
+}
+
+export const CategoryModel = mongoose.model<ICategoryModel>('Category', CategorySchema)
+
+
+export type CategoryDocument = mongoose.Document<unknown, {}, ICategoryModel, {}, {}> 
+& ICategoryModel 
+& { _id: mongoose.Types.ObjectId } 
+& { __v: number }

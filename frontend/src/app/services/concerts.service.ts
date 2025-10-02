@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpApiService } from './httpApi.service';
-import { createConcertResponseWrapper, RawConcertResponse } from '../types/concert';
+import { createConcertDetailsResponseWrapper, createConcertResponseWrapper, RawConcertDetailsResponse, RawConcertResponse } from '../types/concert';
 import { map } from 'rxjs';
 
 @Injectable({
@@ -12,6 +12,12 @@ export class ConcertsService {
   getConcerts() {
     return this.http.get<RawConcertResponse[]>('/concerts').pipe(map((c) => {
       return c.map(createConcertResponseWrapper)
+    }))
+  }
+
+  getConcertDetails(slug: string) {
+    return this.http.get<RawConcertDetailsResponse>(`/concert-details/${slug}`).pipe(map((c) => {
+      return createConcertDetailsResponseWrapper(c)
     }))
   }
 }

@@ -1,5 +1,6 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import slugify from "slugify";
+import type { CategoryDocument } from "./category";
 
 
 type ConcertTicket = {
@@ -31,6 +32,37 @@ const ConcertSchema = new mongoose.Schema({
         trim: true,
         required: true
     },
+    images: [{
+        type: String,
+        required: true,
+    }],
+    mapImg: {
+        type: String,
+    },
+    thumbnailImg: {
+        type: String,
+    },
+    locationName: {
+        type: String,
+        required: true
+    },
+    location: {
+        type: {
+            type: String,
+            enum: ['Point'],
+            required: true
+        },
+        coordinates: {
+            type: [Number],
+            required: true,
+            validate: {
+                validator: (value: any[]) => {
+                    return value.length === 2
+                },
+                message: (props: { value: any; }) => `${props.value} must be [lng, lat]`
+            }
+        }
+    },
     tickets: [{
         sold: {
             type: Number,
@@ -49,12 +81,18 @@ const ConcertSchema = new mongoose.Schema({
         location: {
             type: String,
             required: true
-        }
+        },
+    }],
+    // participants: [{
+        
+    // }],
+    categories: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Category'
     }]
-    // categories: [{
-    //     type: 
-    // }]
 })
+
+ConcertSchema.index({ location: '2dsphere' })
 
 ConcertSchema.pre('save', function(next) {
     this.slug = `${slugify(this.title)}-${crypto.randomUUID()}` 
@@ -83,10 +121,54 @@ ConcertSchema.methods.toConcertResponse = function() {
         dateStart: this.dateStart,
         dateEnd: this.dateEnd,
         description: this.description,
+        images: {
+            carousel: this.images || [],
+        },
+        locationName: this.locationName,
         tickets: this.tickets.length === 0 ? null : tickets
     }
 }
 
-export const ConcertModel = mongoose.model<{
+ConcertSchema.methods.toConcertDetailsResponse = async function() {
+    await this.populate('categories')
+
+    return {
+        title: this.title,
+        slug: this.slug,
+        dateStart: this.dateStart,
+        dateEnd: this.dateEnd,
+        description: this.description,
+        images: {
+            carousel: this.images || [],
+            map: this.mapImg || null,
+            thumbnail: this.thumbnailImg || null,
+        },
+        locationName: this.locationName,
+        location: this.location,
+        tickets: this.tickets.sort((a: ConcertTicket, b: ConcertTicket) => b.price - a.price),
+        categories: this.categories.map((cat: CategoryDocument) => cat.toCategoryConcertDetailsResponse())
+    }
+}
+
+interface IConcertModel {
     toConcertResponse: () => any
-}>('Concert', ConcertSchema)
+    toConcertDetailsResponse: () => Promise<any>
+
+    title: string
+    slug?: string
+    dateStart: Date
+    dateEnd: Date,
+    description: string
+    images: string[],
+    mapImg?: string,
+    thumbnailImg?: string,
+    tickets: ConcertTicket[]
+    categories: Schema.Types.ObjectId[],
+    locationName: string,
+    location: {
+        type: string,
+        coordinates: [number, number]
+    }
+}
+
+export const ConcertModel = mongoose.model<IConcertModel>('Concert', ConcertSchema)

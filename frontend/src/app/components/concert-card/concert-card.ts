@@ -1,4 +1,4 @@
-import { Component, inject, Input } from '@angular/core';
+import { Component, inject, Input, OnInit } from '@angular/core';
 import type { ConcertResponseWrapper } from '../../types/concert';
 import { Router, RouterLink } from '@angular/router';
 import { Carousel } from "../carousel/carousel";

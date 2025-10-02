@@ -6,3 +6,4 @@ export const routes: Routes = [
   { path: 'events', loadComponent: () => import('./pages/events/events').then(c => c.Events) },
   { path: 'details/:slug', loadComponent: () => import('./pages/details/details').then(c => c.Details) }
 ];
+//TODO: category page

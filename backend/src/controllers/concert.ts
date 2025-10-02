@@ -19,3 +19,15 @@ export const createConcert = asyncHandler(async (req, res) => {
 //     }
 //     res.send('test')
 // })
+
+
+export const getConcertDetails = asyncHandler(async (req, res) => {
+    const concert = await ConcertModel.findOne({ slug: req.params.slug })
+
+    if(!concert) {
+        res.status(404).send({ msg: "concert not found" })
+        return
+    }
+    
+    res.send(await concert.toConcertDetailsResponse())
+})
