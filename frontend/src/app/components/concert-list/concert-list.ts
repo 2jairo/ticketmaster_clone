@@ -2,10 +2,12 @@ import { Component, inject, OnInit } from '@angular/core';
 import { ConcertCard } from '../concert-card/concert-card';
 import type { ConcertResponseWrapper } from '../../types/concert';
 import { ConcertsService } from '../../services/concerts.service';
+import { FiltersOptions } from "../filters-options/filters-options";
+import { FiltersSearch } from '../filters-search/filters-search';
 
 @Component({
   selector: 'app-concert-list',
-  imports: [ConcertCard],
+  imports: [ConcertCard, FiltersOptions, FiltersSearch],
   templateUrl: './concert-list.html'
 })
 export class ConcertList implements OnInit {

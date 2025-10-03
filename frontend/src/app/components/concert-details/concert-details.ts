@@ -3,12 +3,13 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ConcertsService } from '../../services/concerts.service';
 import { ConcertDetailsResponseWrapper } from '../../types/concert';
 import { ConcertTicketCard } from './concert-ticket-card';
+import { Carousel } from "../carousel/carousel";
 
-type Sections = 'tickets' | 'description' | 'location'
+type Sections = 'tickets' | 'description'
 
 @Component({
   selector: 'app-concert-details',
-  imports: [ConcertTicketCard, RouterLink],
+  imports: [ConcertTicketCard, RouterLink, Carousel],
   templateUrl: './concert-details.html'
 })
 export class ConcertDetails implements OnInit, AfterViewInit {
@@ -20,7 +21,6 @@ export class ConcertDetails implements OnInit, AfterViewInit {
 
   currentSection: Sections = 'tickets'
   @ViewChild('tickets') ticketsSectionElmt!: ElementRef<HTMLElement>
-  @ViewChild('location') locationSectionElmt!: ElementRef<HTMLElement>
   @ViewChild('description') descriptionSectionElmt!: ElementRef<HTMLElement>
 
   ngOnInit(): void {
@@ -61,7 +61,6 @@ export class ConcertDetails implements OnInit, AfterViewInit {
 
     const distances: [Sections, number][] = [
       ['tickets', this.calculateCurrentSectionDistance(this.ticketsSectionElmt)],
-      ['location', this.calculateCurrentSectionDistance(this.locationSectionElmt)],
       ['description', this.calculateCurrentSectionDistance(this.descriptionSectionElmt)],
     ]
 

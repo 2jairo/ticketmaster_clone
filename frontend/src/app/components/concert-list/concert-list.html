@@ -1,12 +1,26 @@
-<div class="concertList">
-  @for (concert of concerts; track concert.slug) {
-    <app-concert-card [concert]="concert"/>
-  }
-</div>
+
+<main>
+  <div class="filters">
+    <app-filters-search />
+    <app-filters-options />
+  </div>
+
+  <div class="concertList">
+    @for (concert of concerts; track concert.slug) {
+      <app-concert-card [concert]="concert"/>
+    }
+  </div>
+</main>
+
 
 
 <style>
+  main {
+    display: flex;
+  }
+
   .concertList {
+    flex: 1;
     padding: 20px;
     display: flex;
     flex-direction: column;

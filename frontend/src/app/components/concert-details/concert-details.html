@@ -23,7 +23,11 @@
       }
     </div>
 
-    <!-- //TODO concert.location -->
+    <div>
+      <i class="fa-solid fa-location-dot"></i>
+      <p>{{ concert.locationName }}</p>
+    </div>
+
     <h2>{{ concert.title }}</h2>
   </div>
 </div>
@@ -35,7 +39,7 @@
     <p>Tickets</p>
   </div>
 
-  <div [class.current]="currentSection === 'location'" (click)="scrollTo('location')">
+  <div [class.current]="currentSection === 'description'" (click)="scrollTo('description')">
     <i class="fa-solid fa-location-dot"></i>
     <p>Location</p>
   </div>
@@ -76,23 +80,23 @@
   </div>
 </section>
 
-<section #location>
-  <div class="sectionHeader">
-    <h2>Location</h2>
-  </div>
-
-  <div>
-     LOCATION
-  </div>
-</section>
-
 
 <section #description>
   <div class="sectionHeader">
     <h2>Description</h2>
   </div>
 
-  <div class="description" [innerHTML]="concert.description"></div>
+  <div class="location">
+    <!-- //TODO SWEEPER MAP -->
+  </div>
+
+  <div class="description">
+    <div [innerHTML]="concert.description"></div>
+
+    <div>
+      <app-carousel [images]="concert.images.carousel" />
+    </div>
+  </div>
 </section>
 
 
@@ -203,6 +207,12 @@
 
   .description {
     padding: 20px;
+    display: flex;
+    align-items: center;
+
+    & > * {
+      width: 50%;
+    }
   }
 
 

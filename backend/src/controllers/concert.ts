@@ -12,13 +12,13 @@ export const createConcert = asyncHandler(async (req, res) => {
     res.status(201).send(savedConcert.toConcertResponse())
 })
 
-// export const createConcert = asyncHandler(async (req, res) => {
-//     for (const c of req.body) {
-//         const concert = new ConcertModel(c)
-//         await concert.save()
-//     }
-//     res.send('test')
-// })
+export const createMultipleConcerts = asyncHandler(async (req, res) => {
+    for (const c of req.body) {
+        const concert = new ConcertModel(c)
+        await concert.save()
+    }
+    res.send('test')
+})
 
 
 export const getConcertDetails = asyncHandler(async (req, res) => {
