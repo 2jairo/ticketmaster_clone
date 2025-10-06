@@ -1,24 +1,46 @@
+<div class="filters">
+  <app-filters-options [startFilters]="filters" (filtersChange)="onFiltersChange($event)"/>
+</div>
 
-<main>
-  <div class="filters">
-    <app-filters-search />
-    <app-filters-options />
-  </div>
 
-  <div class="concertList">
-    @for (concert of concerts; track concert.slug) {
-      <app-concert-card [concert]="concert"/>
+
+<div class="concertList">
+  @for (concert of concerts; track concert.slug) {
+    <app-concert-card [concert]="concert"/>
+  } @empty {
+
+    @if(fetching) {
+      <div class="empty">
+        <i class="fa-solid fa-spinner fa-spin"></i>
+      </div>
+    } @else {
+      <div class="empty">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <p>No concerts found matching your filters.</p>
+      </div>
     }
+  }
+</div>
+
+@if(pages.length > 1) {
+  <div class="pagination">
+    <div (click)="setPage(currentPage -1)" [class.disabled]="currentPage === 1">
+      <i class="fa-solid fa-arrow-left"></i>
+    </div>
+
+    @for (p of pages; track p) {
+      <div [class.current]="p === currentPage" (click)="setPage(p)">{{ p }}</div>
+    }
+
+    <div (click)="setPage(currentPage +1)" [class.disabled]="currentPage === pages.length">
+      <i class="fa-solid fa-arrow-right"></i>
+    </div>
   </div>
-</main>
+}
 
 
 
 <style>
-  main {
-    display: flex;
-  }
-
   .concertList {
     flex: 1;
     padding: 20px;
@@ -29,5 +51,43 @@
   app-concert-card {
     display: flex;
     justify-content: center;
+  }
+
+  .filters {
+    border-bottom: var(--pico-border-width) solid var(--pico-secondary-border);
+  }
+  .empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px
+  }
+
+  .pagination {
+    display: flex;
+    padding: 20px;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+  }
+  .pagination > div {
+    padding: 10px;
+    border-radius: var(--pico-border-radius);
+    background-color: var(--pico-form-element-background-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 45px;
+    height: 45px;
+    cursor: pointer;
+  }
+  .pagination > div:not(.disabled):hover {
+    border: var(--pico-border-width) solid var(--pico-secondary-border);
+  }
+  .pagination > div.disabled {
+    background-color: var(--pico-background-color);
+  }
+  .pagination > div.current {
+    border: var(--pico-border-width) solid var(--pico-secondary-border);
   }
 </style>

@@ -3,3 +3,8 @@ export interface CategoryResponse {
   slug: string
   image: string
 }
+
+export interface CategoryTitleResponse {
+  title: string
+  slug: string
+}

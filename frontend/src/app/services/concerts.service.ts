@@ -2,6 +2,9 @@ import { inject, Injectable } from '@angular/core';
 import { HttpApiService } from './httpApi.service';
 import { createConcertDetailsResponseWrapper, createConcertResponseWrapper, RawConcertDetailsResponse, RawConcertResponse } from '../types/concert';
 import { map } from 'rxjs';
+import { ConcertFilters, Pagination } from '../types/filters';
+
+export const CONCERTS_PAGE_SIZE = 5
 
 @Injectable({
   providedIn: 'root'
@@ -9,9 +12,17 @@ import { map } from 'rxjs';
 export class ConcertsService {
   private http = inject(HttpApiService)
 
-  getConcerts() {
-    return this.http.get<RawConcertResponse[]>('/concerts').pipe(map((c) => {
-      return c.map(createConcertResponseWrapper)
+  getConcerts(filters = new ConcertFilters(), pagination: Pagination) {
+    const params: any = { ...filters.toQueryFilters(), ...pagination }
+
+    return this.http.get<{
+      concerts: RawConcertResponse[],
+      totalCount: number
+    }>('/concerts', { params }).pipe(map((c) => {
+      return {
+        concerts: c.concerts.map(createConcertResponseWrapper),
+        totalCount: c.totalCount
+      }
     }))
   }
 

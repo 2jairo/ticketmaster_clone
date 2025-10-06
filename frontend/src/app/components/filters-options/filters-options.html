@@ -1,25 +1,110 @@
-<div class="filters-options">
-  <label for="filter-title">Title:</label>
-  <input type="text" id="filter-title" name="filter-title" placeholder="Search by title">
+<div class="filtersContainer">
+  <label>
+    <div class="inputContainer">
+      <input type="text" placeholder="Title" (input)="sendFilters()" [(ngModel)]="filters.title"/>
+    </div>
+  </label>
 
-  <label for="filter-price">Price:</label>
-  <select id="filter-price" name="filter-price">
-    <option value="">All</option>
-    <option value="low-to-high">Low to High</option>
-    <option value="high-to-low">High to Low</option>
-  </select>
+  <label>
+    <div class="inputContainer">
+      <select [(ngModel)]="filters.category" (input)="sendFilters()">
+        <option [defaultSelected]="true" value="">Category</option>
 
-  <label for="filter-solds">Sold:</label>
-  <select id="filter-solds" name="filter-solds">
-    <option value="">All</option>
-    <option value="lowest">Lowest Sold</option>
-    <option value="highest">Highest Sold</option>
-  </select>
+        @for (cat of categories; track cat.slug) {
+          <option [value]="cat.slug">{{ cat.title }}</option>
+        }
+      </select>
+    </div>
+  </label>
 
-  <label for="filter-date">Date:</label>
-  <select id="filter-date" name="filter-date">
-    <option value="">All</option>
-    <option value="newest">Newest</option>
-    <option value="oldest">Oldest</option>
-  </select>
+  <label>
+    <div class="desc">
+      <p>{{ filters.priceMin || filters.PRICE_MIN }}€</p>
+      <p>{{ filters.priceMax || filters.PRICE_MAX }}€</p>
+    </div>
+
+    <div class="inputContainer padding">
+      <app-min-max-input
+        (minMaxChange)="minMaxChange($event, 'price')"
+        [step]="10"
+        [max]="filters.priceMax || filters.PRICE_MAX"
+        [maxLimit]="filters.PRICE_MAX"
+        [min]="filters.priceMin || filters.PRICE_MIN"
+        [minLimit]="filters.PRICE_MIN"
+      />
+    </div>
+  </label>
+
+  <label>
+    <div class="desc">
+      <p>{{ filters.dateStart ? filters.dateStart.formatted : filters.DATE_MIN.formatted }}</p>
+      <p>{{ filters.dateEnd ? filters.dateEnd.formatted : filters.DATE_MAX.formatted }}</p>
+    </div>
+
+    <div class="inputContainer padding">
+      <app-min-max-input
+        (minMaxChange)="minMaxChange($event, 'date')"
+        [step]="8640000"
+        [max]="filters.dateEnd ? filters.dateEnd.num : filters.DATE_MAX.num"
+        [maxLimit]="filters.DATE_MAX.num"
+        [min]="filters.dateStart ? filters.dateStart.num : filters.DATE_MIN.num"
+        [minLimit]="filters.DATE_MIN.num"
+      />
+    </div>
+  </label>
+
+  <div class="reset" (click)="resetFilters()">
+    <i class="fa-solid fa-xmark"></i>
+  </div>
 </div>
+
+<style>
+  .filtersContainer {
+    padding: 20px;
+    display: flex;
+    width: 100%;
+    gap: 20px
+  }
+
+  label {
+    flex: 1;
+    background-color: var(--pico-form-element-background-color);
+    border: var(--pico-border-width) solid var(--pico-secondary-border);
+    border-radius: var(--pico-border-radius);
+  }
+  label:focus-within {
+    border-color: var(--pico-primary-focus)
+  }
+
+  label .desc {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    p {
+      padding: 0 10px
+    }
+  }
+
+
+
+  label .inputContainer {
+    &.padding {
+      padding: 5px;
+    }
+
+    input, select {
+      padding: 10px;
+      height: unset;
+      border: 0;
+      box-shadow: none;
+    }
+  }
+
+  .reset {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+</style>
