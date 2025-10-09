@@ -17,8 +17,6 @@ export class FiltersOptions implements OnInit {
 
   @Input() startFilters: ConcertFilters = new ConcertFilters()
 
-  // dateStart = new Date(this.filters.DATE_MIN).toISOString().split('T')[0]
-  // dateEnd = new Date(this.filters.DATE_MAX).toISOString().split('T')[0]
   debounceTimeout: number = -1
 
   @Output() filtersChange = new EventEmitter<ConcertFilters>()

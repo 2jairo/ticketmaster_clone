@@ -5,16 +5,6 @@ export interface Pagination {
   size: number
 }
 
-// export interface ConcertFilters {
-//   title?: string
-//   category?: string
-//   priceMax?: number
-//   priceMin?: number
-//   dateStart?: string
-//   dateEnd?: string
-// }
-
-
 
 export class ConcertFilters {
   readonly PRICE_MIN = 0
@@ -29,7 +19,7 @@ export class ConcertFilters {
   }
 
   title?: string
-  category?: string
+  category?: string = ''
   priceMax?: number
   priceMin?: number
   dateStart?: {
@@ -40,6 +30,7 @@ export class ConcertFilters {
     num: number,
     formatted: string
   }
+  sortBy?: 'nearest' | 'most_sold' | 'starting_soon' | '' = ''
 
 
   setPrice(key: 'priceMax' | 'priceMin', value: string | number) {
@@ -68,8 +59,9 @@ export class ConcertFilters {
   toQueryFilters() {
     const filters: Record<string, any> = {}
 
-    if (this.title !== undefined) filters["title"] = this.title
-    if (this.category !== undefined) filters["category"] = this.category
+    if (this.sortBy) filters["sortBy"] = this.sortBy
+    if (this.title) filters["title"] = this.title
+    if (this.category) filters["category"] = this.category
     if (this.priceMax !== undefined) filters["priceMax"] = this.priceMax
     if (this.priceMin !== undefined) filters["priceMin"] = this.priceMin
     if (this.dateStart !== undefined) filters["dateStart"] = new Date(this.dateStart.num).toISOString()

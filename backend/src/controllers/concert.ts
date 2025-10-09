@@ -5,9 +5,10 @@ import { CategoryModel } from "../models/category";
 const CONCERTS_PAGE_SIZE = 5
 
 export const getConcerts = asyncHandler(async (req, res) => {
-    const { title, priceMax, priceMin, dateStart, dateEnd, category, size, offset } = req.query
+    const { title, priceMax, priceMin, dateStart, dateEnd, category, sortBy, size, offset } = req.query
 
     const filters: any = {};
+    let sortOption: any = {}
 
     if (title) {
         filters.title = { $regex: title, $options: "i" };
@@ -30,8 +31,7 @@ export const getConcerts = asyncHandler(async (req, res) => {
         filters.dateEnd = {
             $lte: new Date(dateEnd as string)
         }
-    }
-    
+    }  
     if (category) {
         const categoryDoc = await CategoryModel.findOne({ slug: category });
         if (categoryDoc) {
@@ -39,7 +39,22 @@ export const getConcerts = asyncHandler(async (req, res) => {
         }
     }
 
+    switch (sortBy) {
+        case 'most_sold':
+            //TODO
+            
+            break
+        case 'starting_soon':
+            sortOption = { dateStart: 1 }
+            filters.dateEnd = { ...(filters.dateEnd || {}), $gte: new Date() }
+            break;
+                
+        default:
+            break;
+    }
+    
     const concerts = await ConcertModel.find(filters)
+        .sort(sortOption)
         .limit(Number(size) || CONCERTS_PAGE_SIZE)
         .skip(Number(offset) || 0)
         
