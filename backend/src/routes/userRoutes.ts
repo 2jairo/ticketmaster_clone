@@ -4,8 +4,8 @@ import { verifyJWT } from '../middleware/auth'
 
 const router = Router()
 
-router.post('/auth/login', handleLogin)
-router.post('/auth/signin', handleSignin)
-router.get('/auth/user', verifyJWT, getUserInfo)
+router.post('/login', handleLogin)
+router.post('/signin', handleSignin)
+router.get('/user', verifyJWT, getUserInfo)
 
 export default router

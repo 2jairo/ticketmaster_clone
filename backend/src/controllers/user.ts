@@ -1,6 +1,7 @@
 import asyncHandler from "express-async-handler";
 import { UserModel } from "../models/user";
 import bcrypt from 'bcrypt'
+import { ErrKind, LocalError } from "../error/err";
 
 
 
@@ -30,17 +31,14 @@ export const handleLogin = asyncHandler(async (req, res) => {
     })
 
     if (!user) {
-        res.status(404).json({message: "User Not Found"})
-        return
+        throw new LocalError(ErrKind.UserNotFound, 404)
     }
 
     const match = await bcrypt.compare(password, user.password || '')
     if(match) {
         res.status(200).json(user.toUserResponse(true))
     } else {
-        res.status(401).json({
-            error: 'test'
-        })
+        throw new LocalError(ErrKind.PasswordMismatch, 401)
     }
 })
 
@@ -49,10 +47,8 @@ export const getUserInfo = asyncHandler(async (req, res) => {
     const user = await UserModel.findById(req.userId)
 
     if(!user) {
-        res.status(404).json({
-            error: 'error'
-        })
-    } else {
-        res.status(200).json(user.toUserResponse(false))
+        throw new LocalError(ErrKind.UserNotFound, 404)
     }
+
+    res.status(200).json(user.toUserResponse(false))
 })

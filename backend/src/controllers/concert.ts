@@ -1,6 +1,7 @@
 import asyncHandler from "express-async-handler";
 import { ConcertModel } from "../models/concert";
 import { CategoryModel } from "../models/category";
+import { ErrKind, LocalError } from "../error/err";
 
 const CONCERTS_PAGE_SIZE = 5
 
@@ -84,8 +85,7 @@ export const getConcertDetails = asyncHandler(async (req, res) => {
     const concert = await ConcertModel.findOne({ slug: req.params.slug })
 
     if(!concert) {
-        res.status(404).send({ msg: "concert not found" })
-        return
+        throw new LocalError(ErrKind.ConcertNotFound, 404)
     }
     
     res.send(await concert.toConcertDetailsResponse())

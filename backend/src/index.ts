@@ -5,6 +5,7 @@ import { connectMongoDb } from './config/mongoConnection'
 import concertsRoutes from './routes/concertRoutes'
 import categoryRoutes from './routes/categoryRoutes'
 import userRoutes from './routes/userRoutes'
+import { errorHandler, notFoundHandler } from './error/err'
 
 dotenv.config()
 await connectMongoDb(process.env.MONGO_URI!)
@@ -15,9 +16,12 @@ app.use(cors({
 }))
 app.use(express.json())
 
-app.use('/api', userRoutes)
+app.use('/api/auth', userRoutes)
 app.use('/api', concertsRoutes)
 app.use('/api', categoryRoutes)
+
+app.use(notFoundHandler)
+app.use(errorHandler)
 
 
 const PORT = process.env.PORT || 3000
