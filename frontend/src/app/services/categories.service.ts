@@ -6,7 +6,7 @@ import { CategoryResponse, CategoryTitleResponse } from '../types/categories';
   providedIn: 'root'
 })
 export class CategoriesService {
-  http = inject(HttpApiService)
+  private http = inject(HttpApiService)
 
   getCategories() {
     return this.http.get<CategoryResponse[]>('/categories')

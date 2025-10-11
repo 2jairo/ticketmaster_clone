@@ -52,29 +52,31 @@
 
 
 <section #tickets>
-  <div class="sectionHeader">
-    <h2>Tickets</h2>
-  </div>
-
-  <div class="tickets">
-    <div class="map">
-      @if(concert.images.map) {
-        <img [src]="concert.images.map" alt="map image"/>
-      } @else {
-        <div class="noMap">
-          <i class="fa-solid fa-map-location"></i>
-          <p>No map available</p>
-        </div>
-      }
+  <div class="sectionContainer">
+    <div class="sectionHeader">
+      <h2>Tickets</h2>
     </div>
 
-    <div class="ticketTypes">
-      @for (ticket of concert.tickets; track ticket._id) {
-        <app-concert-details-ticket-card [concert]="concert" [currentTicket]="ticket"/>
-      }
+    <div class="tickets">
+      <div class="map">
+        @if(concert.images.map) {
+          <img [src]="concert.images.map" alt="map image"/>
+        } @else {
+          <div class="noMap">
+            <i class="fa-solid fa-map-location"></i>
+            <p>No map available</p>
+          </div>
+        }
+      </div>
 
-      <div class="ticketBtns">
-        <button class="outline" disabled>Continue</button>
+      <div class="ticketTypes">
+        @for (ticket of concert.tickets; track ticket._id) {
+          <app-concert-details-ticket-card [concert]="concert" [currentTicket]="ticket"/>
+        }
+
+        <div class="ticketBtns">
+          <button class="outline" disabled>Continue</button>
+        </div>
       </div>
     </div>
   </div>
@@ -82,19 +84,21 @@
 
 
 <section #description>
-  <div class="sectionHeader">
-    <h2>Description</h2>
-  </div>
+  <div class="sectionContainer">
+    <div class="sectionHeader">
+      <h2>Description</h2>
+    </div>
 
-  <div class="location">
-    <!-- //TODO SWEEPER MAP -->
-  </div>
+    <div class="location">
+      <!-- //TODO SWEEPER MAP -->
+    </div>
 
-  <div class="description">
-    <div [innerHTML]="concert.description"></div>
+    <div class="description">
+      <div [innerHTML]="concert.description"></div>
 
-    <div>
-      <app-carousel [images]="concert.images.carousel" />
+      <div>
+        <app-carousel [images]="concert.images.carousel" />
+      </div>
     </div>
   </div>
 </section>
@@ -166,6 +170,11 @@
   section {
     padding-bottom: 20px;
     border-bottom: var(--pico-border-width) solid var(--pico-secondary-border);
+
+    .sectionContainer {
+      max-width: 1500px;
+      margin: 0 auto !important;
+    }
   }
 
   .tickets {

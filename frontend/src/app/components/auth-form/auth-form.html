@@ -1,0 +1,204 @@
+<div class="mainContainer">
+  <div class="advantages">
+    <div>
+      <i class="fa-solid fa-comments"></i>
+      <p>Comment on concerts</p>
+    </div>
+
+    <div>
+      <i class="fa-solid fa-bolt"></i>
+      <p>Fast and secure checkout</p>
+    </div>
+
+    <div>
+      <i class="fa-solid fa-heart"></i>
+      <p>Save your favorite events</p>
+    </div>
+
+    <div>
+      <i class="fa-solid fa-envelope"></i>
+      <p>Get personalized recommendations</p>
+    </div>
+  </div>
+
+  <div class="operationTitle">
+    @if(operation === 'login') {
+      <h2>Login</h2>
+    } @else if(operation === 'signin') {
+      <h2>Signin</h2>
+    } @else {
+      <h2>Forgot password</h2>
+    }
+  </div>
+
+  <form [formGroup]="forms[operation]" (ngSubmit)="submitForm()">
+    @if (operation === 'login') {
+      <div>
+        <i class="fa-solid fa-address-card"></i>
+        <input
+          type="text"
+          placeholder="username or email"
+          formControlName="credential"
+          autocomplete="username email"
+        />
+      </div>
+
+      <div>
+        <i class="fa-solid fa-key"></i>
+        <input
+          [type]="showPassword.login ? 'text' : 'password'"
+          type="password"
+          placeholder="password"
+          formControlName="password"
+          autocomplete="current-password"
+        />
+        <app-show-password [showPassword]="showPassword.login" (setInputType)="setInputType('login', $event)"/>
+      </div>
+
+    } @else if(operation === 'signin') {
+      <div>
+        <i class="fa-solid fa-user"></i>
+        <input
+          type="text"
+          placeholder="username"
+          formControlName="username"
+          autocomplete="username"
+        />
+      </div>
+
+      <div>
+        <i class="fa-solid fa-envelope"></i>
+
+        <input
+          type="text"
+          placeholder="email"
+          formControlName="email"
+          autocomplete="email"
+        />
+      </div>
+
+      <div>
+        <i class="fa-solid fa-key"></i>
+        <input
+          [type]="showPassword.signin ? 'text' : 'password'"
+          type="password"
+          placeholder="password"
+          formControlName="password"
+          autocomplete="new-password"
+        />
+        <app-show-password [showPassword]="showPassword.signin" (setInputType)="setInputType('signin', $event)"/>
+      </div>
+
+      <div>
+        <i class="fa-solid fa-key"></i>
+        <input
+          [type]="showPassword.signin ? 'text' : 'password'"
+          type="password"
+          placeholder="repeat password"
+          formControlName="passwordRepeat"
+          autocomplete="new-password"
+        />
+        <app-show-password [showPassword]="showPassword.signin" (setInputType)="setInputType('signin', $event)"/>
+      </div>
+    } @else if(operation === 'forgot-password') {
+      <div>
+        <i class="fa-solid fa-address-card"></i>
+        <input
+          type="text"
+          placeholder="username or email"
+          formControlName="credential"
+          autocomplete="username email"
+        />
+      </div>
+    }
+
+    <button>
+      Send
+    </button>
+  </form>
+
+  <div class="operations">
+    @if(operation === 'login') {
+      <p>
+        Don't have an account?
+        <a routerLink="/auth/signin">Create account</a>
+      </p>
+    } @else {
+      <p>
+        Do you have an account?
+        <a routerLink="/auth/login">Log in</a>
+      </p>
+    }
+
+    <p class="noMobile">|</p>
+
+    <p>
+      Forgot
+      <a routerLink="/auth/forgot-password">your password?</a>
+    </p>
+  </div>
+
+</div>
+
+
+<style>
+  .mainContainer {
+    max-width: 1000px;
+    margin: auto !important;
+    padding: 20px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+    padding: 20px 0;
+
+    input:-webkit-autofill {
+      transition: background-color 9999s;
+    }
+  }
+
+
+  form > div {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .operations {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+  }
+
+  .advantages {
+    display: flex;
+    flex-wrap: wrap;
+    padding-bottom: 40px;
+  }
+  .advantages > div {
+    width: 50%;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+
+  @media (max-width: 765px) {
+    .advantages {
+      flex-direction: column;
+      width: fit-content;
+      margin: 0 auto !important;
+      padding-bottom: 0;
+    }
+    .advantages > div {
+      width: unset;
+    }
+  }
+</style>
