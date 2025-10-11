@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt'
 
 
 
-export const handleRegister = asyncHandler(async (req, res) => {
+export const handleSignin = asyncHandler(async (req, res) => {
     const { username, email, password } = req.body
 
     const hashedPassword = await bcrypt.hash(password, 10)
@@ -16,16 +16,16 @@ export const handleRegister = asyncHandler(async (req, res) => {
     })
 
     const createdUser = await user.save()
-    res.status(200).json(createdUser.toUserResponse())    
+    res.status(200).json(createdUser.toUserResponse(true))    
 })
 
 export const handleLogin = asyncHandler(async (req, res) => {
-    const { credentials, password } = req.body
+    const { credential, password } = req.body
 
     const user = await UserModel.findOne({
         $or: [
-            { username: credentials },
-            { email: credentials }
+            { username: credential },
+            { email: credential }
         ]
     })
 
@@ -34,14 +34,25 @@ export const handleLogin = asyncHandler(async (req, res) => {
         return
     }
 
-    const match = await bcrypt.compare(user.password || '', password)
+    const match = await bcrypt.compare(password, user.password || '')
     if(match) {
-        res.status(200).json({
-            user: user.toUserResponse()
-        })
+        res.status(200).json(user.toUserResponse(true))
     } else {
-        res.status(200).json({
+        res.status(401).json({
             error: 'test'
         })
+    }
+})
+
+
+export const getUserInfo = asyncHandler(async (req, res) => {
+    const user = await UserModel.findById(req.userId)
+
+    if(!user) {
+        res.status(404).json({
+            error: 'error'
+        })
+    } else {
+        res.status(200).json(user.toUserResponse(false))
     }
 })

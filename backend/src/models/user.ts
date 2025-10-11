@@ -37,27 +37,25 @@ const userSchema = new mongoose.Schema({
 
 userSchema.methods.generateAccessToken = function() {
     const payload = {
-        "user": {
-            "id": this._id,
-            "email": this.email,
-            "password": this.password
-        }
+        "userId": this._id
     }
 
     return jwt.sign(payload, process.env.JWT_SECRET!,{ expiresIn: "1d" })
 }
 
-userSchema.methods.toUserResponse = function() {
+userSchema.methods.toUserResponse = function(withToken: boolean) {
     return {
         username: this.username,
         email: this.email,
         image: this.image,
-        token: this.generateAccessToken()
+        ...(withToken ? { token: this.generateAccessToken() } : {})
     }
 }
 
+
 interface IUserModel {
-    toUserResponse(): void
+    toUserResponse(withToken: boolean): void
+    generateAccesToken(): void
 
     password?: string
 }
