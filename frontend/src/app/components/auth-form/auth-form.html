@@ -31,88 +31,101 @@
     }
   </div>
 
+  @if(errors[operation].general) {
+    <div class="generalError">
+      <i class="fa-solid fa-circle-exclamation"></i>
+      <p>{{ errors[operation].general }}</p>
+    </div>
+  }
+
   <form [formGroup]="forms[operation]" (ngSubmit)="submitForm()">
     @if (operation === 'login') {
       <div>
-        <i class="fa-solid fa-address-card"></i>
-        <input
-          type="text"
-          placeholder="username or email"
-          formControlName="credential"
-          autocomplete="username email"
-        />
+        <div class="content">
+          <i class="fa-solid fa-address-card"></i>
+          <input type="text" placeholder="username or email" formControlName="credential" autocomplete="username email"
+            [attr.aria-invalid]="isInvalid(errors.login.credential)"
+          />
+        </div>
+
+        <app-show-error [error]="errors.login.credential" />
       </div>
 
       <div>
-        <i class="fa-solid fa-key"></i>
-        <input
-          [type]="showPassword.login ? 'text' : 'password'"
-          type="password"
-          placeholder="password"
-          formControlName="password"
-          autocomplete="current-password"
-        />
-        <app-show-password [showPassword]="showPassword.login" (setInputType)="setInputType('login', $event)"/>
+        <div class="content">
+          <i class="fa-solid fa-key"></i>
+          <input type="password" placeholder="password" formControlName="password" autocomplete="current-password"
+            [type]="showPassword.login ? 'text' : 'password'"
+            [attr.aria-invalid]="isInvalid(errors.login.password)"
+          />
+          <app-show-password [showPassword]="showPassword.login" (setInputType)="setInputType('login', $event)"/>
+        </div>
+
+        <app-show-error [error]="errors.login.password" />
       </div>
 
     } @else if(operation === 'signin') {
       <div>
-        <i class="fa-solid fa-user"></i>
-        <input
-          type="text"
-          placeholder="username"
-          formControlName="username"
-          autocomplete="username"
-        />
+        <div class="content">
+          <i class="fa-solid fa-user"></i>
+          <input type="text" placeholder="username" formControlName="username" autocomplete="username"
+            [attr.aria-invalid]="isInvalid(errors.signin.username)"
+          />
+        </div>
+
+        <app-show-error [error]="errors.signin.username" />
       </div>
 
       <div>
-        <i class="fa-solid fa-envelope"></i>
+        <div class="content">
+          <i class="fa-solid fa-envelope"></i>
+          <input type="text" placeholder="email" formControlName="email" autocomplete="email"
+            [attr.aria-invalid]="isInvalid(errors.signin.email)"
+          />
+        </div>
 
-        <input
-          type="text"
-          placeholder="email"
-          formControlName="email"
-          autocomplete="email"
-        />
+        <app-show-error [error]="errors.signin.email" />
       </div>
 
       <div>
-        <i class="fa-solid fa-key"></i>
-        <input
-          [type]="showPassword.signin ? 'text' : 'password'"
-          type="password"
-          placeholder="password"
-          formControlName="password"
-          autocomplete="new-password"
-        />
-        <app-show-password [showPassword]="showPassword.signin" (setInputType)="setInputType('signin', $event)"/>
+        <div class="content">
+          <i class="fa-solid fa-key"></i>
+          <input type="password" placeholder="password" formControlName="password" autocomplete="new-password"
+            [type]="showPassword.signin ? 'text' : 'password'"
+            [attr.aria-invalid]="isInvalid(errors.signin.passwords)"
+          />
+          <app-show-password [showPassword]="showPassword.signin" (setInputType)="setInputType('signin', $event)"/>
+        </div>
+
       </div>
 
       <div>
-        <i class="fa-solid fa-key"></i>
-        <input
-          [type]="showPassword.signin ? 'text' : 'password'"
-          type="password"
-          placeholder="repeat password"
-          formControlName="passwordRepeat"
-          autocomplete="new-password"
-        />
-        <app-show-password [showPassword]="showPassword.signin" (setInputType)="setInputType('signin', $event)"/>
+        <div class="content">
+          <i class="fa-solid fa-key"></i>
+          <input type="password" placeholder="repeat password" formControlName="passwordRepeat" autocomplete="new-password"
+            [type]="showPassword.signin ? 'text' : 'password'"
+            [attr.aria-invalid]="isInvalid(errors.signin.passwords)"
+          />
+          <app-show-password [showPassword]="showPassword.signin" (setInputType)="setInputType('signin', $event)"/>
+        </div>
+
+        <app-show-error [error]="errors.signin.passwords" />
       </div>
+
     } @else if(operation === 'forgot-password') {
       <div>
-        <i class="fa-solid fa-address-card"></i>
-        <input
-          type="text"
-          placeholder="username or email"
-          formControlName="credential"
-          autocomplete="username email"
-        />
+        <div class="content">
+          <i class="fa-solid fa-address-card"></i>
+          <input type="text" placeholder="username or email" formControlName="credential" autocomplete="username email"
+            [attr.aria-invalid]="isInvalid(errors['forgot-password'].credential)"
+          />
+        </div>
+
+        <app-show-error [error]="errors['forgot-password'].credential" />
       </div>
     }
 
-    <button>
+    <button [class.outline]="!forms[operation].valid || !errors.canSubmit" [disabled]="!forms[operation].valid || !errors.canSubmit">
       Send
     </button>
   </form>
@@ -165,10 +178,24 @@
   }
 
 
-  form > div {
+  form > div .content {
     display: flex;
     align-items: center;
     gap: 20px;
+  }
+
+  .generalError {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background-color: var(--pico-contrast-background);
+    border-radius: var(--pico-border-radius);
+    padding: 15px 20px;
+    margin-top: 20px !important;
+
+    & * {
+      color: var(--pico-contrast-inverse)
+    }
   }
 
   .operations {

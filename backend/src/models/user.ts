@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
+import uniqueValidator from 'mongoose-unique-validator'
 
 const userSchema = new mongoose.Schema({
     username: {
@@ -33,6 +34,9 @@ const userSchema = new mongoose.Schema({
     //     ref: 'User'
     // }]
 })
+
+
+userSchema.plugin(uniqueValidator)
 
 
 userSchema.methods.generateAccessToken = function() {

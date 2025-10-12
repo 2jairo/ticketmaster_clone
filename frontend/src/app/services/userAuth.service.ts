@@ -1,4 +1,4 @@
-import { inject, Injectable, OnInit } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { JwtService } from './jwt.service';
 import { HttpApiService } from './httpApi.service';
 import { LoginRequestBody, LoginSigninResponse, SigninRequestBody } from '../types/userAuth';
@@ -29,10 +29,16 @@ export class UserAuthService {
   }
 
   populate() {
-    return this.httpService.get<LoginSigninResponse>('/auth/user')
-      .pipe(tap((resp) => {
+    if(!this.jwtService.getToken()) {
+      this.isAuthenticatedSubject.next(false)
+      this.userSubject.next({} as LoginSigninResponse)
+      return
+    }
+
+    this.httpService.get<LoginSigninResponse>('/auth/user')
+      .subscribe((resp) => {
         this.setUser(resp)
-      }))
+      })
   }
 
   login(body: LoginRequestBody) {

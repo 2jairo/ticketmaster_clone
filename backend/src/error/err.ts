@@ -1,10 +1,13 @@
 import type { ErrorRequestHandler, RequestHandler } from "express";
+import mongoose from "mongoose";
 
 export const enum ErrKind {
     InternalServerError = 'InternalServerError',
     RouteNotFound = 'RouteNotFound',
     UserNotFound = 'UserNotFound',
-    PasswordMismatch = 'PasswordMismatch',
+    UniqueConstraintViolation = 'UniqueConstraintViolation',
+    RequiredConstraintViolation = 'RequiredConstraintViolation',
+    RegexConstraintViolation = 'RegexConstraintViolation',
     Unauthorized = 'Unauthorized',
     ConcertNotFound = 'ConcertNotFound',
 }
@@ -33,14 +36,34 @@ export class LocalError {
 
 
 export const errorHandler: ErrorRequestHandler = (
-    err: Error, 
+    err: any, 
     req, 
     res, 
     next
 ) => {
-    const localErr = err instanceof LocalError
-        ? err
-        : new LocalError(ErrKind.InternalServerError, 500, err.message)
+    if(err instanceof LocalError) {
+        res.status(err.statusCode).json(err.toJSON())
+        return next()
+    }
+
+    // console.log(JSON.stringify(err))
+
+    let localErr = new LocalError(ErrKind.InternalServerError, 500, err.message)
+
+    if(err instanceof mongoose.Error.ValidationError) {
+        for (const [name, e] of Object.entries(err.errors)) {
+            if(e.kind === 'unique') {
+                localErr = new LocalError(ErrKind.UniqueConstraintViolation, 409, name)
+                break
+            } else if(e.kind === 'required') {
+                localErr = new LocalError(ErrKind.RequiredConstraintViolation, 400, name)
+                break
+            } else if(e.kind === 'regexp') {
+                localErr = new LocalError(ErrKind.RegexConstraintViolation, 400, name)
+                break
+            }
+        }
+    }
 
     res.status(localErr.statusCode).json(localErr.toJSON())
     next()

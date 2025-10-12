@@ -13,6 +13,6 @@ export class App implements OnInit {
   private userAuthService = inject(UserAuthService)
 
   ngOnInit(): void {
-    this.userAuthService.populate().subscribe()
+    this.userAuthService.populate()
   }
 }

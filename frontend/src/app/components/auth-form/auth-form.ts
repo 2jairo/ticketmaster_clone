@@ -1,14 +1,16 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { UserAuthService } from '../../services/userAuth.service';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LoginRequestBody, SigninRequestBody } from '../../types/userAuth';
 import { tap } from 'rxjs';
 import { ShowPassword } from "./show-password";
+import { ShowError } from "./show-error";
+import { AuthFormErrors, AuthFormOperations, EMAIL_MAX_LENGTH, PASSWORD_MAX_LENGTH, USERNAME_MAX_LENGTH } from '../../types/authFormErrors';
 
 @Component({
   selector: 'app-auth-form',
-  imports: [ReactiveFormsModule, ShowPassword, RouterLink],
+  imports: [ReactiveFormsModule, ShowPassword, RouterLink, ShowError],
   templateUrl: './auth-form.html'
 })
 export class AuthForm implements OnInit {
@@ -17,20 +19,29 @@ export class AuthForm implements OnInit {
   private fb = inject(FormBuilder)
   private router = inject(Router)
 
-  operation = 'login' as 'login' | 'signin' | 'forgot-password'
+  operation: AuthFormOperations = 'login'
   fetching = false
 
   forms = {
     login: this.fb.group({
-      credential: ['', [Validators.required, Validators.maxLength(50)]],
-      password: ['', Validators.required],
+      credential: new FormControl('', [Validators.required, Validators.maxLength(EMAIL_MAX_LENGTH)]),
+      password: new FormControl('', [Validators.required, Validators.maxLength(PASSWORD_MAX_LENGTH)]),
     }),
     signin: this.fb.group(
       {
-        username: ['', Validators.required],
-        email: ['', [Validators.required, Validators.email]],
-        password: ['', Validators.required],
-        passwordRepeat: ['', Validators.required]
+        username: new FormControl('', [Validators.required, Validators.maxLength(USERNAME_MAX_LENGTH)]),
+        email: new FormControl('', {
+          validators: [Validators.required, Validators.email, Validators.maxLength(EMAIL_MAX_LENGTH)],
+          updateOn: 'blur'
+        }),
+        password: new FormControl('', {
+          validators: [Validators.required, Validators.maxLength(PASSWORD_MAX_LENGTH)],
+          updateOn: 'blur'
+        }),
+        passwordRepeat: new FormControl('', {
+          validators: [Validators.required, Validators.maxLength(PASSWORD_MAX_LENGTH)],
+          updateOn: 'blur'
+        })
       },
       {
         validators: (group) => {
@@ -41,17 +52,18 @@ export class AuthForm implements OnInit {
       }
     ),
     'forgot-password': this.fb.group({
-      credential: ['', Validators.required]
+      credential: new FormControl('', [Validators.required, Validators.maxLength(EMAIL_MAX_LENGTH)])
     })
   }
   showPassword = {
     login: false,
     signin: false,
   }
+  errors = new AuthFormErrors(this.forms)
 
   ngOnInit(): void {
     this.route.url.subscribe((segments) => {
-      this.operation = segments[segments.length - 1].path as 'login' | 'signin' | 'forgot-password'
+      this.operation = segments[segments.length - 1].path as AuthFormOperations
     })
   }
 
@@ -66,15 +78,17 @@ export class AuthForm implements OnInit {
       this.userAuthService.login(this.forms.login.value as LoginRequestBody)
         .pipe(tap(() => this.fetching = false))
         .subscribe({
-          error: (e) => this.handleError(e),
+          error: (e) => this.errors.handleHttpErrorsLogin(e),
           next: () => this.router.navigate(['/']),
         })
     }
     else if(this.operation === 'signin') {
-      this.userAuthService.signin(this.forms.signin.value as SigninRequestBody)
+      const { passwordRepeat, ...signinBody } = this.forms.signin.value;
+
+      this.userAuthService.signin(signinBody as SigninRequestBody)
         .pipe(tap(() => this.fetching = false))
         .subscribe({
-          error: (e) => this.handleError(e),
+          error: (e) => this.errors.handleHttpErrorsSignin(e),
           next: () => this.router.navigate(['/']),
         })
     }
@@ -83,17 +97,16 @@ export class AuthForm implements OnInit {
       // this.userAuthService.login(this.forms.login.value as LoginRequestBody)
       // .pipe(tap(() => this.fetching = false))
       // .subscribe({
-      //   error: (e) => this.handleError(e)
+      //   error: (e) => this.errors.handleHttpErrorsForgotPassword(e)
       // })
     }
   }
 
-  handleError(e: string) {
-    console.log('handle error')
-    //TODO
-  }
 
   setInputType(on: 'login' | 'signin', value: boolean) {
     this.showPassword[on] = value
+  }
+  isInvalid(err: any) {
+    return err ? 'true' : ''
   }
 }

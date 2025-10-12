@@ -1,0 +1,19 @@
+@if(error) {
+  <div class="error">
+    <p>{{ error }}</p>
+  </div>
+}
+
+
+
+<style>
+  .error {
+    display: flex;
+    align-items: center;
+    justify-content: end;
+
+    & * {
+      color: var(--pico-form-element-invalid-border-color);
+    }
+  }
+</style>

@@ -38,7 +38,7 @@ export const handleLogin = asyncHandler(async (req, res) => {
     if(match) {
         res.status(200).json(user.toUserResponse(true))
     } else {
-        throw new LocalError(ErrKind.PasswordMismatch, 401)
+        throw new LocalError(ErrKind.UserNotFound, 401)
     }
 })
 
