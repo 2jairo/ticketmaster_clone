@@ -3,7 +3,6 @@ import { RouterLink } from '@angular/router';
 import { ConcertDetailsResponseWrapper } from '../../types/concert';
 import { ConcertTicketCard } from './concert-ticket-card';
 import { Carousel } from "../carousel/carousel";
-import { LeafletModule } from '@bluehalo/ngx-leaflet';
 import * as L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 
@@ -12,7 +11,7 @@ type Sections = 'tickets' | 'description'
 
 @Component({
   selector: 'app-concert-details',
-  imports: [ConcertTicketCard, RouterLink, Carousel, LeafletModule],
+  imports: [ConcertTicketCard, RouterLink, Carousel],
   templateUrl: './concert-details.html'
 })
 export class ConcertDetails implements AfterViewInit {
