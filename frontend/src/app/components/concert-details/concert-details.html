@@ -89,9 +89,8 @@
       <h2>Description</h2>
     </div>
 
-    <div class="location">
-      <!-- //TODO SWEEPER MAP -->
-    </div>
+    <!-- <div class="location" leaflet [leafletOptions]="leafletOptions"></div> -->
+    <div #location class="location"></div>
 
     <div class="description">
       <div [innerHTML]="concert.description"></div>
@@ -223,6 +222,10 @@
       width: 50%;
     }
   }
+  .location {
+    padding: 20px;
+    height: 400px;
+  }
 
 
   @media (max-width: 700px) {
@@ -234,4 +237,5 @@
       width: 100% !important
     }
   }
+
 </style>

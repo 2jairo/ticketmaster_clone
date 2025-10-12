@@ -1,40 +1,43 @@
-import { AfterViewInit, Component, ElementRef, HostListener, inject, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { ConcertsService } from '../../services/concerts.service';
+import { AfterViewInit, Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { ConcertDetailsResponseWrapper } from '../../types/concert';
 import { ConcertTicketCard } from './concert-ticket-card';
 import { Carousel } from "../carousel/carousel";
+import { LeafletModule } from '@bluehalo/ngx-leaflet';
+import * as L from 'leaflet'
+import 'leaflet/dist/leaflet.css'
+
 
 type Sections = 'tickets' | 'description'
 
 @Component({
   selector: 'app-concert-details',
-  imports: [ConcertTicketCard, RouterLink, Carousel],
+  imports: [ConcertTicketCard, RouterLink, Carousel, LeafletModule],
   templateUrl: './concert-details.html'
 })
-export class ConcertDetails implements OnInit, AfterViewInit {
-  route = inject(ActivatedRoute)
-  router = inject(Router)
-  concertApiService = inject(ConcertsService)
-
-  concert!: ConcertDetailsResponseWrapper
+export class ConcertDetails implements AfterViewInit {
+  @Input({ required: true }) concert!: ConcertDetailsResponseWrapper
 
   currentSection: Sections = 'tickets'
   @ViewChild('tickets') ticketsSectionElmt!: ElementRef<HTMLElement>
   @ViewChild('description') descriptionSectionElmt!: ElementRef<HTMLElement>
-
-  ngOnInit(): void {
-    const slug = this.route.snapshot.params['slug']
-
-    this.concertApiService.getConcertDetails(slug).subscribe({
-      next: (c) => {
-        this.concert = c
-      }
-    })
-  }
+  @ViewChild('location') leafletMapElmt!: ElementRef<HTMLElement>
 
   ngAfterViewInit(): void {
     this.updateCurrentSection()
+    this.setupLeafletMap()
+  }
+
+  setupLeafletMap() {
+    const [lat, lng] = this.concert.location.coordinates
+    const map = L.map(this.leafletMapElmt.nativeElement)
+      .setView([lat, lng], 15)
+      .addLayer(L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+      }))
+
+    map.zoomControl.remove()
+    L.marker([lat, lng]).addTo(map);
   }
 
   scrollTo(section: Sections) {
