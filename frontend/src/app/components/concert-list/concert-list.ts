@@ -6,10 +6,11 @@ import { FiltersOptions } from "../filters-options/filters-options";
 import { ConcertFilters } from '../../types/filters';
 import { tap } from 'rxjs';
 import { Location } from '@angular/common';
+import { LoadingGif } from "../loading-gif/loading-gif";
 
 @Component({
   selector: 'app-concert-list',
-  imports: [ConcertCard, FiltersOptions],
+  imports: [ConcertCard, FiltersOptions, LoadingGif],
   templateUrl: './concert-list.html'
 })
 export class ConcertList implements OnInit {

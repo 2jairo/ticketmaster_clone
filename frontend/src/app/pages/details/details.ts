@@ -3,10 +3,11 @@ import { ConcertDetails } from "../../components/concert-details/concert-details
 import { ActivatedRoute } from '@angular/router';
 import { ConcertsService } from '../../services/concerts.service';
 import { ConcertDetailsResponseWrapper } from '../../types/concert';
+import { LoadingGif } from "../../components/loading-gif/loading-gif";
 
 @Component({
   selector: 'app-details',
-  imports: [ConcertDetails],
+  imports: [ConcertDetails, LoadingGif],
   templateUrl: './details.html'
 })
 export class Details {
