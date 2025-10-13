@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { DETAILS_ROUTES } from './pages/details/details.routes';
 import { AUTH_ROUTES } from './pages/auth/auth.routes';
+import { EVENTS_ROUTES } from './pages/events/events.routes';
 
 
 export const routes: Routes = [
@@ -14,7 +15,7 @@ export const routes: Routes = [
   },
   {
     path: 'events',
-    loadComponent: () => import('./pages/events/events').then(c => c.Events),
+    children: EVENTS_ROUTES,
   },
   {
     path: 'details',
