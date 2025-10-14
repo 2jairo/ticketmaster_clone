@@ -23,7 +23,7 @@ export class UserAuthService {
   }
 
   logout() {
-    this.userSubject.next({} as LoginSigninResponse)
+    this.userSubject.next(null)
     this.isAuthenticatedSubject.next(false)
     this.jwtService.destroyToken()
   }
