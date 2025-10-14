@@ -8,16 +8,25 @@
 
   <div class="routes">
     <a routerLink="/events">Events</a>
-    <a routerLink="/auth/login">
-      <i class="fa-solid fa-user"></i>
-    </a>
+
+    @if(user) {
+      <a class="profile" routerLink="/profile">
+        <img [src]="user.image" alt="avatar"/>
+      </a>
+
+    } @else {
+      <a class="profile notLogged" routerLink="/auth/login">
+        <i class="fa-solid fa-user"></i>
+      </a>
+    }
+
   </div>
 </header>
 
 <style>
   header {
     width: 100%;
-    height: 3rem;
+    height: 3.5rem;
     padding: 10px 20px;
     display: flex;
     align-items: center;
@@ -45,10 +54,25 @@
 
   .routes {
     display: flex;
-    gap: 20px;
+    gap: 40px;
 
     a {
       color: var(--pico-h3-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .profile.notLogged {
+      border-radius: 50%;
+      border: var(--pico-border-width) solid var(--pico-secondary-border);
+      width: 2em;
+      height: 2em;
+    }
+    .profile img {
+      width: 2em;
+      height: 2em;
+      border-radius: 50%;
     }
   }
 </style>

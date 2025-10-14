@@ -12,10 +12,10 @@ export class UserAuthService {
   private httpService = inject(HttpApiService)
 
   private userSubject = new BehaviorSubject<LoginSigninResponse>({} as LoginSigninResponse)
-  user = this.userSubject.asObservable()
+  readonly user = this.userSubject.asObservable()
 
   private isAuthenticatedSubject = new ReplaySubject<boolean>(1);
-  isAuthenticated = this.isAuthenticatedSubject.asObservable();
+  readonly isAuthenticated = this.isAuthenticatedSubject.asObservable();
 
   private setUser(user: LoginSigninResponse) {
     this.userSubject.next(user)
