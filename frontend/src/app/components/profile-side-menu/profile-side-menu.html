@@ -7,7 +7,7 @@
       </summary>
 
       <div class="detailsContent">
-        <a routerLink="/profile/account" [class.current]="section === 'account'">Account</a>
+        <a routerLink="/profile/account" [class.current]="section() === 'account'">Account</a>
       </div>
     </details>
 
@@ -18,7 +18,7 @@
       </summary>
 
       <div class="detailsContent">
-        <a routerLink="/profile/orders" [class.current]="section === 'orders'">Orders</a>
+        <a routerLink="/profile/orders" [class.current]="section() === 'orders'">Orders</a>
       </div>
     </details>
 

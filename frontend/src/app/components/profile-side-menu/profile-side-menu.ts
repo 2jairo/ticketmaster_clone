@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { UserAuthService } from '../../services/userAuth.service';
 import { ActivatedRoute, NavigationEnd, Router, RouterLink } from '@angular/router';
 import { filter } from 'rxjs';
@@ -13,7 +13,7 @@ export class ProfileSideMenu implements OnInit {
   private router = inject(Router)
   private route = inject(ActivatedRoute);
 
-  section = 'account'
+  section = signal('account')
 
   ngOnInit(): void {
     this.router.events
@@ -22,7 +22,7 @@ export class ProfileSideMenu implements OnInit {
         const child = this.route.firstChild;
         if (child) {
           const segments = child.snapshot.url.map((seg) => seg.path);
-          this.section = segments.join('/') || 'account';
+          this.section.set(segments.join('/') || 'account')
         }
       })
   }
