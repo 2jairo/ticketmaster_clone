@@ -36,11 +36,9 @@ export class AuthForm implements OnInit {
         }),
         password: new FormControl('', {
           validators: [Validators.required, Validators.maxLength(PASSWORD_MAX_LENGTH)],
-          updateOn: 'blur'
         }),
         passwordRepeat: new FormControl('', {
           validators: [Validators.required, Validators.maxLength(PASSWORD_MAX_LENGTH)],
-          updateOn: 'blur'
         })
       },
       {

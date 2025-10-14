@@ -11,7 +11,7 @@ export class UserAuthService {
   private jwtService = inject(JwtService)
   private httpService = inject(HttpApiService)
 
-  private userSubject = new BehaviorSubject<LoginSigninResponse>({} as LoginSigninResponse)
+  private userSubject = new BehaviorSubject<LoginSigninResponse | null>(null)
   readonly user = this.userSubject.asObservable()
 
   private isAuthenticatedSubject = new ReplaySubject<boolean>(1);
@@ -31,7 +31,7 @@ export class UserAuthService {
   populate() {
     if(!this.jwtService.getToken()) {
       this.isAuthenticatedSubject.next(false)
-      this.userSubject.next({} as LoginSigninResponse)
+      this.userSubject.next(null)
       return
     }
 
