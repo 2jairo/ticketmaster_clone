@@ -9,7 +9,7 @@
   <div class="routes">
     <a routerLink="/events">Events</a>
 
-    @if(user) {
+    @if(userAuthService.user | async; as user) {
       <a class="profile" routerLink="/profile">
         <img [src]="user.image" alt="avatar"/>
       </a>

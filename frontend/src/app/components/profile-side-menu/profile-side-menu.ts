@@ -9,18 +9,13 @@ import { filter } from 'rxjs';
   templateUrl: './profile-side-menu.html'
 })
 export class ProfileSideMenu implements OnInit {
-  private userAuthService = inject(UserAuthService)
+  readonly userAuthService = inject(UserAuthService)
   private router = inject(Router)
   private route = inject(ActivatedRoute);
 
   section = 'account'
-  logged = false
 
   ngOnInit(): void {
-    this.userAuthService.isAuthenticated.subscribe((logged) => {
-      this.logged = logged
-    })
-
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe(() => {
@@ -30,15 +25,5 @@ export class ProfileSideMenu implements OnInit {
           this.section = segments.join('/') || 'account';
         }
       })
-
-    // this.route.firstChild?.url.subscribe((seg) => {
-    //   this.section = seg.map(s => s.path).join('/')
-    //   console.log(this.section)
-    // })
-
-    // this.router.events.subscribe(event => {
-    //   console.log(event)
-    //   // this.section = this.router.url;
-    // });
   }
 }
