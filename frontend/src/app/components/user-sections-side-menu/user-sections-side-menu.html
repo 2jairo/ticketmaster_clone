@@ -6,8 +6,13 @@
         <h3>Account</h3>
       </summary>
 
+
+
       <div class="detailsContent">
-        <a routerLink="/profile/account" [class.current]="section() === 'account'">Account</a>
+        @if(userAuthService.user | async; as user) {
+          <a routerLink="/user/profile/{{ user.username }}" [class.current]="section() === 'profile'">Profile</a>
+        }
+        <a routerLink="/user/account" [class.current]="section() === 'account'">Account</a>
       </div>
     </details>
 
@@ -18,10 +23,9 @@
       </summary>
 
       <div class="detailsContent">
-        <a routerLink="/profile/orders" [class.current]="section() === 'orders'">Orders</a>
+        <a routerLink="/user/orders" [class.current]="section() === 'orders'">Orders</a>
       </div>
     </details>
-
   </div>
 </div>
 
@@ -61,7 +65,7 @@
 
     a {
       color: var(--pico-h3-color);
-      padding: 10px 20px;
+      padding: 5px 20px;
       text-decoration: none;
     }
     a.current, a:hover {

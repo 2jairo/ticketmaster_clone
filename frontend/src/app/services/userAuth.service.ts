@@ -3,6 +3,7 @@ import { JwtService } from './jwt.service';
 import { HttpApiService } from './httpApi.service';
 import { LoginRequestBody, LoginSigninResponse, SigninRequestBody } from '../types/userAuth';
 import { BehaviorSubject, ReplaySubject, tap } from 'rxjs';
+import { ErrKind, LocalErrorResponse } from '../types/error';
 
 @Injectable({
   providedIn: 'root'
@@ -22,10 +23,16 @@ export class UserAuthService {
     this.isAuthenticatedSubject.next(true)
   }
 
-  logout() {
+  private logoutInner(destroyToken: boolean) {
     this.userSubject.next(null)
     this.isAuthenticatedSubject.next(false)
-    this.jwtService.destroyToken()
+    if(destroyToken) {
+      this.jwtService.destroyToken()
+    }
+  }
+
+  logout() {
+    this.logoutInner(true)
   }
 
   populate() {
@@ -36,8 +43,11 @@ export class UserAuthService {
     }
 
     this.httpService.get<LoginSigninResponse>('/auth/user')
-      .subscribe((resp) => {
-        this.setUser(resp)
+      .subscribe({
+        next: (resp) => this.setUser(resp),
+        error: (e: LocalErrorResponse) => {
+          this.logoutInner(e.error === ErrKind.Status0)
+        }
       })
   }
 

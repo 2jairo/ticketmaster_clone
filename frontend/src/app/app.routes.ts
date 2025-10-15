@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { DETAILS_ROUTES } from './pages/details/details.routes';
 import { AUTH_ROUTES } from './pages/auth/auth.routes';
 import { EVENTS_ROUTES } from './pages/events/events.routes';
-import { PROFILE_ROUTES } from './pages/profile/profile.routes';
+import { USER_ROUTES } from './pages/user/user.routes';
 
 
 export const routes: Routes = [
@@ -27,9 +27,9 @@ export const routes: Routes = [
     children: AUTH_ROUTES,
   },
   {
-    path: 'profile',
-    children: PROFILE_ROUTES,
-    loadComponent: () => import('./pages/profile/profile').then(c => c.Profile)
+    path: 'user',
+    children: USER_ROUTES,
+    loadComponent: () => import('./pages/user/user').then(c => c.User)
   },
   {
     path: '**',

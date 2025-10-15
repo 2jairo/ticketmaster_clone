@@ -10,7 +10,7 @@
     <a routerLink="/events">Events</a>
 
     @if(userAuthService.user | async; as user) {
-      <a class="profile" routerLink="/profile">
+      <a class="profile" routerLink="/user/profile/{{ user.username }}">
         <img [src]="user.image" alt="avatar"/>
       </a>
 

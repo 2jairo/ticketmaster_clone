@@ -65,6 +65,11 @@ export class AuthForm implements OnInit {
     })
   }
 
+  navigateToReturnUrl() {
+    const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/';
+    this.router.navigateByUrl(returnUrl);
+  }
+
   submitForm() {
     if(!this.forms[this.operation].valid) {
       return
@@ -77,7 +82,7 @@ export class AuthForm implements OnInit {
         .pipe(tap(() => this.fetching = false))
         .subscribe({
           error: (e) => this.errors.handleHttpErrorsLogin(e),
-          next: () => this.router.navigate(['/']),
+          next: () => this.navigateToReturnUrl(),
         })
     }
     else if(this.operation === 'signin') {
@@ -87,7 +92,7 @@ export class AuthForm implements OnInit {
         .pipe(tap(() => this.fetching = false))
         .subscribe({
           error: (e) => this.errors.handleHttpErrorsSignin(e),
-          next: () => this.router.navigate(['/']),
+          next: () => this.navigateToReturnUrl(),
         })
     }
     else if(this.operation === 'forgot-password') {
