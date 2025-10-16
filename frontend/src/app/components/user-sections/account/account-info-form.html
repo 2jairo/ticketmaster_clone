@@ -1,0 +1,59 @@
+<form [formGroup]="credentialsForm" (submit)="submitForm()">
+  <h3>Account Info</h3>
+
+  <app-show-error [generalError]="true" [error]="errors.general.msg" [icon]="errors.general.icon" />
+
+  <div>
+    <div class="content">
+      <i class="fa-solid fa-user"></i>
+      <input type="text" placeholder="username" formControlName="username" autocomplete="username"
+        [attr.aria-invalid]="isInvalid(errors.username)"
+      />
+    </div>
+
+    <app-show-error [error]="errors.username" />
+  </div>
+
+  <div>
+    <div class="content">
+      <i class="fa-solid fa-envelope"></i>
+      <input type="text" placeholder="email" formControlName="email" autocomplete="email"
+        [attr.aria-invalid]="isInvalid(errors.email)" />
+    </div>
+
+    <app-show-error [error]="errors.email" />
+  </div>
+
+  <button [class.outline]="!credentialsForm.valid || !errors.canSubmit || fetching"
+    [disabled]="!credentialsForm.valid || !errors.canSubmit || fetching">
+
+    @if(fetching) {
+      <app-loading-gif />
+    } @else {
+      Update
+    }
+  </button>
+</form>
+
+
+<style>
+  form {
+    margin: 0 auto !important;
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+    padding: 20px 0;
+
+    input:-webkit-autofill {
+      transition: background-color 9999s;
+    }
+  }
+
+  form > div .content {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+</style>

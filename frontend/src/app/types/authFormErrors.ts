@@ -39,9 +39,9 @@ export class AuthFormErrors {
   }
 
   private resetErrors() {
-    this.login = { ...ERRORS.login }
-    this.signin = { ...ERRORS.signin }
-    this['forgot-password'] = { ...ERRORS['forgot-password'] }
+    this.login = structuredClone(ERRORS.login)
+    this.signin = structuredClone(ERRORS.signin)
+    this['forgot-password'] = structuredClone(ERRORS['forgot-password'])
     this.canSubmit = ERRORS.canSubmit
   }
 
@@ -98,7 +98,8 @@ export class AuthFormErrors {
       this.login.general = `Invalid credentials. The user doesn't exist or the password doesn't match`
     }
     else {
-      this.login.general = 'An unexpected error occurred. Please try again.'
+      this.login.general = `An unexpected error occurred. Please try again (${err.error})`
+      this.canSubmit = true
     }
   }
 
@@ -124,7 +125,8 @@ export class AuthFormErrors {
       this.signin.general = 'Some fields have invalid format'
     }
     else {
-      this.signin.general = 'An unexpected error occurred. Please try again.'
+      this.signin.general = `An unexpected error occurred. Please try again. (${err.error})`
+      this.canSubmit = true
     }
   }
 

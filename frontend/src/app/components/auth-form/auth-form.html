@@ -31,12 +31,7 @@
     }
   </div>
 
-  @if(errors[operation].general) {
-    <div class="generalError">
-      <i class="fa-solid fa-circle-exclamation"></i>
-      <p>{{ errors[operation].general }}</p>
-    </div>
-  }
+  <app-show-error [generalError]="true" [error]="errors[operation].general" />
 
   <form [formGroup]="forms[operation]" (ngSubmit)="submitForm()">
     @if (operation === 'login') {
@@ -182,20 +177,6 @@
     display: flex;
     align-items: center;
     gap: 20px;
-  }
-
-  .generalError {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    background-color: var(--pico-contrast-background);
-    border-radius: var(--pico-border-radius);
-    padding: 15px 20px;
-    margin-top: 20px !important;
-
-    & * {
-      color: var(--pico-contrast-inverse)
-    }
   }
 
   .operations {

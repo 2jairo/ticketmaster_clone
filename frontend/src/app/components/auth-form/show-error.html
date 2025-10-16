@@ -1,7 +1,14 @@
 @if(error) {
-  <div class="error">
-    <p>{{ error }}</p>
-  </div>
+  @if(generalError) {
+    <div class="generalError">
+      <i [class]="icon"></i>
+      <p>{{ error }}</p>
+    </div>
+  } @else {
+    <div class="error">
+      <p>{{ error }}</p>
+    </div>
+  }
 }
 
 
@@ -14,6 +21,20 @@
 
     & * {
       color: var(--pico-form-element-invalid-border-color);
+    }
+  }
+
+  .generalError {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background-color: var(--pico-contrast-background);
+    border-radius: var(--pico-border-radius);
+    padding: 15px 20px;
+    margin-top: 20px !important;
+
+    & * {
+      color: var(--pico-contrast-inverse)
     }
   }
 </style>

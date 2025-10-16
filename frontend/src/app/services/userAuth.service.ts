@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { JwtService } from './jwt.service';
 import { HttpApiService } from './httpApi.service';
-import { LoginRequestBody, LoginSigninResponse, SigninRequestBody } from '../types/userAuth';
+import { ChangeCredentialsRequestBody, LoginRequestBody, LoginSigninResponse, SigninRequestBody } from '../types/userAuth';
 import { BehaviorSubject, ReplaySubject, tap } from 'rxjs';
 import { ErrKind, LocalErrorResponse } from '../types/error';
 import { environment } from '../../environments/environment';
@@ -62,6 +62,14 @@ export class UserAuthService {
 
   signin(body: SigninRequestBody) {
     return this.httpService.post<LoginSigninResponse & { token: string }>(environment.USER_API_URL, '/auth/signin', body)
+      .pipe(tap((resp) => {
+        this.setUser(resp)
+        this.jwtService.setToken(resp.token)
+      }))
+  }
+
+  updateCredentials(body: ChangeCredentialsRequestBody) {
+    return this.httpService.post<LoginSigninResponse & { token: string }>(environment.USER_API_URL, '/auth/update', body)
       .pipe(tap((resp) => {
         this.setUser(resp)
         this.jwtService.setToken(resp.token)

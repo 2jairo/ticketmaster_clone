@@ -15,3 +15,12 @@ export interface SigninRequestBody {
   email: string
   password: string
 }
+
+export interface ChangeCredentialsRequestBody {
+  username?: string
+  email?: string
+  password?: {
+    new: string
+    old: string
+  }
+}
