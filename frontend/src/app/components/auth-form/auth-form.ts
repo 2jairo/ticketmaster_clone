@@ -1,12 +1,13 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { UserAuthService } from '../../services/userAuth.service';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LoginRequestBody, SigninRequestBody } from '../../types/userAuth';
 import { tap } from 'rxjs';
 import { ShowPassword } from "./show-password";
 import { ShowError } from "./show-error";
-import { AuthFormErrors, AuthFormOperations, EMAIL_MAX_LENGTH, PASSWORD_MAX_LENGTH, USERNAME_MAX_LENGTH } from '../../types/authFormErrors';
+import { AuthFormErrors, AuthFormOperations } from '../../types/authFormErrors';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-auth-form',
@@ -24,21 +25,21 @@ export class AuthForm implements OnInit {
 
   forms = {
     login: this.fb.group({
-      credential: new FormControl('', [Validators.required, Validators.maxLength(EMAIL_MAX_LENGTH)]),
-      password: new FormControl('', [Validators.required, Validators.maxLength(PASSWORD_MAX_LENGTH)]),
+      credential: new FormControl('', [Validators.required, Validators.maxLength(environment.EMAIL_MAX_LENGTH)]),
+      password: new FormControl('', [Validators.required, Validators.maxLength(environment.PASSWORD_MAX_LENGTH)]),
     }),
     signin: this.fb.group(
       {
-        username: new FormControl('', [Validators.required, Validators.maxLength(USERNAME_MAX_LENGTH)]),
+        username: new FormControl('', [Validators.required, Validators.maxLength(environment.USERNAME_MAX_LENGTH)]),
         email: new FormControl('', {
-          validators: [Validators.required, Validators.email, Validators.maxLength(EMAIL_MAX_LENGTH)],
+          validators: [Validators.required, Validators.email, Validators.maxLength(environment.EMAIL_MAX_LENGTH)],
           updateOn: 'blur'
         }),
         password: new FormControl('', {
-          validators: [Validators.required, Validators.maxLength(PASSWORD_MAX_LENGTH)],
+          validators: [Validators.required, Validators.maxLength(environment.PASSWORD_MAX_LENGTH)],
         }),
         passwordRepeat: new FormControl('', {
-          validators: [Validators.required, Validators.maxLength(PASSWORD_MAX_LENGTH)],
+          validators: [Validators.required, Validators.maxLength(environment.PASSWORD_MAX_LENGTH)],
         })
       },
       {
@@ -50,7 +51,7 @@ export class AuthForm implements OnInit {
       }
     ),
     'forgot-password': this.fb.group({
-      credential: new FormControl('', [Validators.required, Validators.maxLength(EMAIL_MAX_LENGTH)])
+      credential: new FormControl('', [Validators.required, Validators.maxLength(environment.EMAIL_MAX_LENGTH)])
     })
   }
   showPassword = {

@@ -1,12 +1,13 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { ConcertCard } from '../concert-card/concert-card';
 import type { ConcertResponseWrapper } from '../../types/concert';
-import { CONCERTS_PAGE_SIZE, ConcertsService } from '../../services/concerts.service';
+import { ConcertsService } from '../../services/concerts.service';
 import { FiltersOptions } from "../filters-options/filters-options";
 import { ConcertFilters } from '../../types/filters';
 import { tap } from 'rxjs';
 import { Location } from '@angular/common';
 import { LoadingGif } from "../loading-gif/loading-gif";
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-concert-list',
@@ -33,7 +34,7 @@ export class ConcertList implements OnInit {
   onFiltersChange(filters: ConcertFilters) {
     this.fetching = true
 
-    this.concertApiService.getConcerts(filters, { size: CONCERTS_PAGE_SIZE, offset: this.offset })
+    this.concertApiService.getConcerts(filters, { size: environment.CONCERTS_PAGE_SIZE, offset: this.offset })
       .pipe(tap(() => {
         this.fetching = false
       }))
@@ -43,7 +44,7 @@ export class ConcertList implements OnInit {
           this.filters = filters
           this.updateUrlFilters()
 
-          this.pages = Array.from({ length: Math.ceil(c.totalCount / CONCERTS_PAGE_SIZE) }, (_, i) => i + 1)
+          this.pages = Array.from({ length: Math.ceil(c.totalCount / environment.CONCERTS_PAGE_SIZE) }, (_, i) => i + 1)
           this.currentPage = 1
         },
         error: (e) => {
@@ -95,10 +96,10 @@ export class ConcertList implements OnInit {
     }
 
     this.currentPage = page
-    this.offset = (page - 1) * CONCERTS_PAGE_SIZE
+    this.offset = (page - 1) * environment.CONCERTS_PAGE_SIZE
     this.fetching = true
 
-    this.concertApiService.getConcerts(this.filters, { size: CONCERTS_PAGE_SIZE, offset: this.offset })
+    this.concertApiService.getConcerts(this.filters, { size: environment.CONCERTS_PAGE_SIZE, offset: this.offset })
       .pipe(tap(() => {
         this.fetching = false
       }))

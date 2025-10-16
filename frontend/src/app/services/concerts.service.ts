@@ -3,8 +3,7 @@ import { HttpApiService } from './httpApi.service';
 import { createConcertDetailsResponseWrapper, createConcertResponseWrapper, RawConcertDetailsResponse, RawConcertResponse } from '../types/concert';
 import { map } from 'rxjs';
 import { ConcertFilters, Pagination } from '../types/filters';
-
-export const CONCERTS_PAGE_SIZE = 5
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +17,7 @@ export class ConcertsService {
     return this.http.get<{
       concerts: RawConcertResponse[],
       totalCount: number
-    }>('/concerts', { params }).pipe(map((c) => {
+    }>(environment.USER_API_URL, '/concerts', { params }).pipe(map((c) => {
       return {
         concerts: c.concerts.map(createConcertResponseWrapper),
         totalCount: c.totalCount
@@ -27,7 +26,7 @@ export class ConcertsService {
   }
 
   getConcertDetails(slug: string) {
-    return this.http.get<RawConcertDetailsResponse>(`/concert-details/${slug}`).pipe(map((c) => {
+    return this.http.get<RawConcertDetailsResponse>(environment.USER_API_URL, `/concert-details/${slug}`).pipe(map((c) => {
       return createConcertDetailsResponseWrapper(c)
     }))
   }

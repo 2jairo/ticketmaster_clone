@@ -4,6 +4,7 @@ import { HttpApiService } from './httpApi.service';
 import { LoginRequestBody, LoginSigninResponse, SigninRequestBody } from '../types/userAuth';
 import { BehaviorSubject, ReplaySubject, tap } from 'rxjs';
 import { ErrKind, LocalErrorResponse } from '../types/error';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -42,7 +43,7 @@ export class UserAuthService {
       return
     }
 
-    this.httpService.get<LoginSigninResponse>('/auth/user')
+    this.httpService.get<LoginSigninResponse>(environment.USER_API_URL, '/auth/user')
       .subscribe({
         next: (resp) => this.setUser(resp),
         error: (e: LocalErrorResponse) => {
@@ -52,7 +53,7 @@ export class UserAuthService {
   }
 
   login(body: LoginRequestBody) {
-    return this.httpService.post<LoginSigninResponse & { token: string }>('/auth/login', body)
+    return this.httpService.post<LoginSigninResponse & { token: string }>(environment.USER_API_URL, '/auth/login', body)
       .pipe(tap((resp) => {
         this.setUser(resp)
         this.jwtService.setToken(resp.token)
@@ -60,7 +61,7 @@ export class UserAuthService {
   }
 
   signin(body: SigninRequestBody) {
-    return this.httpService.post<LoginSigninResponse & { token: string }>('/auth/signin', body)
+    return this.httpService.post<LoginSigninResponse & { token: string }>(environment.USER_API_URL, '/auth/signin', body)
       .pipe(tap((resp) => {
         this.setUser(resp)
         this.jwtService.setToken(resp.token)

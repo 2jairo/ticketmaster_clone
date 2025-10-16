@@ -1,11 +1,9 @@
 import { HttpErrorResponse } from "@angular/common/http";
 import { ErrKind, LocalErrorResponse } from "./error";
 import { FormGroup } from "@angular/forms";
+import { environment } from "../../environments/environment";
 
 export type AuthFormOperations = 'login' | 'signin' | 'forgot-password'
-export const USERNAME_MAX_LENGTH = 40
-export const EMAIL_MAX_LENGTH = 80
-export const PASSWORD_MAX_LENGTH = 80
 
 const ERRORS = {
   login: {
@@ -55,11 +53,11 @@ export class AuthFormErrors {
     const passwordCtrl = form.get('password')
 
     if (credentialCtrl?.hasError('maxlength')) {
-      this.login.credential = `The email or username length can't be more than ${EMAIL_MAX_LENGTH}`;
+      this.login.credential = `The email or username length can't be more than ${environment.EMAIL_MAX_LENGTH}`;
     }
 
     if (passwordCtrl?.hasError('maxlength')) {
-      this.login.password = `The password length can't be more than ${PASSWORD_MAX_LENGTH}`;
+      this.login.password = `The password length can't be more than ${environment.PASSWORD_MAX_LENGTH}`;
     }
   }
   handleClientErrorsSignin() {
@@ -72,19 +70,19 @@ export class AuthFormErrors {
     const passwordRepeatCtrl = form.get('passwordRepeat')
 
     if (usernameCtrl?.hasError('maxlength')) {
-      this.signin.username = `The username length can't be more than ${USERNAME_MAX_LENGTH}`
+      this.signin.username = `The username length can't be more than ${environment.USERNAME_MAX_LENGTH}`
     }
 
     if (emailCtrl?.hasError('email')) {
       this.signin.email = 'Invalid email'
     } else if(emailCtrl?.hasError('maxlength')) {
-      this.signin.email = `The email length can't be more than ${EMAIL_MAX_LENGTH}`
+      this.signin.email = `The email length can't be more than ${environment.EMAIL_MAX_LENGTH}`
     }
 
     if (form.hasError('passwordMismatch') && passwordCtrl?.value && passwordRepeatCtrl?.value) {
       this.signin.passwords = 'Passwords do not match'
     } else if (passwordCtrl?.hasError('maxlength') || passwordRepeatCtrl?.hasError('maxLength')) {
-      this.signin.passwords = `The password length can't be more than ${PASSWORD_MAX_LENGTH}`
+      this.signin.passwords = `The password length can't be more than ${environment.PASSWORD_MAX_LENGTH}`
     }
   }
   hanldeClientErrorsForgotPassword() {
