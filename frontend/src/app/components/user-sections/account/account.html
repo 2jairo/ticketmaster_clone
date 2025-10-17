@@ -1,7 +1,35 @@
 <div class="main">
   <app-account-info-form />
   <app-passwords-form />
+
+  <div class="logout">
+    <h3>Session</h3>
+    <p>You are currently logged in</p>
+
+    <button (click)="openLogoutDialog($event)">Log out</button>
+  </div>
 </div>
+
+
+<dialog #logout>
+  <article #logoutContent>
+    <header>
+      <h3>Confirm your action</h3>
+
+      <div (click)="closeLogoutDialog()">
+        <i class="fa-solid fa-xmark"></i>
+      </div>
+    </header>
+
+    <p>Are you sure you want to log out?</p>
+
+    <footer>
+      <button (click)="closeLogoutDialog()" class="secondary">Cancel</button>
+      <button (click)="handleLogout()">Log out</button>
+    </footer>
+  </article>
+</dialog>
+
 
 <style>
   .main {
@@ -9,5 +37,39 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
+  }
+
+  .logout {
+    margin: 0 auto !important;
+    width: 80%;
+
+    h3 {
+      padding: 20px 0
+    }
+    button {
+      width: 100%;
+    }
+  }
+
+  dialog article {
+    padding: 0;
+
+    header, header > div {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header > div {
+      cursor: pointer;
+    }
+    p {
+      padding: 20px;
+    }
+    footer {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: end;
+    }
   }
 </style>
