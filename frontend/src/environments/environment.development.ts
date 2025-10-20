@@ -6,4 +6,5 @@ export const environment = {
   EMAIL_MAX_LENGTH: 80,
   PASSWORD_MAX_LENGTH: 80,
   CONCERTS_PAGE_SIZE: 5,
+  AVATAR_IMAGE_MAX_LENGTH: 150,
 };

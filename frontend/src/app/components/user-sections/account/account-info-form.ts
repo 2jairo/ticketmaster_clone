@@ -12,6 +12,7 @@ import { ErrKind, LocalErrorResponse } from '../../../types/error';
 const ERRORS_DEFAULT = {
   username: '',
   email: '',
+  image: '',
   canSubmit: true,
   general: {
     msg: '',
@@ -37,13 +38,22 @@ export class AccountInfoForm implements OnInit {
         validators: [Validators.required, Validators.email, Validators.maxLength(environment.EMAIL_MAX_LENGTH)],
         updateOn: 'blur'
       }),
+      image: new FormControl(
+        '',
+        [
+          Validators.required,
+          Validators.pattern(/^https:\/\/.+/),
+          Validators.maxLength(environment.AVATAR_IMAGE_MAX_LENGTH)
+        ]
+      )
     },
     {
       validators: (group) => {
         const username = group.get('username')?.value
         const email = group.get('email')?.value
+        const img = group.get('image')?.value
 
-        if (this.userValues?.username === username && this.userValues?.email === email) {
+        if (this.userValues?.username === username && this.userValues?.email === email && this.userValues?.image === img) {
           return { sameCredentials: true }
         }
         return null
@@ -66,10 +76,7 @@ export class AccountInfoForm implements OnInit {
       }
 
       this.userValues = user
-      this.credentialsForm.patchValue({
-        username: user.username,
-        email: user.email,
-      })
+      this.credentialsForm.patchValue(user)
     })
 
     this.credentialsForm.valueChanges.subscribe(() => {
@@ -82,6 +89,7 @@ export class AccountInfoForm implements OnInit {
 
     const usernameCtrl = this.credentialsForm.get('username')
     const emailCtrl = this.credentialsForm.get('email')
+    const imgCtrl = this.credentialsForm.get('image')
 
     if (usernameCtrl?.hasError('maxlength')) {
       this.errors.username = `Username must be at most ${environment.USERNAME_MAX_LENGTH} characters.`
@@ -91,6 +99,12 @@ export class AccountInfoForm implements OnInit {
       this.errors.email = 'Email must be valid.'
     } else if (emailCtrl?.hasError('maxlength')) {
       this.errors.email = `The email length can't be more than ${environment.EMAIL_MAX_LENGTH}`
+    }
+
+    if (imgCtrl?.hasError('pattern')) {
+      this.errors.image = 'Image URL must start with https://'
+    } else if (imgCtrl?.hasError('maxlength')) {
+      this.errors.image = `Image URL must be at most ${environment.AVATAR_IMAGE_MAX_LENGTH} characters.`
     }
   }
 
