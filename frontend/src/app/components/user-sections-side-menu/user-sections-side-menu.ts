@@ -1,14 +1,15 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { UserAuthService } from '../../services/userAuth.service';
-import { ActivatedRoute, NavigationEnd, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
 import { DEFAULT_USER_ROUTE_SECTION } from '../../pages/user/user.routes';
 import { AsyncPipe } from '@angular/common';
+import { UserSectionsSideMenuInner } from "./user-sections-side-menu-inner";
 
 
 @Component({
   selector: 'app-user-sections-side-menu',
-  imports: [RouterLink, AsyncPipe],
+  imports: [AsyncPipe, UserSectionsSideMenuInner],
   templateUrl: './user-sections-side-menu.html'
 })
 export class UserSectionsSideMenu implements OnInit {
@@ -16,6 +17,7 @@ export class UserSectionsSideMenu implements OnInit {
   private router = inject(Router)
   private route = inject(ActivatedRoute)
 
+  sectionAll = signal('')
   section = signal('')
 
   ngOnInit(): void {
@@ -31,13 +33,13 @@ export class UserSectionsSideMenu implements OnInit {
   private setSectionFromRoute() {
     const child = this.route.firstChild
 
-    if (child) {
-      const segment = child.snapshot.url.length > 0
-        ? child.snapshot.url[0].path
-        : DEFAULT_USER_ROUTE_SECTION
+    if (child && child.snapshot.url.length > 0) {
+      const segment = child.snapshot.url.map(p => p.path)
 
-      this.section.set(segment)
+      this.sectionAll.set(segment.join('/'))
+      this.section.set(segment[0])
     } else {
+      this.sectionAll.set(DEFAULT_USER_ROUTE_SECTION)
       this.section.set(DEFAULT_USER_ROUTE_SECTION)
     }
   }
