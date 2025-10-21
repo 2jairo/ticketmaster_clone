@@ -1,25 +1,33 @@
-import { AfterViewInit, Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, inject, Input, ViewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ConcertDetailsResponseWrapper } from '../../types/concert';
 import { ConcertTicketCard } from './concert-ticket-card';
 import { Carousel } from "../carousel/carousel";
 import * as L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import { MusicGroupCard } from "./music-group-card";
+import { CommentList } from '../comment-list/comment-list';
+import { Pagination } from '../categories/filters';
+import { ProfileService } from '../../services/profile.service';
 
 
-type Sections = 'tickets' | 'description'
+type Sections = 'groups' | 'tickets' | 'description' | 'comments'
 
 @Component({
   selector: 'app-concert-details',
-  imports: [ConcertTicketCard, RouterLink, Carousel],
+  imports: [ConcertTicketCard, RouterLink, Carousel, MusicGroupCard, CommentList],
   templateUrl: './concert-details.html'
 })
 export class ConcertDetails implements AfterViewInit {
   @Input({ required: true }) concert!: ConcertDetailsResponseWrapper
+  private profileService = inject(ProfileService)
 
-  currentSection: Sections = 'tickets'
+  currentSection: Sections = 'groups'
   @ViewChild('tickets') ticketsSectionElmt!: ElementRef<HTMLElement>
   @ViewChild('description') descriptionSectionElmt!: ElementRef<HTMLElement>
+  @ViewChild('musicGroups') groupsSectionElmt!: ElementRef<HTMLElement>
+  @ViewChild('comments') commentsSectionElmt!: ElementRef<HTMLElement>
+
   @ViewChild('location') leafletMapElmt!: ElementRef<HTMLElement>
 
   ngAfterViewInit(): void {
@@ -40,12 +48,19 @@ export class ConcertDetails implements AfterViewInit {
   }
 
   scrollTo(section: Sections) {
-    const elmt = section === 'description'
-      ? this.descriptionSectionElmt
-      : this.ticketsSectionElmt
+    const elmts = {
+      groups: this.groupsSectionElmt,
+      tickets: this.ticketsSectionElmt,
+      description: this.descriptionSectionElmt,
+      comments: this.commentsSectionElmt
+    }
 
-    elmt.nativeElement.scrollIntoView()
+    elmts[section].nativeElement.scrollIntoView()
     this.currentSection = section
+  }
+
+  getComments = (p: Pagination) => {
+    return this.profileService.getConcertComments(this.concert.slug, p)
   }
 
   calculateCurrentSectionDistance(elmt: ElementRef<HTMLElement>) {
@@ -57,13 +72,15 @@ export class ConcertDetails implements AfterViewInit {
   @HostListener('window:resize')
   @HostListener('window:scroll')
   updateCurrentSection() {
-    if(!this.ticketsSectionElmt || !this.descriptionSectionElmt) {
+    if(!this.ticketsSectionElmt || !this.descriptionSectionElmt || !this.groupsSectionElmt) {
       return
     }
 
     const distances: [Sections, number][] = [
+      ['groups', this.calculateCurrentSectionDistance(this.groupsSectionElmt)],
       ['tickets', this.calculateCurrentSectionDistance(this.ticketsSectionElmt)],
       ['description', this.calculateCurrentSectionDistance(this.descriptionSectionElmt)],
+      ['comments', this.calculateCurrentSectionDistance(this.commentsSectionElmt)],
     ]
 
     this.currentSection = distances.reduce((a, b) => a[1] < b[1] ? a : b)[0]

@@ -1,0 +1,60 @@
+<div class="card" routerLink="/events"> <!-- //TODO -->
+  <div class="img">
+    <img [src]="group.image" alt="group img"/>
+  </div>
+
+  <div class="desc">
+    <h3>{{ group.title }}</h3>
+    <p>{{ formatFollowers(group.followers) }} follower{{ group.followers === 1 ? '' : 's' }}</p>
+  </div>
+
+  <div class="follow">
+    @if(group.following) {
+      <button (click)="toggleFollow($event)" class="secondary">Unfollow</button>
+    } @else {
+      <button (click)="toggleFollow($event)">Follow</button>
+    }
+  </div>
+</div>
+
+
+<style>
+  .card {
+    background-color: var(--pico-form-element-background-color);
+    padding: 20px;
+    border-radius: var(--pico-border-radius);
+    border: var(--pico-border-width) solid var(--pico-secondary-border);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .img {
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+
+    img {
+      width: 100%;
+      height: 100%;
+      border-radius: var(--pico-border-radius);
+    }
+  }
+
+  .desc {
+    cursor: pointer;
+  }
+  .desc h3 {
+    font-size: large;
+  }
+  .desc p {
+    color: var(--pico-secondary-border);
+  }
+
+  .follow {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: end;
+  }
+</style>

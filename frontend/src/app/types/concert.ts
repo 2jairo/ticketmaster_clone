@@ -67,6 +67,13 @@ export interface RawConcertDetailsResponse {
     title: string,
     slug: string
   }[]
+  groups: {
+    title: string
+    slug: string
+    image: string
+    followers: number
+    following: boolean
+  }[]
 }
 export type ConcertDetailsResponseWrapper = ReturnType<typeof createConcertDetailsResponseWrapper>
 

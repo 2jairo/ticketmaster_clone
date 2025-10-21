@@ -1,0 +1,108 @@
+<div class="commentContainer">
+
+  <form class="createComment" [formGroup]="newCommentForm" (submit)="handleSubmit()">
+    <app-show-error [error]="error.msg" [generalError]="error.general" />
+
+    <div>
+      <div class="avatar">
+        @if(userAuthService.user | async; as user) {
+          <div class="profile">
+            <img [src]="user.image" alt="current user img"/>
+          </div>
+        } @else {
+          <a class="profile notLogged" routerLink="/auth/login">
+            <i class="fa-solid fa-user"></i>
+          </a>
+        }
+      </div>
+
+      <div class="newComment">
+        <textarea
+          formControlName="message"
+          [attr.aria-invalid]="hasError(error.msg)"
+          placeholder="Write a new comment..."
+        ></textarea>
+      </div>
+    </div>
+
+    @if(messageLength()) {
+      <div class="btns">
+        <button class="secondary" (click)="resetComment()">
+          Cancel
+        </button>
+        <button [disabled]="!newCommentForm.valid" [class.outline]="!newCommentForm.valid">
+          Submit
+        </button>
+      </div>
+    }
+  </form>
+
+  <div
+    class="comments"
+    infiniteScroll
+    [infiniteScrollDistance]="2"
+    [infiniteScrollThrottle]="150"
+    (scrolled)="loadComments()"
+  >
+    @for (c of comments; track c.id) {
+      <app-comment-card [comment]="c" [concertSlug]="concertSlug" (onDelete)="deleteComment($event)"/>
+    }
+  </div>
+</div>
+
+
+<style>
+  .commentContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+  }
+  .comments {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .createComment, .createComment > div {
+    display: flex;
+    gap: 10px;
+  }
+  .createComment {
+    flex-direction: column;
+  }
+
+  .btns {
+    align-items: center;
+    justify-content: end;
+  }
+
+
+  .newComment {
+    flex: 1;
+
+    textarea {
+      resize: none;
+      field-sizing: content;
+    }
+  }
+
+  .profile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &.notLogged {
+      width: 2em;
+      height: 2em;
+      border-radius: 50%;
+      border: var(--pico-border-width) solid var(--pico-secondary-border);
+      cursor: pointer;
+    }
+    & img {
+      width: 2em;
+      height: 2em;
+      border-radius: 50%;
+    }
+  }
+</style>

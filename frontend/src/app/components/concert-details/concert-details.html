@@ -34,6 +34,11 @@
 
 
 <div class="options">
+  <div [class.current]="currentSection === 'groups'" (click)="scrollTo('groups')">
+    <i class="fa-solid fa-people-group"></i>
+    <p>Groups</p>
+  </div>
+
   <div [class.current]="currentSection === 'tickets'" (click)="scrollTo('tickets')">
     <i class="fa-solid fa-ticket"></i>
     <p>Tickets</p>
@@ -48,7 +53,26 @@
     <i class="fa-solid fa-message"></i>
     <p>Description</p>
   </div>
+
+  <div [class.current]="currentSection === 'comments'" (click)="scrollTo('comments')">
+    <i class="fa-solid fa-comments"></i>
+    <p>Comments</p>
+  </div>
 </div>
+
+<section #musicGroups>
+  <div class="sectionContainer">
+    <div class="sectionHeader">
+      <h2>Groups</h2>
+    </div>
+
+    <div class="musicGroups">
+      @for (group of concert.groups; track group.slug) {
+        <app-music-group-card [group]="group" />
+      }
+    </div>
+  </div>
+</section>
 
 
 <section #tickets>
@@ -89,15 +113,27 @@
       <h2>Description</h2>
     </div>
 
-    <!-- <div class="location" leaflet [leafletOptions]="leafletOptions"></div> -->
-    <div #location class="location"></div>
-
     <div class="description">
       <div [innerHTML]="concert.description"></div>
 
       <div>
         <app-carousel [images]="concert.images.carousel" />
       </div>
+    </div>
+
+    <!-- <div class="location" leaflet [leafletOptions]="leafletOptions"></div> -->
+    <div #location class="location"></div>
+  </div>
+</section>
+
+<section #comments>
+  <div class="sectionContainer">
+    <div class="sectionHeader">
+      <h2>Comments</h2>
+    </div>
+
+    <div>
+      <app-comment-list [getComments]="getComments" [concertSlug]="concert.slug" />
     </div>
   </div>
 </section>
@@ -133,6 +169,7 @@
 
   .options {
     position: sticky;
+    z-index: 999;
     top: 0;
     display: flex;
     border-bottom: var(--pico-border-width) solid var(--pico-secondary-border);
@@ -158,7 +195,6 @@
     }
   }
 
-
   .sectionHeader {
     padding: 20px;
 
@@ -173,6 +209,17 @@
     .sectionContainer {
       max-width: 1500px;
       margin: 0 auto !important;
+    }
+  }
+
+  .musicGroups {
+    padding: 20px;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+
+    & > * {
+      width: calc(50% - 10px)
     }
   }
 
@@ -228,6 +275,12 @@
   }
 
 
+  @media (max-width: 1000px) {
+    .musicGroups > * {
+      width: 100%;
+    }
+  }
+
   @media (max-width: 700px) {
     .tickets {
       flex-direction: column;
@@ -237,5 +290,4 @@
       width: 100% !important
     }
   }
-
 </style>
