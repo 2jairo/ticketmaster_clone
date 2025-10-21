@@ -10,6 +10,8 @@ export const enum ErrKind {
     RegexConstraintViolation = 'RegexConstraintViolation',
     Unauthorized = 'Unauthorized',
     ConcertNotFound = 'ConcertNotFound',
+    CommentNotFound = 'CommentNotFound',
+    MusicGroupNotFound = 'MusicGroupNotFound'
 }
 
 export class LocalError {

@@ -2,6 +2,7 @@ import asyncHandler from "express-async-handler";
 import { ConcertModel } from "../models/concert";
 import { CategoryModel } from "../models/category";
 import { ErrKind, LocalError } from "../error/err";
+import { UserModel } from "../models/user";
 
 const CONCERTS_PAGE_SIZE = 5
 
@@ -87,6 +88,10 @@ export const getConcertDetails = asyncHandler(async (req, res) => {
     if(!concert) {
         throw new LocalError(ErrKind.ConcertNotFound, 404)
     }
+
+    const user = req.logged
+        ? await UserModel.findById(req.userId) || undefined
+        : undefined
     
-    res.send(await concert.toConcertDetailsResponse())
+    res.send(await concert.toConcertDetailsResponse(user))
 })

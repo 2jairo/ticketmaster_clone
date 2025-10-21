@@ -21,8 +21,15 @@ const CategorySchema = new mongoose.Schema({
 })
 
 CategorySchema.pre('save', function(next)  {
-    this.slug = `${slugify(this.title)}-${crypto.randomUUID()}`
-    return next()  
+    const slugifiedTitle = slugify(this.title)
+    const currentSlugifiedTitle = (this.slug || '').split('-')
+    currentSlugifiedTitle.pop()
+    
+    if(!this.slug || slugifiedTitle !== currentSlugifiedTitle.join('-')) {
+        const uuid = crypto.randomUUID().replaceAll('-', '')
+        this.slug = `${slugifiedTitle}-${uuid}` 
+    }
+    return next()
 })
 
 

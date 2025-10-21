@@ -6,14 +6,20 @@ declare global {
   namespace Express {
     interface Request {
       userId: string
+      v: number
+      logged: boolean
     }
   }
 }
 
-export const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
+const verifyJWTInner = (req: Request, res: Response, next: NextFunction, optional: boolean) => {
   const authHeader = (req.headers.authorization || req.headers.Authorization)?.toString()
 
   if (!authHeader || !authHeader?.startsWith('Bearer ')) {
+    if(optional) {
+      req.logged = false
+      return next()
+    }
     throw new LocalError(ErrKind.Unauthorized, 401)
   }
 
@@ -24,11 +30,27 @@ export const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
     process.env.JWT_SECRET!,
     (err, decoded) => {
       if (err) {
+        if(optional) {
+          req.logged = false
+          return next()
+        }
         throw new LocalError(ErrKind.Unauthorized, 401)
       }
-
-      req.userId = (decoded as { userId: string }).userId
-      next()
+      else {
+        const d = decoded as { userId: string, v: number }
+        req.logged = true
+        req.v = d.v
+        req.userId = d.userId
+        next()
+      }
     }
   )
+}
+
+export const verifyJWTOptional = (req: Request, res: Response, next: NextFunction) => {
+  return verifyJWTInner(req, res, next, true)
+}
+
+export const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
+  return verifyJWTInner(req, res, next, false)
 }

@@ -52,3 +52,12 @@ export const getUserInfo = asyncHandler(async (req, res) => {
 
     res.status(200).json(user.toUserResponse(false))
 })
+
+export const updateUserInfo = asyncHandler(async (req, res) => {
+    const updatedUser = await UserModel.findByIdAndUpdate({ _id: req.userId }, req.body, { new: true })
+
+    if (!updatedUser) {
+        throw new LocalError(ErrKind.UserNotFound, 404)
+    }
+    res.status(200).json(updatedUser.toUserResponse(true))
+})

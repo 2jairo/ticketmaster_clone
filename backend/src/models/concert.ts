@@ -1,6 +1,8 @@
 import mongoose, { Schema } from "mongoose";
 import slugify from "slugify";
 import type { CategoryDocument } from "./category";
+import type { IMusicGroupModel } from "./musicGroup";
+import type { IUserModel } from "./user";
 
 
 type ConcertTicket = {
@@ -83,19 +85,31 @@ const ConcertSchema = new mongoose.Schema({
             required: true
         },
     }],
-    // participants: [{
-        
-    // }],
+    groups: [{
+        type: Schema.Types.ObjectId,
+        ref: 'MusicGroup'
+    }],
     categories: [{
         type: Schema.Types.ObjectId,
         ref: 'Category'
+    }],
+    comments: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Comment'
     }]
 })
 
 ConcertSchema.index({ location: '2dsphere' })
 
 ConcertSchema.pre('save', function(next) {
-    this.slug = `${slugify(this.title)}-${crypto.randomUUID()}` 
+    const slugifiedTitle = slugify(this.title)
+    const currentSlugifiedTitle = (this.slug || '').split('-')
+    currentSlugifiedTitle.pop()
+    
+    if(!this.slug || slugifiedTitle !== currentSlugifiedTitle.join('-')) {
+        const uuid = crypto.randomUUID().replaceAll('-', '')
+        this.slug = `${slugifiedTitle}-${uuid}` 
+    }
     return next()
 })
 ConcertSchema.pre('insertMany', function(next) {
@@ -129,8 +143,9 @@ ConcertSchema.methods.toConcertResponse = function() {
     }
 }
 
-ConcertSchema.methods.toConcertDetailsResponse = async function() {
+ConcertSchema.methods.toConcertDetailsResponse = async function(user?: IUserModel) {
     await this.populate('categories')
+    await this.populate('groups')
 
     return {
         title: this.title,
@@ -146,13 +161,26 @@ ConcertSchema.methods.toConcertDetailsResponse = async function() {
         locationName: this.locationName,
         location: this.location,
         tickets: this.tickets.sort((a: ConcertTicket, b: ConcertTicket) => b.price - a.price),
-        categories: this.categories.map((cat: CategoryDocument) => cat.toCategoryConcertDetailsResponse())
+        categories: this.categories.map((cat: CategoryDocument) => cat.toCategoryConcertDetailsResponse()),
+        groups: this.groups.map((g: IMusicGroupModel) => g.toMusicGroupConcertDetailsResponse(user))
     }
 }
 
+ConcertSchema.methods.addComment = function (commentId: mongoose.Types.ObjectId) {
+    this.comments.unshift(commentId)
+};
+
+ConcertSchema.methods.removeComment = function (commentId: mongoose.Types.ObjectId) {
+    const commentidStr = commentId.toString()
+    this.comments = this.comments.filter((id: mongoose.Types.ObjectId) => id.toString() !== commentidStr);
+};
+
+
 interface IConcertModel {
     toConcertResponse: () => any
-    toConcertDetailsResponse: () => Promise<any>
+    toConcertDetailsResponse: (user?: IUserModel) => Promise<any>
+    addComment: (commentId: mongoose.Types.ObjectId) => void
+    removeComment: (commentId: mongoose.Types.ObjectId) => void
 
     title: string
     slug?: string
@@ -169,6 +197,7 @@ interface IConcertModel {
         type: string,
         coordinates: [number, number]
     }
+    comments: Schema.Types.ObjectId[],
 }
 
 export const ConcertModel = mongoose.model<IConcertModel>('Concert', ConcertSchema)
