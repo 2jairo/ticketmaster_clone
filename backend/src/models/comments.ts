@@ -34,7 +34,7 @@ CommentSchema.methods.toCommentResponse = async function (user?: IUserModel) {
         createdAt: this.createdAt,
         owner: this.author.toString() === user?._id?.toString(),
         liked: user ? this.userLiked(user._id) : false,
-        author: authorObj?.toProfileResponse(user)
+        author: authorObj?.toCommentAuthorResponse(user)
     }
 };
 

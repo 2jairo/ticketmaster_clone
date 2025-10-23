@@ -41,6 +41,37 @@ export const followUser = asyncHandler(async (req, res) => {
         throw new LocalError(ErrKind.UserNotFound, 404)
     }
 
-    const newValue = req.params.newValue === 'true'
-    currentUser.setUserFollow(followUser._id, newValue)
+    const newValue = req.query.newValue === 'true'
+    const offset = currentUser.setUserFollow(followUser._id, newValue)
+    await currentUser.save()
+
+    if(offset !== 0) {
+        followUser.updateFollowers(offset)
+        await followUser.save()
+    }
+
+    res.status(200).json()
+})
+
+export const getUserProfile = asyncHandler(async (req, res) => {
+    const { username } = req.params
+
+    const profileUser = await UserModel.findOne({ username })
+    if(!profileUser) {
+        throw new LocalError(ErrKind.UserNotFound, 404)
+    }
+    
+    let resp
+    if(req.logged) {
+        const currentUser = await UserModel.findById(req.userId)
+        if(!currentUser) {
+            throw new LocalError(ErrKind.UserNotFound, 404)
+        }
+
+        resp = await profileUser.toProfileResponse(currentUser, req.userId)
+    } else {
+        resp = await profileUser.toProfileResponse()
+    }
+
+    res.status(200).json(resp)
 })

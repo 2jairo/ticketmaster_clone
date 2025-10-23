@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
 import uniqueValidator from 'mongoose-unique-validator'
+import { MusicGroupModel, type IMusicGroupModel } from './musicGroup';
 
 const userSchema = new mongoose.Schema({
     username: {
@@ -32,7 +33,12 @@ const userSchema = new mongoose.Schema({
     followingUsers: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
-    }]
+    }],
+    followers: {
+        type: Number,
+        required: true,
+        default: 0
+    }
 })
 
 
@@ -57,13 +63,78 @@ userSchema.methods.toUserResponse = function(withToken: boolean) {
     }
 }
 
-userSchema.methods.toProfileResponse = function(user?: IUserModel) {
+userSchema.methods.toCommentAuthorResponse = function(user?: IUserModel) {
     return {
         username: this.username,
         image: this.image,
-        following: user ? user.isFollowingUser(this._id) : false
+        following: user ? user.isFollowingUser(this._id) : false,
+        followers: this.followers
     }
 }
+
+userSchema.methods.toProfileResponse = async function(user?: IUserModel, currentUserId?: string) {
+    const myProfile = this._id?.toString() === currentUserId
+    
+    let commonFollowingGroups = []
+    let commonFollowingUsers = []
+
+    if(user && !myProfile) {
+        const commonUsers = this.commonFollowingUsers(user)
+        if(commonUsers.length) {
+            commonFollowingUsers = (await UserModel.find({ _id: { $in: commonUsers } }))
+                .map((u) => u.toCommentAuthorResponse(user))
+        }
+
+        const commonGroups = this.commonFollowingGroups(user)
+        if (commonGroups.length) {
+            commonFollowingGroups = (await MusicGroupModel.find({ _id: { $in: commonGroups } }))
+                .map((g) => g.toMusicGroupConcertDetailsResponse(user));
+        }
+    }
+
+    return {
+        username: this.username,
+        image: this.image,
+        following: user ? user.isFollowingUser(this._id) : false,
+        followers: this.followers,
+        myProfile,    
+        commonFollowingGroups,
+        commonFollowingUsers,
+    }
+}
+
+userSchema.methods.commonFollowingGroups = function(user: IUserModel) {
+    const userFollowingGroups = new Set(user.followingGroups.map((g: mongoose.Types.ObjectId) => g.toString()));
+    return this.followingGroups.filter((g: mongoose.Types.ObjectId) => userFollowingGroups.has(g.toString()));
+}
+
+userSchema.methods.commonFollowingUsers = function(user: IUserModel) {
+    const userFollowingUsers = new Set(user.followingUsers.map((u: mongoose.Types.ObjectId) => u.toString()));
+    return this.followingUsers.filter((u: mongoose.Types.ObjectId) => userFollowingUsers.has(u.toString()));
+}
+
+// userSchema.methods.toProfileResponse = async function(user?: IUserModel, currentUserId?: string) {
+//     const myProfile = this._id?.toString() === currentUserId
+
+//     if(myProfile) {
+//         await this.populate('followingGroups')
+//         await this.populate('followingUsers')
+//     }
+
+//     return {
+//         username: this.username,
+//         image: this.image,
+//         following: user ? user.isFollowingUser(this._id) : false,
+//         followers: this.followers,
+//         myProfile,
+//         myProfileInfo: myProfile
+//             ? {
+//                 followingGroups: this.followingGroups.map((g: IMusicGroupModel) => g.toMusicGroupConcertDetailsResponse(user)),
+//                 followingUsers: this.followingUsers.map((u: IUserModel) => u.toCommentAuthorResponse(user))
+//             }
+//             : null
+//     }
+// }
 
 userSchema.methods.isFollowingUser = function(userId: mongoose.Types.ObjectId) {
     const idStr = userId.toString()
@@ -123,16 +194,24 @@ userSchema.methods.setUserFollow = function(userId: mongoose.Types.ObjectId, new
     return 0;
 }
 
+userSchema.methods.updateFollowers = function(offset: number) {
+    this.followers += offset
+}
+
 export interface IUserModel {
     toUserResponse(withToken: boolean): any
-    toProfileResponse(user?: IUserModel): any
+    toProfileResponse(user?: IUserModel, currentUserId?: string): Promise<any>
+    toCommentAuthorResponse(user?: IUserModel): any
     generateAccesToken(): void
     isFollowingUser(userId: mongoose.Types.ObjectId): boolean
     isFollowingGroup(groupId: mongoose.Types.ObjectId): boolean
     setGroupFollow(groupId: mongoose.Types.ObjectId, newValue: boolean): number
     setUserFollow(userId: mongoose.Types.ObjectId, newValue: boolean): number
+    updateFollowers(offset: number): void
 
     password?: string
+    followingGroups: mongoose.Types.ObjectId[]
+    followingUsers: mongoose.Types.ObjectId[]
     _id?: mongoose.Types.ObjectId
 }
 

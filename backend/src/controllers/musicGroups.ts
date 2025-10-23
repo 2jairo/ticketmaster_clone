@@ -1,7 +1,6 @@
 import asyncHandler from "express-async-handler";
 import { MusicGroupModel } from "../models/musicGroup";
 import { ErrKind, LocalError } from "../error/err";
-import { UserModel } from "../models/user";
 
 export const createMusicGroup = asyncHandler(async (req, res) => {
     const group = new MusicGroupModel(req.body)
