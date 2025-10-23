@@ -65,6 +65,11 @@ const ConcertSchema = new mongoose.Schema({
             }
         }
     },
+    totalTicketsSold: {
+        type: Number,
+        required: true,
+        default: 0,
+    },
     tickets: [{
         sold: {
             type: Number,
@@ -190,6 +195,7 @@ interface IConcertModel {
     images: string[],
     mapImg?: string,
     thumbnailImg?: string,
+    totalTicketsSold: number
     tickets: ConcertTicket[]
     categories: Schema.Types.ObjectId[],
     locationName: string,

@@ -7,7 +7,7 @@ import { UserModel } from "../models/user";
 const CONCERTS_PAGE_SIZE = 5
 
 export const getConcerts = asyncHandler(async (req, res) => {
-    const { title, priceMax, priceMin, dateStart, dateEnd, category, sortBy, size, offset } = req.query
+    const { title, priceMax, priceMin, dateStart, dateEnd, category, sortBy, size, offset, lat, lng } = req.query
 
     const filters: any = {};
     let sortOption: any = {}
@@ -43,17 +43,31 @@ export const getConcerts = asyncHandler(async (req, res) => {
 
     switch (sortBy) {
         case 'most_sold':
-            //TODO
-            
-            break
+            sortOption = { totalTicketsSold: 1 } 
+            break;
         case 'starting_soon':
             sortOption = { dateStart: 1 }
             filters.dateEnd = { ...(filters.dateEnd || {}), $gte: new Date() }
             break;
-                
-        default:
-            break;
+        case 'nearest':
+            if (!lat || !lng) {
+                throw new LocalError(ErrKind.RequiredConstraintViolation, 400, `lat and lng are required for 'nearest' sort`)
+            }
+            //TODO
+
+            filters.location = {
+                $near: {
+                    $geometry: {
+                        type: "Point",
+                        coordinates: [Number(lng), Number(lat)]
+                    },
+                    $minDistance: 0,
+                    $maxDistance: 50_000
+                }
+            }
+            break
     }
+
     
     const concerts = await ConcertModel.find(filters)
         .sort(sortOption)
