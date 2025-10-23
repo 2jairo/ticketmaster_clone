@@ -5,11 +5,10 @@ import { ConcertTicketCard } from './concert-ticket-card';
 import { Carousel } from "../carousel/carousel";
 import * as L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import { MusicGroupCard } from "./music-group-card";
 import { CommentList } from '../comment-list/comment-list';
 import { Pagination } from '../categories/filters';
 import { ProfileService } from '../../services/profile.service';
-
+import { MusicGroupCard } from '../music-group-card/music-group-card';
 
 type Sections = 'groups' | 'tickets' | 'description' | 'comments'
 

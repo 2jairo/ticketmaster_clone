@@ -53,7 +53,7 @@ export class CommentList implements OnInit {
           this.allLoaded = true
         } else {
           this.comments = [...this.comments, ...newComments]
-          this.pagination.offset += this.pagination.size
+          this.pagination.offset += newComments.length
         }
       },
       complete: () => this.loading = false
@@ -61,10 +61,6 @@ export class CommentList implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getComments(this.pagination).subscribe((comments) => {
-      this.comments = comments
-    })
-
     this.newCommentForm.valueChanges.subscribe(() => {
       const value = this.newCommentForm.get('message')?.value || ''
       this.messageLength.set(value.length)

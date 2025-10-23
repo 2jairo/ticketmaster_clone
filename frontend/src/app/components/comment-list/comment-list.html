@@ -46,6 +46,8 @@
   >
     @for (c of comments; track c.id) {
       <app-comment-card [comment]="c" [concertSlug]="concertSlug" (onDelete)="deleteComment($event)"/>
+    } @empty {
+      <p>No comments yet. Be the first one to comment!</p>
     }
   </div>
 </div>

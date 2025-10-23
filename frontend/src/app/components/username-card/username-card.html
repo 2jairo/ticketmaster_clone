@@ -1,15 +1,17 @@
-<div class="card" routerLink="/events"> <!-- //TODO -->
+<div class="card" routerLink="/user/proifle/{{ user.username }}">
   <div class="img">
-    <img [src]="group.image" alt="group img"/>
+    <img [src]="user.image" alt="user img"/>
   </div>
 
   <div class="desc">
-    <h3>{{ group.title }}</h3>
-    <p>{{ formatFollowers(group.followers) }} follower{{ group.followers === 1 ? '' : 's' }}</p>
+    <a routerLink="/user/profile/{{ user.username }}">
+      <h3>{{ user.username }}</h3>
+    </a>
+    <p>{{ formatFollowers(user.followers) }} follower{{ user.followers === 1 ? '' : 's' }}</p>
   </div>
 
   <div class="follow">
-    @if(group.following) {
+    @if(user.following) {
       <button (click)="toggleFollow($event)" class="secondary">Unfollow</button>
     } @else {
       <button (click)="toggleFollow($event)">Follow</button>

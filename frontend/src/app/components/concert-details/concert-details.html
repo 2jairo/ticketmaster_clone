@@ -133,7 +133,9 @@
     </div>
 
     <div>
-      <app-comment-list [getComments]="getComments" [concertSlug]="concert.slug" />
+      @defer {
+        <app-comment-list [getComments]="getComments" [concertSlug]="concert.slug" />
+      }
     </div>
   </div>
 </section>

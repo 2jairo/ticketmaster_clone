@@ -4,12 +4,17 @@ import { environment } from '../../environments/environment';
 import { Pagination } from '../types/filters';
 import { createCommentResponseWrapper, RawCommentResponse } from '../types/comments';
 import { map } from 'rxjs';
+import { UserProfileResponse } from '../types/profile';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProfileService {
   private http = inject(HttpApiService)
+
+  getUserProfile(username: string) {
+    return this.http.get<UserProfileResponse>(environment.USER_API_URL, `/profile/${username}`)
+  }
 
   setFollowGroup(groupSlug: string, newValue: boolean) {
     const params = { newValue }

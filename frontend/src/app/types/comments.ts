@@ -1,4 +1,5 @@
 import { formatDate } from "../utils/format"
+import { CommentAuthorResponse } from "./profile"
 
 export interface RawCommentResponse {
   id: string
@@ -6,11 +7,7 @@ export interface RawCommentResponse {
   createdAt: string
   owner: boolean
   liked: boolean
-  author: {
-    username: string
-    image: string
-    following: boolean
-  }
+  author: CommentAuthorResponse
 }
 
 export type CommentResponseWrapper = ReturnType<typeof createCommentResponseWrapper>

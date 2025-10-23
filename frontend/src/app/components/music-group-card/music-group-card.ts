@@ -1,8 +1,8 @@
 import { Component, inject, Input } from '@angular/core';
-import { ConcertDetailsResponseWrapper } from '../../types/concert';
 import { formatViews } from '../../utils/format';
 import { ProfileService } from '../../services/profile.service';
 import { RouterLink } from "@angular/router";
+import { MusicGroupResponse } from '../../types/musicGroupts';
 
 @Component({
   selector: 'app-music-group-card',
@@ -12,7 +12,7 @@ import { RouterLink } from "@angular/router";
 export class MusicGroupCard {
   private profileService = inject(ProfileService)
 
-  @Input({ required: true }) group!: ConcertDetailsResponseWrapper['groups'][0]
+  @Input({ required: true }) group!: MusicGroupResponse
 
   formatFollowers(f: number) {
     return formatViews(f)

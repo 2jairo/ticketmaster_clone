@@ -1,1 +1,100 @@
-<p>profile works!</p>
+@if(profile) {
+  <div class="profileContainer">
+    <section class="head">
+      <div class="img">
+        <img [src]="profile.image" />
+      </div>
+
+      <div>
+        <h3>{{ profile.username }}</h3>
+        <p>{{ formatFollows(profile.followers) }} followers</p>
+      </div>
+
+      <div class="followBtn">
+        <button
+          [class.outline]="profile.myProfile"
+          [disabled]="profile.myProfile"
+          [class.secondary]="profile.following"
+          (click)="toggleUserFollow()"
+        >
+          {{ profile.following ? 'Unfollow' : 'Follow' }}
+        </button>
+      </div>
+    </section>
+
+    <section>
+      <h4>Common Following Groups</h4>
+
+      <div class="commonFollowing">
+        @for (group of profile.commonFollowingGroups; track group.slug) {
+          <app-music-group-card [group]="group" />
+        } @empty {
+          <p>No common groups found</p>
+        }
+      </div>
+    </section>
+
+    <section>
+      <h4>Common Following Users</h4>
+
+      <div class="commonFollowing">
+        @for (user of profile.commonFollowingUsers; track user.username) {
+          <app-username-card [user]="user" />
+        } @empty {
+          <p>No common users found.</p>
+        }
+      </div>
+    </section>
+  </div>
+}
+
+
+<style>
+  .profileContainer {
+    padding: 20px;
+
+    .img {
+      width: 150px;
+      height: 150px;
+      border-radius: var(--pico-border-radius);
+      overflow: hidden;
+      background-color: var(--pico-secondary-border);
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain
+    }
+  }
+
+  section {
+    max-width: 1000px;
+    margin: 0 auto !important;
+  }
+
+  .head {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px !important;
+    align-items: end;
+    padding-bottom: 20px;
+    border-bottom: var(--pico-border-width) solid var(--pico-secondary-border);
+  }
+  .followBtn {
+    flex: 1;
+    display: flex;
+    justify-content: end;
+  }
+
+  .commonFollowing {
+    padding: 20px;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+
+    & > * {
+      width: calc(50% - 10px)
+    }
+  }
+</style>
