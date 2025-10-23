@@ -1,6 +1,6 @@
 <div class="concertCard">
   <div class="images">
-    <app-carousel [images]="concert.images.carousel" background="#000" />
+    <app-carousel [images]="formatCarouselImages()" background="#000" />
 
     <div class="ticketsAvailable">
       @if (concert.tickets.available > 0) {

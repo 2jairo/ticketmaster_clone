@@ -1,7 +1,7 @@
 export interface CategoryResponse {
   title: string
   slug: string
-  image: string
+  images: string[]
 }
 
 export interface CategoryTitleResponse {

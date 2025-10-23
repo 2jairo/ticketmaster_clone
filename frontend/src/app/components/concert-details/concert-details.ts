@@ -58,6 +58,10 @@ export class ConcertDetails implements AfterViewInit {
     this.currentSection = section
   }
 
+  formatCarouselImages() {
+    return this.concert.images.carousel.map((src) => ({ src }))
+  }
+
   getComments = (p: Pagination) => {
     return this.profileService.getConcertComments(this.concert.slug, p)
   }

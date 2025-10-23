@@ -1,0 +1,32 @@
+<div class="home">
+
+  <div class="categories">
+    <h2>Categories</h2>
+
+    <div class="carousel">
+      <app-carousel [images]="this.categories" />
+    </div>
+  </div>
+</div>
+
+
+
+<style>
+
+  .categories {
+    h2 {
+      padding: 20px
+    }
+
+    .carousel {
+      height: 400px;
+    }
+  }
+
+
+  @media(min-width: 1920px) {
+    .categories .carousel {
+      height: 600px;
+    }
+  }
+</style>

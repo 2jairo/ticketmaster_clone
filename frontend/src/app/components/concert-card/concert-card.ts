@@ -18,6 +18,10 @@ export class ConcertCard {
     this.router.navigate([`/details/${this.concert.slug}`])
   }
 
+  formatCarouselImages() {
+    return this.concert.images.carousel.map((src) => ({ src }))
+  }
+
   formatViews(n: number) {
     return formatViews(n)
   }

@@ -3,7 +3,17 @@
     @for (img of images; track $index) {
       <swiper-slide [style.background-color]="background" [style.aspect-ratio]="aspectRatio">
         <div class="imgContainer">
-          <img [src]="img" alt="carousel {{ $index }}"/>
+          @if(img.navigateTo) {
+            <a [href]="img.navigateTo">
+              <img [src]="img.src" alt="carousel {{ $index }}"/>
+            </a>
+          } @else {
+            <img [src]="img.src" alt="carousel {{ $index }}"/>
+          }
+
+          @if(img.title) {
+            <h3 class="title">{{ img.title }}</h3>
+          }
         </div>
       </swiper-slide>
     }
@@ -32,6 +42,11 @@
     }
   }
 
+  .title {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+  }
 
   swiper-slide {
     display: flex;
