@@ -54,10 +54,31 @@ export const getUserInfo = asyncHandler(async (req, res) => {
 })
 
 export const updateUserInfo = asyncHandler(async (req, res) => {
-    const updatedUser = await UserModel.findByIdAndUpdate({ _id: req.userId }, req.body, { new: true })
+    const updatedUser = await UserModel.findByIdAndUpdate(req.userId, req.body.password, { new: true })
 
     if (!updatedUser) {
         throw new LocalError(ErrKind.UserNotFound, 404)
     }
     res.status(200).json(updatedUser.toUserResponse(true))
+})
+
+export const updateUserPassword = asyncHandler(async (req, res) => {
+    const { new: newPassword, old: oldPassword } = req.body
+
+    const user = await UserModel.findById(req.userId)
+    if (!user) {
+        throw new LocalError(ErrKind.UserNotFound, 404)
+    }
+
+    const match = await bcrypt.compare(oldPassword, user.password || '')
+    if(match) {
+        const hashedPassword = await bcrypt.hash(newPassword, 10)
+        user.password = hashedPassword
+        const updatedUser = await user.save()
+        
+        res.status(200).json(updatedUser.toUserResponse(true))
+    } else {
+        throw new LocalError(ErrKind.PasswordMismatch, 401)
+    }
+
 })

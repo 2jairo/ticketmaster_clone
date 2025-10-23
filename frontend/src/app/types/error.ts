@@ -7,6 +7,9 @@ export enum ErrKind {
   RegexConstraintViolation = 'RegexConstraintViolation',
   Unauthorized = 'Unauthorized',
   ConcertNotFound = 'ConcertNotFound',
+  CommentNotFound = 'CommentNotFound',
+  MusicGroupNotFound = 'MusicGroupNotFound',
+  PasswordMismatch = 'PasswordMismatch',
 
   // only frontend
   Status0 = 'Status0' // server down | no connection

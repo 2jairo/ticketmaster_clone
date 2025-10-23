@@ -5,7 +5,7 @@ import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angu
 import { UserAuthService } from '../../../services/userAuth.service';
 import { environment } from '../../../../environments/environment';
 import { LoadingGif } from "../../loading-gif/loading-gif";
-import { ChangeCredentialsRequestBody } from '../../../types/userAuth';
+import { ChangePasswordRequestBody } from '../../../types/userAuth';
 import { tap } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { LocalErrorResponse } from '../../../types/error';
@@ -82,7 +82,6 @@ export class PasswordsForm implements OnInit {
 
   handleClientPasswordsErrors() {
     this.errors = structuredClone(ERRORS_DEFAULT)
-    console.log(this.errors)
 
     const oldPasswordCtrl = this.passwordsForm.get('oldPassword');
     const newPasswordCtrl = this.passwordsForm.get('newPassword');
@@ -90,7 +89,7 @@ export class PasswordsForm implements OnInit {
 
     if (this.passwordsForm.hasError('passwordMismatch') && (newPasswordCtrl?.value && newPasswordRepeatCtrl?.value)) {
       this.errors.newPasswords = 'New passwords do not match.';
-    } else if(this.passwordsForm.hasError('samePassword')) {
+    } else if(this.passwordsForm.hasError('samePassword') && (newPasswordCtrl?.value && newPasswordRepeatCtrl?.value)) {
       this.errors.general.msg = 'New password must be different from old password.';
     } else if (oldPasswordCtrl?.hasError('maxlength')) {
       this.errors.oldPassword = `Old password must be at most ${environment.PASSWORD_MAX_LENGTH} characters.`;
@@ -120,17 +119,16 @@ export class PasswordsForm implements OnInit {
     }
     this.fetching = true
 
-    const body = {
-      password: {
-        new: this.passwordsForm.value.newPassword,
-        old: this.passwordsForm.value.oldPassword
-      }
+    const body: ChangePasswordRequestBody = {
+      new: this.passwordsForm.value.newPassword || '',
+      old: this.passwordsForm.value.oldPassword || ''
     }
-    this.userAuthService.updateCredentials(body as ChangeCredentialsRequestBody)
+    this.userAuthService.updatePassword(body)
       .pipe(tap(() => this.fetching = false))
       .subscribe({
         error: (e) => this.handleHttpPasswordsErrors(e),
         next: () => {
+          this.passwordsForm.reset()
           this.errors.general = {
             icon: 'fa-solid fa-check',
             msg: 'Your account was updated successfully'

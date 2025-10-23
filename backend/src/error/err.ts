@@ -11,7 +11,8 @@ export const enum ErrKind {
     Unauthorized = 'Unauthorized',
     ConcertNotFound = 'ConcertNotFound',
     CommentNotFound = 'CommentNotFound',
-    MusicGroupNotFound = 'MusicGroupNotFound'
+    MusicGroupNotFound = 'MusicGroupNotFound',
+    PasswordMismatch = 'PasswordMismatch'
 }
 
 export class LocalError {

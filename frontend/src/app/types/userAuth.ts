@@ -19,8 +19,10 @@ export interface SigninRequestBody {
 export interface ChangeCredentialsRequestBody {
   username?: string
   email?: string
-  password?: {
-    new: string
-    old: string
-  }
+  image?: string
+}
+
+export interface ChangePasswordRequestBody {
+  new: string
+  old: string
 }
