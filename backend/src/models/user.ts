@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
-import jwt from 'jsonwebtoken';
 import uniqueValidator from 'mongoose-unique-validator'
-import { MusicGroupModel, type IMusicGroupModel } from './musicGroup';
+import { MusicGroupModel } from './musicGroup';
+import { generateAccesToken, type AccesTokenClaims } from '../utils/jwt';
 
 const userSchema = new mongoose.Schema({
     username: {
@@ -44,22 +44,16 @@ const userSchema = new mongoose.Schema({
 
 userSchema.plugin(uniqueValidator)
 
-
-userSchema.methods.generateAccessToken = function() {
-    const payload = {
-        "userId": this._id,
-        "v": this.__v
-    }
-
-    return jwt.sign(payload, process.env.JWT_SECRET!,{ expiresIn: "1d" })
+userSchema.methods.getJwtClaims = function() {
+    return { userId: this._id.toString(), v: this.__v }
 }
 
-userSchema.methods.toUserResponse = function(withToken: boolean) {
+userSchema.methods.toUserResponse = function(accessToken: boolean) {
     return {
         username: this.username,
         email: this.email,
         image: this.image,
-        ...(withToken ? { token: this.generateAccessToken() } : {})
+        ...(accessToken ? { token: generateAccesToken(this.getJwtClaims()) } : {})
     }
 }
 
@@ -199,10 +193,10 @@ userSchema.methods.updateFollowers = function(offset: number) {
 }
 
 export interface IUserModel {
-    toUserResponse(withToken: boolean): any
+    toUserResponse(accessToken: boolean): any
+    getJwtClaims(): AccesTokenClaims
     toProfileResponse(user?: IUserModel, currentUserId?: string): Promise<any>
     toCommentAuthorResponse(user?: IUserModel): any
-    generateAccesToken(): void
     isFollowingUser(userId: mongoose.Types.ObjectId): boolean
     isFollowingGroup(groupId: mongoose.Types.ObjectId): boolean
     setGroupFollow(groupId: mongoose.Types.ObjectId, newValue: boolean): number

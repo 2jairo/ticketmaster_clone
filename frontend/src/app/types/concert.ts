@@ -14,7 +14,8 @@ export interface RawConcertResponse {
   tickets: {
     available: number
     sold: number
-    price: number
+    priceMin: number
+    priceMax: number
   }
 }
 

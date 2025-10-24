@@ -5,6 +5,7 @@ import { UserProfileResponse } from '../../../types/profile';
 import { formatViews } from '../../../utils/format';
 import { MusicGroupCard } from '../../music-group-card/music-group-card';
 import { UsernameCard } from '../../username-card/username-card';
+import { JwtService } from '../../../services/jwt.service';
 
 @Component({
   selector: 'app-profile',
@@ -15,6 +16,7 @@ export class Profile implements OnInit {
   private profileService = inject(ProfileService)
   private route = inject(ActivatedRoute)
   private router = inject(Router)
+  private jwtService = inject(JwtService)
 
   profile: UserProfileResponse | null = null
 
@@ -33,6 +35,9 @@ export class Profile implements OnInit {
 
   toggleUserFollow() {
     if(!this.profile || this.profile.myProfile) {
+      return
+    }
+    if(this.jwtService.checkIfLogged()) {
       return
     }
 

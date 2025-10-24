@@ -9,15 +9,18 @@ import commentsRoutes from './routes/commentsRoutes'
 import musicGroupsRoutes from './routes/musicGroupRoutes'
 import profileRoutes from './routes/profileRoutes'
 import { errorHandler, notFoundHandler } from './error/err'
+import cookieParser from 'cookie-parser'
 
 dotenv.config()
 await connectMongoDb(process.env.MONGO_URI!)
 const app = express()
 
 app.use(cors({
-    origin: 'http://localhost:4200'
+    origin: ['http://127.0.0.1:4200'],
+    credentials: true,
 }))
 app.use(express.json())
+app.use(cookieParser())
 
 app.use('/api/auth', userRoutes)
 app.use('/api', concertsRoutes)
@@ -30,8 +33,8 @@ app.use(notFoundHandler)
 app.use(errorHandler)
 
 
-const PORT = process.env.PORT || 3000
+const PORT = parseInt(process.env.PORT!) || 3000
 
-app.listen(PORT, () => {
+app.listen(PORT, '127.0.0.1', () => {
     console.log(`Listening on localhost:${PORT}`)
 })

@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
-import jwt from 'jsonwebtoken'
 import { ErrKind, LocalError } from '../error/err';
+import { authenticateAccessToken } from '../utils/jwt';
 
 declare global {
   namespace Express {
@@ -12,7 +12,7 @@ declare global {
   }
 }
 
-const verifyJWTInner = (req: Request, res: Response, next: NextFunction, optional: boolean) => {
+const verifyJWTInner = async (req: Request, res: Response, next: NextFunction, optional: boolean) => {
   const authHeader = (req.headers.authorization || req.headers.Authorization)?.toString()
 
   if (!authHeader || !authHeader?.startsWith('Bearer ')) {
@@ -23,28 +23,13 @@ const verifyJWTInner = (req: Request, res: Response, next: NextFunction, optiona
     throw new LocalError(ErrKind.Unauthorized, 401)
   }
 
-  const token = authHeader.split(' ')[1]!
+  const accessToken = authHeader.split(' ')[1]!
+  const claims = await authenticateAccessToken(accessToken)
 
-  jwt.verify(
-    token,
-    process.env.JWT_SECRET!,
-    (err, decoded) => {
-      if (err) {
-        if(optional) {
-          req.logged = false
-          return next()
-        }
-        throw new LocalError(ErrKind.Unauthorized, 401)
-      }
-      else {
-        const d = decoded as { userId: string, v: number }
-        req.logged = true
-        req.v = d.v
-        req.userId = d.userId
-        next()
-      }
-    }
-  )
+  req.logged = true
+  req.v = claims.v
+  req.userId = claims.userId
+  next()
 }
 
 export const verifyJWTOptional = (req: Request, res: Response, next: NextFunction) => {

@@ -9,7 +9,7 @@ import { ErrKind, LocalErrorResponse } from '../types/error';
 export class HttpApiService {
   private http = inject(HttpClient)
 
-  private catchErr = catchError((err: HttpErrorResponse) => {
+  catchErr = catchError((err: HttpErrorResponse) => {
     return throwError(() => {
       let newError: LocalErrorResponse = {
         error: ErrKind.Status0

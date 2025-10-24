@@ -3,6 +3,7 @@ import { ProfileService } from '../../services/profile.service';
 import { RouterLink } from '@angular/router';
 import { CommentAuthorResponse } from '../../types/profile';
 import { formatViews } from '../../utils/format';
+import { JwtService } from '../../services/jwt.service';
 
 @Component({
   selector: 'app-username-card',
@@ -11,6 +12,7 @@ import { formatViews } from '../../utils/format';
 })
 export class UsernameCard {
   private profileService = inject(ProfileService)
+  private jwtService = inject(JwtService)
 
   @Input({ required: true }) user!: CommentAuthorResponse
 
@@ -20,6 +22,10 @@ export class UsernameCard {
 
   toggleFollow(e: PointerEvent) {
     e.stopPropagation()
+
+    if(this.jwtService.checkIfLogged()) {
+      return
+    }
 
     this.profileService.setFollowUser(this.user.username, !this.user.following)
       .subscribe({

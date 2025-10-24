@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, GuardResult, MaybeAsync, Router, RouterStateSnapshot } from '@angular/router';
 import { UserAuthService } from '../services/userAuth.service';
-import { map, skip, switchMap, take } from 'rxjs';
+import { map, switchMap, take } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'

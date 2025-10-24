@@ -9,6 +9,8 @@ export const enum ErrKind {
     RequiredConstraintViolation = 'RequiredConstraintViolation',
     RegexConstraintViolation = 'RegexConstraintViolation',
     Unauthorized = 'Unauthorized',
+    ExpiredAccessToken = 'ExpiredAccessToken',
+    ExpiredRefreshToken = 'ExpiredRefreshToken',
     ConcertNotFound = 'ConcertNotFound',
     CommentNotFound = 'CommentNotFound',
     MusicGroupNotFound = 'MusicGroupNotFound',

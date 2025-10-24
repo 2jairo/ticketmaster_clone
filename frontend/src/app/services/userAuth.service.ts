@@ -25,19 +25,27 @@ export class UserAuthService {
   }
 
   private logoutInner(destroyToken: boolean) {
-    this.userSubject.next(null)
-    this.isAuthenticatedSubject.next(false)
-    if(destroyToken) {
-      this.jwtService.destroyToken()
-    }
+    return new Promise((r) => {
+      this.userSubject.next(null)
+      this.isAuthenticatedSubject.next(false)
+      if(destroyToken) {
+        this.jwtService.destroyAccessToken()
+        this.httpService
+          .post<void>(environment.USER_API_URL, '/auth/logout', undefined, { credentials: 'include' })
+          .subscribe(() => r(0))
+      }
+    })
+  }
+
+  checkLogged() {
   }
 
   logout() {
-    this.logoutInner(true)
+    return this.logoutInner(true)
   }
 
   populate() {
-    if(!this.jwtService.getToken()) {
+    if(!this.jwtService.getAccessToken()) {
       this.isAuthenticatedSubject.next(false)
       this.userSubject.next(null)
       return
@@ -56,7 +64,7 @@ export class UserAuthService {
     return this.httpService.post<LoginSigninResponse & { token: string }>(environment.USER_API_URL, '/auth/login', body)
       .pipe(tap((resp) => {
         this.setUser(resp)
-        this.jwtService.setToken(resp.token)
+        this.jwtService.setAccessToken(resp.token)
       }))
   }
 
@@ -64,7 +72,7 @@ export class UserAuthService {
     return this.httpService.post<LoginSigninResponse & { token: string }>(environment.USER_API_URL, '/auth/signin', body)
       .pipe(tap((resp) => {
         this.setUser(resp)
-        this.jwtService.setToken(resp.token)
+        this.jwtService.setAccessToken(resp.token)
       }))
   }
 
@@ -72,7 +80,7 @@ export class UserAuthService {
     return this.httpService.post<LoginSigninResponse & { token: string }>(environment.USER_API_URL, '/auth/update', body)
       .pipe(tap((resp) => {
         this.setUser(resp)
-        this.jwtService.setToken(resp.token)
+        this.jwtService.setAccessToken(resp.token)
       }))
   }
 
@@ -80,7 +88,7 @@ export class UserAuthService {
     return this.httpService.post<LoginSigninResponse & { token: string }>(environment.USER_API_URL, '/auth/update/password', body)
       .pipe(tap((resp) => {
         this.setUser(resp)
-        this.jwtService.setToken(resp.token)
+        this.jwtService.setAccessToken(resp.token)
       }))
   }
 }

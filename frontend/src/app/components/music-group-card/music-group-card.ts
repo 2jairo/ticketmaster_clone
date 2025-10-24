@@ -3,6 +3,7 @@ import { formatViews } from '../../utils/format';
 import { ProfileService } from '../../services/profile.service';
 import { RouterLink } from "@angular/router";
 import { MusicGroupResponse } from '../../types/musicGroupts';
+import { JwtService } from '../../services/jwt.service';
 
 @Component({
   selector: 'app-music-group-card',
@@ -10,6 +11,7 @@ import { MusicGroupResponse } from '../../types/musicGroupts';
   templateUrl: './music-group-card.html'
 })
 export class MusicGroupCard {
+  private jwtService = inject(JwtService)
   private profileService = inject(ProfileService)
 
   @Input({ required: true }) group!: MusicGroupResponse
@@ -20,6 +22,10 @@ export class MusicGroupCard {
 
   toggleFollow(e: PointerEvent) {
     e.stopPropagation()
+
+    if(this.jwtService.checkIfLogged()) {
+      return
+    }
 
     this.profileService.setFollowGroup(this.group.slug, !this.group.following)
       .subscribe({

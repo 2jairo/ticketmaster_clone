@@ -11,6 +11,7 @@ import { ShowError } from "../auth-form/show-error";
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ProfileService } from '../../services/profile.service';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
+import { JwtService } from '../../services/jwt.service';
 
 @Component({
   selector: 'app-comment-list',
@@ -21,6 +22,8 @@ export class CommentList implements OnInit {
   readonly userAuthService = inject(UserAuthService)
   private profileService = inject(ProfileService)
   private fb = inject(FormBuilder)
+  private jwtService = inject(JwtService)
+
 
   @Input({ required: true }) concertSlug!: string
   @Input({ required: true }) getComments!: (p: Pagination) => Observable<CommentResponseWrapper[]>
@@ -79,6 +82,9 @@ export class CommentList implements OnInit {
 
   handleSubmit() {
     if(!this.newCommentForm.valid) {
+      return
+    }
+    if(this.jwtService.checkIfLogged()) {
       return
     }
 

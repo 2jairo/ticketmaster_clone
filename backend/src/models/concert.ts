@@ -126,12 +126,14 @@ ConcertSchema.methods.toConcertResponse = function() {
     const tickets = (this.tickets as ConcertTicket[]).reduce((acc, ticket) => {
         acc.available += ticket.available
         acc.sold += ticket.sold
-        acc.price = Math.min(acc.price, ticket.price)
+        acc.priceMax = Math.min(acc.priceMax, ticket.price)
+        acc.priceMin = Math.max(acc.priceMin, ticket.price)
         return acc
     }, {
         available: 0,
         sold: 0,
-        price: Infinity
+        priceMax: Infinity,
+        priceMin: -Infinity
     })
 
     return {

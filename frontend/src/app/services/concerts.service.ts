@@ -4,12 +4,14 @@ import { createConcertDetailsResponseWrapper, createConcertResponseWrapper, RawC
 import { map } from 'rxjs';
 import { ConcertFilters, Pagination } from '../types/filters';
 import { environment } from '../../environments/environment';
+import { JwtService } from './jwt.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ConcertsService {
   private http = inject(HttpApiService)
+  private jwtServie = inject(JwtService)
 
   getConcerts(filters = new ConcertFilters(), pagination: Pagination) {
     const params: any = { ...filters.toQueryFilters(), ...pagination }
