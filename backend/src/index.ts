@@ -11,30 +11,35 @@ import profileRoutes from './routes/profileRoutes'
 import { errorHandler, notFoundHandler } from './error/err'
 import cookieParser from 'cookie-parser'
 
-dotenv.config()
-await connectMongoDb(process.env.MONGO_URI!)
-const app = express()
 
-app.use(cors({
-    origin: ['http://127.0.0.1:4200'],
-    credentials: true,
-}))
-app.use(express.json())
-app.use(cookieParser())
+async function main() {
+    dotenv.config()
+    await connectMongoDb(process.env.MONGO_URI!)
+    const app = express()
+    
+    app.use(cors({
+        origin: ['http://127.0.0.1:4200'],
+        credentials: true,
+    }))
+    app.use(express.json())
+    app.use(cookieParser())
+    
+    app.use('/api/auth', userRoutes)
+    app.use('/api', concertsRoutes)
+    app.use('/api', categoryRoutes)
+    app.use('/api/comments', commentsRoutes)
+    app.use('/api/groups', musicGroupsRoutes)
+    app.use('/api/profile', profileRoutes)
+    
+    app.use(notFoundHandler)
+    app.use(errorHandler)
+    
+    
+    const PORT = parseInt(process.env.PORT!) || 3000
+    
+    app.listen(PORT, '127.0.0.1', () => {
+        console.log(`Listening on localhost:${PORT}`)
+    })
+}
 
-app.use('/api/auth', userRoutes)
-app.use('/api', concertsRoutes)
-app.use('/api', categoryRoutes)
-app.use('/api/comments', commentsRoutes)
-app.use('/api/groups', musicGroupsRoutes)
-app.use('/api/profile', profileRoutes)
-
-app.use(notFoundHandler)
-app.use(errorHandler)
-
-
-const PORT = parseInt(process.env.PORT!) || 3000
-
-app.listen(PORT, '127.0.0.1', () => {
-    console.log(`Listening on localhost:${PORT}`)
-})
+main()
