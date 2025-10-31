@@ -1,0 +1,91 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("MONGO_URI")
+}
+
+model User {
+  id String @id @map("_id") @default(auto()) @db.ObjectId
+  v Int @map("__v")
+  username String @unique
+  password String
+  email String @unique
+  image String @default("https://static.productionready.io/images/smiley-cyrus.jpg")
+  followingGroups String[] @db.ObjectId
+  followingUsers String[] @db.ObjectId
+  followers Int @default(0)
+
+  comments Comment[] @relation("CommentAuthor")
+  @@map("users")
+}
+
+model Category {
+  id String @id @map("_id") @default(auto()) @db.ObjectId
+  title String
+  slug String @unique
+  images String[]
+  concerts String[] @db.ObjectId
+
+  @@map("categories")
+}
+
+model Comment {
+  id String @id @map("_id") @default(auto()) @db.ObjectId
+  createdAt DateTime @default(now()) @db.Date
+  updatedAt DateTime @updatedAt
+  comment String
+  authorId String @db.ObjectId 
+  author User @relation("CommentAuthor", fields: [authorId], references: [id])
+  likes String[] @db.ObjectId
+
+  @@map("comments")
+}
+
+model MusicGroup {
+  id String @id @map("_id") @default(auto()) @db.ObjectId
+  title String
+  slug String @unique
+  description String
+  image String @default("https://static.productionready.io/images/smiley-cyrus.jpg")
+  followers Int @default(0)
+
+  @@map("musicgroups")
+}
+
+
+type ConcertLocation {
+  type String
+  coordinates Float[]
+}
+
+type ConcertTickets {
+  sold Int @default(0)
+  available Int @default(0)
+  price Int
+  location String
+}
+
+model Concert {
+  id String @id @map("_id") @default(auto()) @db.ObjectId
+  title String
+  slug String @unique
+  dateStart DateTime @db.Date
+  dateEnd DateTime @db.Date
+  description String
+  images String[]
+  mapImg String?
+  thumbnailImg String?
+  locationName String
+  location ConcertLocation
+  totalTicketsSold Int @default(0)
+  tickets ConcertTickets
+  groups String[] @db.ObjectId
+  categoroies String[] @db.ObjectId
+  comments String[] @db.ObjectId
+
+  @@map("concerts")
+}
