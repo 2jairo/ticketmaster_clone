@@ -10,7 +10,7 @@ datasource db {
 
 model User {
   id String @id @map("_id") @default(auto()) @db.ObjectId
-  v Int @map("__v")
+  v Int @map("__v") @default(0)
   username String @unique
   password String
   email String @unique
@@ -18,9 +18,28 @@ model User {
   followingGroups String[] @db.ObjectId
   followingUsers String[] @db.ObjectId
   followers Int @default(0)
+  isActive Boolean @default(true)
 
   comments Comment[] @relation("CommentAuthor")
   @@map("users")
+}
+
+model Admin {
+  id String @id @map("_id") @default(auto()) @db.ObjectId
+  v Int @map("__v") @default(0)
+  username String @unique
+  password String
+  email String @unique
+  image String @default("https://static.productionready.io/images/smiley-cyrus.jpg")
+  isActive Boolean @default(true)
+
+  @@map("admin")
+}
+
+enum CategoryStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
 }
 
 model Category {
@@ -29,6 +48,8 @@ model Category {
   slug String @unique
   images String[]
   concerts String[] @db.ObjectId
+  isActive Boolean @default(true)
+  status CategoryStatus @default(PENDING)
 
   @@map("categories")
 }
@@ -52,6 +73,8 @@ model MusicGroup {
   description String
   image String @default("https://static.productionready.io/images/smiley-cyrus.jpg")
   followers Int @default(0)
+  isActive Boolean @default(true)
+
 
   @@map("musicgroups")
 }
@@ -67,6 +90,12 @@ type ConcertTickets {
   available Int @default(0)
   price Int
   location String
+}
+
+enum ConcertStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
 }
 
 model Concert {
@@ -86,6 +115,8 @@ model Concert {
   groups String[] @db.ObjectId
   categoroies String[] @db.ObjectId
   comments String[] @db.ObjectId
+  isActive Boolean @default(true)
+  status ConcertStatus
 
   @@map("concerts")
 }
