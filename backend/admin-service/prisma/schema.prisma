@@ -66,6 +66,12 @@ model Comment {
   @@map("comments")
 }
 
+enum MusicGroupStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
 model MusicGroup {
   id String @id @map("_id") @default(auto()) @db.ObjectId
   title String
@@ -73,6 +79,7 @@ model MusicGroup {
   description String
   image String @default("https://static.productionready.io/images/smiley-cyrus.jpg")
   followers Int @default(0)
+  status MusicGroupStatus @default(PENDING)
   isActive Boolean @default(true)
 
 
@@ -116,7 +123,7 @@ model Concert {
   categoroies String[] @db.ObjectId
   comments String[] @db.ObjectId
   isActive Boolean @default(true)
-  status ConcertStatus
+  status ConcertStatus @default(PENDING)
 
   @@map("concerts")
 }

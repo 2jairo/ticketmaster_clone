@@ -101,7 +101,17 @@ const ConcertSchema = new mongoose.Schema({
     comments: [{
         type: Schema.Types.ObjectId,
         ref: 'Comment'
-    }]
+    }],
+    isActive: {
+        type: Boolean,
+        required: true,
+        default: true
+    },
+    status: {
+        type: String,
+        enum: ['PENDING', 'ACCEPTED', 'REJECTED'],
+        default: 'PENDING'
+    }
 })
 
 ConcertSchema.index({ location: '2dsphere' })
@@ -120,6 +130,11 @@ ConcertSchema.pre('save', function(next) {
 ConcertSchema.pre('insertMany', function(next) {
     console.log(this)
     return next()
+})
+
+ConcertSchema.pre(/^find/, function() {
+    //@ts-ignore
+    this.where({ isActive: true, status: 'ACCEPTED' });
 })
 
 ConcertSchema.methods.toConcertResponse = function() {

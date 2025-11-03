@@ -17,7 +17,17 @@ const CategorySchema = new mongoose.Schema({
     concerts: [{
         type: Schema.Types.ObjectId,
         ref: 'Concert'
-    }]
+    }],
+    isActive: {
+        type: Boolean,
+        required: true,
+        default: true
+    },
+    status: {
+        type: String,
+        enum: ['PENDING', 'ACCEPTED', 'REJECTED'],
+        default: 'PENDING'
+    }
 })
 
 CategorySchema.pre('save', function(next)  {
@@ -30,6 +40,11 @@ CategorySchema.pre('save', function(next)  {
         this.slug = `${slugifiedTitle}-${uuid}` 
     }
     return next()
+})
+
+CategorySchema.pre(/^find/, function() {
+    //@ts-ignore
+    this.where({ isActive: true, status: 'ACCEPTED' });
 })
 
 

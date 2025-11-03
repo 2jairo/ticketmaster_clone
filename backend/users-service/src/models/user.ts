@@ -38,6 +38,11 @@ const userSchema = new mongoose.Schema({
         type: Number,
         required: true,
         default: 0
+    },
+    isActive: {
+        type: Boolean,
+        required: true,
+        default: true
     }
 })
 
@@ -56,6 +61,12 @@ userSchema.methods.toUserResponse = function(accessToken: boolean) {
         ...(accessToken ? { token: generateAccesToken(this.getJwtClaims()) } : {})
     }
 }
+
+
+userSchema.pre(/^find/, function() {
+    //@ts-ignore
+    this.where({ isActive: true });
+})
 
 userSchema.methods.toCommentAuthorResponse = function(user?: IUserModel) {
     return {

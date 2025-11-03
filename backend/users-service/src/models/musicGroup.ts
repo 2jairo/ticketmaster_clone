@@ -24,6 +24,16 @@ const MusicGroupSchema = new mongoose.Schema({
         type: Number,
         default: 0,
         required: true
+    },
+    isActive: {
+        type: Boolean,
+        required: true,
+        default: true
+    },
+    status: {
+        type: String,
+        enum: ['PENDING', 'ACCEPTED', 'REJECTED'],
+        default: 'PENDING'
     }
 })
 
@@ -37,6 +47,11 @@ MusicGroupSchema.pre('save', function(next) {
         this.slug = `${slugifiedTitle}-${uuid}` 
     }
     return next()
+})
+
+MusicGroupSchema.pre(/^find/, function() {
+    //@ts-ignore
+    this.where({ isActive: true, status: 'ACCEPTED' });
 })
 
 MusicGroupSchema.methods.toMusicGroupConcertDetailsResponse = function(user?: IUserModel) {
