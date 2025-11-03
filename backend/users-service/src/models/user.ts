@@ -50,7 +50,7 @@ const userSchema = new mongoose.Schema({
 userSchema.plugin(uniqueValidator)
 
 userSchema.methods.getJwtClaims = function() {
-    return { userId: this._id.toString(), v: this.__v }
+    return { userId: this._id.toString(), v: this.__v, role: 'client' }
 }
 
 userSchema.methods.toUserResponse = function(accessToken: boolean) {

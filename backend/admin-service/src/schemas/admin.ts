@@ -7,7 +7,8 @@ export const adminModelWrapper = (m: AdminModel) => {
     const getJwtClaims = (): JwtClaims => {
         return {
             userId: m.id,
-            v: m.v
+            v: m.v,
+            role: 'admin'
         }
     }
 

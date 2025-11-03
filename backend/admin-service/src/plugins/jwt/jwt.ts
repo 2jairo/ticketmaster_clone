@@ -6,6 +6,7 @@ import fp from 'fastify-plugin'
 export type JwtClaims = {
     userId: string
     v: number
+    role: string
 }
 
 declare module "fastify" {

@@ -8,6 +8,7 @@ declare global {
       userId: string
       v: number
       logged: boolean
+      role: string
     }
   }
 }
