@@ -16,6 +16,29 @@ declare module "fastify" {
 
 export const prismaClientPlugin = fp(async (fastify) => {
     const prisma = new PrismaClient(getPrismaClientConfig())
+    // .$extends({
+    //     name: 'ext',
+    //     query: {
+    //         $allModels: {
+    //             $allOperations: async ({ args, model, operation, query }) => {
+    //                 if(operation.startsWith('find')) {
+                        
+    //                 }
+    //             }
+    //         },
+    //     },
+    //     result: {
+    //         admin: {
+    //             toUserProfile: {
+    //                 compute(u) {
+    //                     return () => ({
+    //                         test: u.email
+    //                     })
+    //                 },
+    //             },
+    //         }
+    //     }
+    // })
 
     fastify.decorate('prisma', prisma)
     fastify.decorate('prismaW', {

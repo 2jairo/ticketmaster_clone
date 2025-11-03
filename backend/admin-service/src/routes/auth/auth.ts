@@ -4,6 +4,7 @@ import { ErrKind, LocalError } from 'plugins/error/error'
 import { RouteCommonOptions } from 'routes/commonOptions'
 import { authSchema, type loginRequestBody, type registerRequestBody } from './schema'
 import bcrypt from 'bcrypt'
+import { ADMIN_MODEL_ACTIVE } from 'schemas/admin'
 
 export const authRoutes = fp((fastify, options: RouteCommonOptions) => {
     fastify.route({
@@ -73,7 +74,7 @@ export const authRoutes = fp((fastify, options: RouteCommonOptions) => {
     })
     async function profile(req: FastifyRequest, reply: FastifyReply) {
         const user = await fastify.prismaW.admin.findFirst({ 
-            where: { id: req.user.userId }
+            where: { id: req.user.userId, ...ADMIN_MODEL_ACTIVE }
         })
 
         if(!user) {

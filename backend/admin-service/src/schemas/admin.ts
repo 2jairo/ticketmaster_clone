@@ -1,6 +1,8 @@
 import { AdminModel } from "generated/prisma/models";
 import { JwtClaims } from "plugins/jwt/jwt";
 
+export const ADMIN_MODEL_ACTIVE = { isActive: true }
+
 export type AdminModelWrapper = ReturnType<typeof adminModelWrapper>
 
 export const adminModelWrapper = (m: AdminModel) => {
