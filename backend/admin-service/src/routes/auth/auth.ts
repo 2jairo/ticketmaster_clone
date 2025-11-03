@@ -46,8 +46,9 @@ export const authRoutes = fp((fastify, options: RouteCommonOptions) => {
     })
     async function register(req: FastifyRequest<{ Body: registerRequestBody }>, reply: FastifyReply) {
         const { email, password, username } = req.body
+        const hashRounds = parseInt(process.env.BCRYPT_HASH_RONUDS!) || 10
 
-        const hashedPassword = await bcrypt.hash(password, process.env.BCRYPT_HASH_RONUDS!)
+        const hashedPassword = await bcrypt.hash(password, hashRounds)
         
         const user = await fastify.prismaW.admin.create({
             data: { 
