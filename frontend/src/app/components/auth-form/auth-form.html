@@ -24,6 +24,8 @@
   <div class="operationTitle">
     @if(operation === 'login') {
       <h2>Login</h2>
+    } @else if(operation === 'admin') {
+      <h2>Login as administrator</h2>
     } @else if(operation === 'signin') {
       <h2>Signin</h2>
     } @else {
@@ -59,7 +61,32 @@
         <app-show-error [error]="errors.login.password" />
       </div>
 
-    } @else if(operation === 'signin') {
+    } @else if(operation === 'admin') {
+      <div>
+        <div class="content">
+          <i class="fa-solid fa-address-card"></i>
+          <input type="text" placeholder="username or email" formControlName="credential" autocomplete="username email"
+            [attr.aria-invalid]="isInvalid(errors.login.credential)"
+          />
+        </div>
+
+        <app-show-error [error]="errors.login.credential" />
+      </div>
+
+      <div>
+        <div class="content">
+          <i class="fa-solid fa-key"></i>
+          <input type="password" placeholder="password" formControlName="password" autocomplete="current-password"
+            [type]="showPassword.login ? 'text' : 'password'"
+            [attr.aria-invalid]="isInvalid(errors.login.password)"
+          />
+          <app-show-password [showPassword]="showPassword.login" (setInputType)="setInputType('login', $event)"/>
+        </div>
+
+        <app-show-error [error]="errors.login.password" />
+      </div>
+
+    }@else if(operation === 'signin') {
       <div>
         <div class="content">
           <i class="fa-solid fa-user"></i>
@@ -143,6 +170,13 @@
     <p>
       Forgot
       <a routerLink="/auth/forgot-password">your password?</a>
+    </p>
+
+    <p class="noMobile">|</p>
+
+    <p>
+      Login
+      <a routerLink="/auth/admin">as admin</a>
     </p>
   </div>
 

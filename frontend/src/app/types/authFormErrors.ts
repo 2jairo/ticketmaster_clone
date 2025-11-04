@@ -3,10 +3,15 @@ import { ErrKind, LocalErrorResponse } from "./error";
 import { FormGroup } from "@angular/forms";
 import { environment } from "../../environments/environment";
 
-export type AuthFormOperations = 'login' | 'signin' | 'forgot-password'
+export type AuthFormOperations = 'login' | 'signin' | 'forgot-password' | 'admin'
 
 const ERRORS = {
   login: {
+    general: '',
+    credential: '',
+    password: '',
+  },
+  admin: {
     general: '',
     credential: '',
     password: '',
@@ -26,14 +31,16 @@ const ERRORS = {
 
 export class AuthFormErrors {
   login = { ...ERRORS.login }
+  admin = { ...ERRORS.admin }
   signin = { ...ERRORS.signin }
   'forgot-password' = { ...ERRORS['forgot-password'] }
   canSubmit = ERRORS.canSubmit
 
   constructor(
-    private forms: { login: FormGroup, signin: FormGroup, ['forgot-password']: FormGroup },
+    private forms: { [O in AuthFormOperations]: FormGroup },
   ) {
     this.forms.login.valueChanges.subscribe(() => this.handleClientErrorsLogin())
+    this.forms.admin.valueChanges.subscribe(() => this.handleClientErrorsAdmin())
     this.forms.signin.valueChanges.subscribe(() => this.handleClientErrorsSignin())
     this.forms["forgot-password"].valueChanges.subscribe(() => this.hanldeClientErrorsForgotPassword())
   }
@@ -43,6 +50,22 @@ export class AuthFormErrors {
     this.signin = structuredClone(ERRORS.signin)
     this['forgot-password'] = structuredClone(ERRORS['forgot-password'])
     this.canSubmit = ERRORS.canSubmit
+  }
+
+  handleClientErrorsAdmin() {
+    this.resetErrors()
+
+    const form = this.forms.login
+    const credentialCtrl = form.get('credential')
+    const passwordCtrl = form.get('password')
+
+    if (credentialCtrl?.hasError('maxlength')) {
+      this.login.credential = `The email or username length can't be more than ${environment.EMAIL_MAX_LENGTH}`;
+    }
+
+    if (passwordCtrl?.hasError('maxlength')) {
+      this.login.password = `The password length can't be more than ${environment.PASSWORD_MAX_LENGTH}`;
+    }
   }
 
   handleClientErrorsLogin() {
@@ -90,6 +113,20 @@ export class AuthFormErrors {
   }
 
   handleHttpErrorsLogin(e: HttpErrorResponse) {
+    this.resetErrors()
+    this.canSubmit = false
+
+    const err = e.error as LocalErrorResponse
+    if (err.error === ErrKind.UserNotFound) {
+      this.login.general = `Invalid credentials. The user doesn't exist or the password doesn't match`
+    }
+    else {
+      this.login.general = `An unexpected error occurred. Please try again (${err.error})`
+      this.canSubmit = true
+    }
+  }
+
+  handleHttpErrorsAdmin(e: HttpErrorResponse) {
     this.resetErrors()
     this.canSubmit = false
 

@@ -28,6 +28,10 @@ export class AuthForm implements OnInit {
       credential: new FormControl('', [Validators.required, Validators.maxLength(environment.EMAIL_MAX_LENGTH)]),
       password: new FormControl('', [Validators.required, Validators.maxLength(environment.PASSWORD_MAX_LENGTH)]),
     }),
+    admin: this.fb.group({
+      credential: new FormControl('', [Validators.required, Validators.maxLength(environment.EMAIL_MAX_LENGTH)]),
+      password: new FormControl('', [Validators.required, Validators.maxLength(environment.PASSWORD_MAX_LENGTH)]),
+    }),
     signin: this.fb.group(
       {
         username: new FormControl('', [Validators.required, Validators.maxLength(environment.USERNAME_MAX_LENGTH)]),
@@ -85,6 +89,14 @@ export class AuthForm implements OnInit {
           error: (e) => this.errors.handleHttpErrorsLogin(e),
           next: () => this.navigateToReturnUrl(),
         })
+    }
+    else if(this.operation === 'admin') {
+      // this.userAuthService.login(this.forms.login.value as LoginRequestBody)
+      //   .pipe(tap(() => this.fetching = false))
+      //   .subscribe({
+      //     error: (e) => this.errors.handleHttpErrorsLogin(e),
+      //     next: () => this.navigateToReturnUrl(),
+      //   })
     }
     else if(this.operation === 'signin') {
       const { passwordRepeat, ...signinBody } = this.forms.signin.value;

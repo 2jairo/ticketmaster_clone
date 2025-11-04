@@ -18,6 +18,11 @@ export const AUTH_ROUTES: Route[] = [
     canActivate: [NoAuthGuard]
   },
   {
+    path: 'admin',
+    loadComponent: () => import('./auth').then((c) => c.Auth),
+    canActivate: [NoAuthGuard]
+  },
+  {
     path: '**',
     pathMatch: 'full',
     redirectTo: 'login'

@@ -1,5 +1,6 @@
 export const environment = {
   USER_API_URL: 'http://127.0.0.1:3000/api',
+  ADMIN_API_URL: 'http://127.0.0.1:3001/api',
   LS_TOKEN_KEY: 'jwt',
 
   USERNAME_MAX_LENGTH: 40,
