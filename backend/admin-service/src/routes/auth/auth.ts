@@ -5,6 +5,7 @@ import { RouteCommonOptions } from 'routes/commonOptions'
 import { authSchema, type loginRequestBody, type registerRequestBody } from './schema'
 import bcrypt from 'bcrypt'
 import { ADMIN_MODEL_ACTIVE } from 'schemas/admin'
+import { REFRESH_TOKEN_COOKIE } from 'plugins/jwt/jwt'
 
 export const authRoutes = fp((fastify, options: RouteCommonOptions) => {
     fastify.route({
@@ -30,8 +31,11 @@ export const authRoutes = fp((fastify, options: RouteCommonOptions) => {
 
         const match = await bcrypt.compare(password, user.password || '')
         if(match) {
-            const token = fastify.generateToken(user.getJwtClaims())
+            const claims = user.getJwtClaims()
+            fastify.generateRefreshTokenCookie(claims, reply)
+            const token = fastify.generateAccessToken(claims)
             const resp = user.toProfileResponse(token)
+
             reply.status(200).send(resp)
         } else {
             throw new LocalError(ErrKind.UserNotFound, 401)
@@ -59,8 +63,11 @@ export const authRoutes = fp((fastify, options: RouteCommonOptions) => {
             }
         })
 
-        const token = fastify.generateToken(user.getJwtClaims())
+        const claims = user.getJwtClaims()
+        fastify.generateRefreshTokenCookie(claims, reply)
+        const token = fastify.generateAccessToken(claims)
         const resp = user.toProfileResponse(token)
+
         reply.status(200).send(resp)
     }
 
@@ -82,4 +89,34 @@ export const authRoutes = fp((fastify, options: RouteCommonOptions) => {
         }
         reply.status(200).send(user.toProfileResponse())
     }
+
+
+    fastify.route({
+        method: 'POST',
+        url: `${options.prefix}/logout`,
+        handler: logout,
+    })
+    async function logout(req: FastifyRequest, reply: FastifyReply) {
+        // //TODO: blacklist
+        reply.clearCookie('refreshToken', { path: '/' })
+        reply.status(200).send()
+    }
+ 
+
+    fastify.route({
+        method: 'POST',
+        url: `${options.prefix}/refresh`,
+        handler: refreshAccessToken,
+    })
+    async function refreshAccessToken(req: FastifyRequest, reply: FastifyReply) {
+        const refresh = req.cookies[REFRESH_TOKEN_COOKIE]
+        if(!refresh) {
+            throw new LocalError(ErrKind.ExpiredRefreshToken, 401)
+        }
+
+        const claims = await fastify.authenticateRefreshToken(refresh)
+        const newAccess = fastify.generateAccessToken(claims)
+        reply.status(200).send({ token: newAccess })
+    }
 })
+

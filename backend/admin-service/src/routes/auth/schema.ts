@@ -32,7 +32,7 @@ export interface registerRequestBody {
 }
 const register: FastifySchema = {
     body: S.object()
-        .id('api/auth/signin')
+        .id('api/auth/register')
         .title('admin user Signin')
         .description('Signin admin user and respond with token')
         .prop('username', S.string().required().maxLength(50))
