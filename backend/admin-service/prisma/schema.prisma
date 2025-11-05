@@ -8,6 +8,11 @@ datasource db {
   url      = env("MONGO_URI")
 }
 
+enum UserRole {
+  CLIENT
+  ADMIN
+}
+
 model User {
   id String @id @map("_id") @default(auto()) @db.ObjectId
   v Int @map("__v") @default(0)
@@ -19,21 +24,10 @@ model User {
   followingUsers String[] @db.ObjectId
   followers Int @default(0)
   isActive Boolean @default(true)
+  role UserRole
 
   comments Comment[] @relation("CommentAuthor")
   @@map("users")
-}
-
-model Admin {
-  id String @id @map("_id") @default(auto()) @db.ObjectId
-  v Int @map("__v") @default(0)
-  username String @unique
-  password String
-  email String @unique
-  image String @default("https://static.productionready.io/images/smiley-cyrus.jpg")
-  isActive Boolean @default(true)
-
-  @@map("admin")
 }
 
 enum CategoryStatus {
@@ -118,7 +112,7 @@ model Concert {
   locationName String
   location ConcertLocation
   totalTicketsSold Int @default(0)
-  tickets ConcertTickets
+  tickets ConcertTickets[]
   groups String[] @db.ObjectId
   categoroies String[] @db.ObjectId
   comments String[] @db.ObjectId

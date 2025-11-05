@@ -4,8 +4,8 @@ import { ErrKind, LocalError } from 'plugins/error/error'
 import { RouteCommonOptions } from 'routes/commonOptions'
 import { authSchema, type loginRequestBody, type registerRequestBody } from './schema'
 import bcrypt from 'bcrypt'
-import { ADMIN_MODEL_ACTIVE } from 'schemas/admin'
 import { REFRESH_TOKEN_COOKIE } from 'plugins/jwt/jwt'
+import { ADMIN_ACTIVE } from 'schemas/user'
 
 export const authRoutes = fp((fastify, options: RouteCommonOptions) => {
     fastify.route({
@@ -16,8 +16,9 @@ export const authRoutes = fp((fastify, options: RouteCommonOptions) => {
     })
     async function login(req: FastifyRequest<{ Body: loginRequestBody }>, reply: FastifyReply) {
         const { credential, password } = req.body
-        const user = await fastify.prismaW.admin.findFirst({
+        const user = await fastify.prismaW.user.findFirst({
             where: {
+                ...ADMIN_ACTIVE,
                 OR: [
                     { username: credential },
                     { email: credential },
@@ -34,7 +35,7 @@ export const authRoutes = fp((fastify, options: RouteCommonOptions) => {
             const claims = user.getJwtClaims()
             fastify.generateRefreshTokenCookie(claims, reply)
             const token = fastify.generateAccessToken(claims)
-            const resp = user.toProfileResponse(token)
+            const resp = user.toUserResponse(token)
 
             reply.status(200).send(resp)
         } else {
@@ -47,6 +48,7 @@ export const authRoutes = fp((fastify, options: RouteCommonOptions) => {
         method: 'POST',
         url: `${options.prefix}/register`,
         schema: authSchema.register,
+        onRequest: [fastify.authenticate], // only a admin can create admin
         handler: register,
     })
     async function register(req: FastifyRequest<{ Body: registerRequestBody }>, reply: FastifyReply) {
@@ -55,39 +57,36 @@ export const authRoutes = fp((fastify, options: RouteCommonOptions) => {
 
         const hashedPassword = await bcrypt.hash(password, hashRounds)
         
-        const user = await fastify.prismaW.admin.create({
+        const user = await fastify.prismaW.user.create({
             data: { 
                 email, 
                 username,
                 password: hashedPassword,
+                role: 'ADMIN'
             }
         })
 
         const claims = user.getJwtClaims()
         fastify.generateRefreshTokenCookie(claims, reply)
         const token = fastify.generateAccessToken(claims)
-        const resp = user.toProfileResponse(token)
+        const resp = user.toUserResponse(token)
 
         reply.status(200).send(resp)
     }
 
     
     fastify.route({
-        method: 'POST',
-        url: `${options.prefix}/profile`,
-        schema: authSchema.profile,
+        method: 'GET',
+        url: `${options.prefix}/user`,
+        schema: authSchema.user,
         onRequest: [fastify.authenticate],
-        handler: profile,
+        handler: userProfile,
     })
-    async function profile(req: FastifyRequest, reply: FastifyReply) {
-        const user = await fastify.prismaW.admin.findFirst({ 
-            where: { id: req.user.userId, ...ADMIN_MODEL_ACTIVE }
+    async function userProfile(req: FastifyRequest, reply: FastifyReply) {
+        const user = await fastify.prismaW.user.findFirst({ 
+            where: { id: req.user.userId, ...ADMIN_ACTIVE }
         })
-
-        if(!user) {
-            throw new LocalError(ErrKind.UserNotFound, 404)
-        }
-        reply.status(200).send(user.toProfileResponse())
+        reply.status(200).send(user!.toUserResponse())
     }
 
 

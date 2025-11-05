@@ -2,11 +2,13 @@ import { ErrKind, LocalError } from 'plugins/error/error'
 import { FastifyReply, FastifyRequest } from 'fastify';
 import jwt from 'jsonwebtoken'
 import fp from 'fastify-plugin'
+import { UserRole } from 'generated/prisma/enums';
+import { ADMIN_ACTIVE } from 'schemas/user';
 
 export type JwtClaims = {
     userId: string
     v: number
-    role: string
+    role: UserRole
 }
 
 declare module "fastify" {
@@ -41,6 +43,12 @@ export const jwtPlugin = fp((fastify) => {
 
         const accessToken = authHeader.split(' ')[1]!
         const claims = await fastify.authenticateAccessToken(accessToken)
+
+        const user = await fastify.prismaW.user.findFirst({ where: {  id: claims.userId, ...ADMIN_ACTIVE } })
+        if(!user || user.v !== claims.v) {
+            throw new LocalError(ErrKind.Unauthorized, 401)
+        }
+
         req.user = claims
     }
 
@@ -85,6 +93,7 @@ export const jwtPlugin = fp((fastify) => {
                 process.env.JWT_ACCESS_SECRET!,
                 (err, decoded) => {
                     if (err) {
+                        console.log(err)
                         reject(new LocalError(ErrKind.ExpiredAccessToken, 401))
                     }
                     else {

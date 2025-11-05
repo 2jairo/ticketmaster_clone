@@ -17,11 +17,11 @@ async function main() {
     const config = getFastifyListenConfig()
 
     await fastify.register(errorHandler)
+    await fastify.register(prismaClientPlugin)
     await fastify.register(corsPlugin)
     await fastify.register(fastifyCookie)
     await fastify.register(jwtPlugin)
     await fastify.register(swaggerPlugin)
-    await fastify.register(prismaClientPlugin)
 
     await fastify.register(authRoutes, { prefix: '/api/auth' })
 

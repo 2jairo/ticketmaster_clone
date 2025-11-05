@@ -40,6 +40,8 @@ export class LocalError {
 
 export const errorHandler = fp((fastify) => {
     fastify.setErrorHandler((err, req, reply) => {
+        console.log({err})
+
         if(err instanceof LocalError) {
             reply.status(err.statusCode).send(err.toJSON())
         }

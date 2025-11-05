@@ -44,8 +44,8 @@ const register: FastifySchema = {
     }
 }
 
-const profile: FastifySchema = {
+const user: FastifySchema = {
 
 }
 
-export const authSchema = { login, register, profile }
+export const authSchema = { login, register, user }

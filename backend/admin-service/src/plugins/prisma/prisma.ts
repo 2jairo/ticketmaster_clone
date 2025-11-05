@@ -1,48 +1,51 @@
 import { getPrismaClientConfig } from 'config/config'
 import fp from 'fastify-plugin'
-import { PrismaClient } from 'generated/prisma/client'
-import { adminModelWrapper } from 'schemas/admin'
+import { Prisma, PrismaClient } from 'generated/prisma/client'
+import { userModelWrapper } from 'schemas/user'
 import { musicGroupWrapper } from 'schemas/musicGroup'
 import { ModelWrapper, PrismaModelWrappers } from 'schemas/wrapper'
 
 declare module "fastify" {
     interface FastifyInstance {
-        prisma: PrismaClient
+        prisma: ExtendedPrismaClient,
         prismaW: {
             [K in keyof PrismaModelWrappers]: ModelWrapper<K, PrismaModelWrappers[K]>
         }
     }
 }
 
-export const prismaClientPlugin = fp(async (fastify) => {
-    const prisma = new PrismaClient(getPrismaClientConfig())
-    // .$extends({
-    //     name: 'ext',
-    //     query: {
-    //         $allModels: {
-    //             $allOperations: async ({ args, model, operation, query }) => {
-    //                 if(operation.startsWith('find')) {
-                        
-    //                 }
-    //             }
-    //         },
-    //     },
-    //     result: {
-    //         admin: {
-    //             toUserProfile: {
-    //                 compute(u) {
-    //                     return () => ({
-    //                         test: u.email
-    //                     })
-    //                 },
-    //             },
-    //         }
-    //     }
-    // })
+export type ExtendedPrismaClient = ReturnType<typeof getPrismaClient>
 
+const getPrismaClient = () => {
+    const updateUserVersion = Prisma.defineExtension({
+        name: 'update __v',
+        query: {
+            user: {
+                $allOperations: async ({ args, operation, query }) => {
+                    if (operation !== 'update' && operation !== 'updateMany') {
+                        return query(args)
+                    }
+
+                    if(args.data.password || args.data.isActive !== undefined || args.data.role) {
+                        args.data.v = { increment: 1 }
+                    }
+                    return query(args)
+                }
+            }
+        }
+    })
+
+    return new PrismaClient(getPrismaClientConfig())
+        .$extends(updateUserVersion)
+}
+
+export const prismaClientPlugin = fp(async (fastify) => {
+    const prisma = getPrismaClient()
+    await prisma.$connect()
+    
     fastify.decorate('prisma', prisma)
     fastify.decorate('prismaW', {
-        admin: new ModelWrapper(prisma, 'admin', (v) => adminModelWrapper(v)),
+        user: new ModelWrapper(prisma, 'user', (v) => userModelWrapper(v)),
         musicGroup: new ModelWrapper(prisma, 'musicGroup', (v) => musicGroupWrapper(v))
     })
 })
