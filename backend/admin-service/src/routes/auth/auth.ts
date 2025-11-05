@@ -2,10 +2,10 @@ import { FastifyReply, FastifyRequest } from 'fastify'
 import fp from 'fastify-plugin'
 import { ErrKind, LocalError } from 'plugins/error/error'
 import { RouteCommonOptions } from 'routes/commonOptions'
-import { authSchema, type loginRequestBody, type registerRequestBody } from './schema'
+import { authSchema, updateUserInfoRequestBody, updateUserPasswordRequestBody, type loginRequestBody, type registerRequestBody } from './schema'
 import bcrypt from 'bcrypt'
 import { REFRESH_TOKEN_COOKIE } from 'plugins/jwt/jwt'
-import { ADMIN_ACTIVE } from 'schemas/user'
+import { ADMIN_ROOT_ACTIVE } from 'schemas/user'
 
 export const authRoutes = fp((fastify, options: RouteCommonOptions) => {
     fastify.route({
@@ -18,7 +18,7 @@ export const authRoutes = fp((fastify, options: RouteCommonOptions) => {
         const { credential, password } = req.body
         const user = await fastify.prismaW.user.findFirst({
             where: {
-                ...ADMIN_ACTIVE,
+                isActive: true,
                 OR: [
                     { username: credential },
                     { email: credential },
@@ -26,12 +26,12 @@ export const authRoutes = fp((fastify, options: RouteCommonOptions) => {
             }
         })
 
-        if(!user) {
+        if (!user) {
             throw new LocalError(ErrKind.UserNotFound, 404)
-        } 
+        }
 
         const match = await bcrypt.compare(password, user.password || '')
-        if(match) {
+        if (match) {
             const claims = user.getJwtClaims()
             fastify.generateRefreshTokenCookie(claims, reply)
             const token = fastify.generateAccessToken(claims)
@@ -48,21 +48,25 @@ export const authRoutes = fp((fastify, options: RouteCommonOptions) => {
         method: 'POST',
         url: `${options.prefix}/register`,
         schema: authSchema.register,
-        onRequest: [fastify.authenticate], // only a admin can create admin
+        onRequest: [fastify.authenticateOptional], // only a root can change role
         handler: register,
     })
     async function register(req: FastifyRequest<{ Body: registerRequestBody }>, reply: FastifyReply) {
-        const { email, password, username } = req.body
+        const { email, password, username, role = 'CLIENT' } = req.body
         const hashRounds = parseInt(process.env.BCRYPT_HASH_RONUDS!) || 10
 
         const hashedPassword = await bcrypt.hash(password, hashRounds)
-        
+
+        const userRole = (req.user && req.user.role) === 'ROOT'
+            ? role
+            : 'CLIENT'
+
         const user = await fastify.prismaW.user.create({
-            data: { 
-                email, 
+            data: {
+                email,
                 username,
                 password: hashedPassword,
-                role: 'ADMIN'
+                role: userRole
             }
         })
 
@@ -74,7 +78,7 @@ export const authRoutes = fp((fastify, options: RouteCommonOptions) => {
         reply.status(200).send(resp)
     }
 
-    
+
     fastify.route({
         method: 'GET',
         url: `${options.prefix}/user`,
@@ -83,8 +87,8 @@ export const authRoutes = fp((fastify, options: RouteCommonOptions) => {
         handler: userProfile,
     })
     async function userProfile(req: FastifyRequest, reply: FastifyReply) {
-        const user = await fastify.prismaW.user.findFirst({ 
-            where: { id: req.user.userId, ...ADMIN_ACTIVE }
+        const user = await fastify.prismaW.user.findFirst({
+            where: { id: req.user.userId, ...ADMIN_ROOT_ACTIVE }
         })
         reply.status(200).send(user!.toUserResponse())
     }
@@ -100,7 +104,78 @@ export const authRoutes = fp((fastify, options: RouteCommonOptions) => {
         reply.clearCookie('refreshToken', { path: '/' })
         reply.status(200).send()
     }
- 
+
+
+    fastify.route({
+        method: 'POST',
+        url: `${options.prefix}/update`,
+        onRequest: [fastify.authenticate],
+        schema: authSchema.updateUserInfo,
+        handler: updateUserInfo,
+    })
+    async function updateUserInfo(req: FastifyRequest<{ Body: updateUserInfoRequestBody }>, reply: FastifyReply) {
+        const { userId = req.user.userId, ...rest } = req.body
+
+        const idToFind = req.user.role === 'ROOT' ? userId : req.user.userId
+        const updatedUser = await fastify.prismaW.user.update({
+            where: { id: idToFind },
+            data: rest
+        })
+
+        if(!updatedUser) {
+            throw new LocalError(ErrKind.UserNotFound, 404)
+        }
+    
+        const claims = updatedUser.getJwtClaims()
+        fastify.generateRefreshTokenCookie(claims, reply)
+        const token = fastify.generateAccessToken(claims)
+        const resp = updatedUser.toUserResponse(token)
+        reply.status(200).send(resp)
+    }
+
+
+    fastify.route({
+        method: 'POST', 
+        url: `${options.prefix}/update/password`,
+        onRequest: [fastify.authenticate],
+        schema: authSchema.updateUserPassword,
+        handler: updateUserPassword,
+    })
+    async function updateUserPassword(req: FastifyRequest<{ Body: updateUserPasswordRequestBody }>, reply: FastifyReply) {
+        const { new: newPassword, old: oldPassword, userId = req.user.userId } = req.body
+
+        const idToFind = req.user.role === 'ROOT' ? userId : req.user.userId
+        const user = await fastify.prismaW.user.findFirst({
+            where: { id: idToFind }
+        })
+        if (!user) {
+            throw new LocalError(ErrKind.UserNotFound, 404)
+        }
+
+        const match = req.user.role === 'ROOT'
+            ? true
+            : await bcrypt.compare(oldPassword, user.password || '')
+
+        if (match) {
+            const hashRounds = parseInt(process.env.BCRYPT_HASH_RONUDS!) || 10
+            const hashedPassword = await bcrypt.hash(newPassword, hashRounds)
+            user.password = hashedPassword
+
+            const updatedUser = await fastify.prismaW.user.update({
+                where: { id: user.id },
+                data: user
+            })
+
+            const claims = updatedUser.getJwtClaims()
+            fastify.generateRefreshTokenCookie(claims, reply)
+            const token = fastify.generateAccessToken(claims)
+            const resp = updatedUser.toUserResponse(token)
+            reply.status(200).send(resp)
+        } else {
+            throw new LocalError(ErrKind.PasswordMismatch, 401)
+        }
+    }
+
 
     fastify.route({
         method: 'POST',
@@ -109,7 +184,7 @@ export const authRoutes = fp((fastify, options: RouteCommonOptions) => {
     })
     async function refreshAccessToken(req: FastifyRequest, reply: FastifyReply) {
         const refresh = req.cookies[REFRESH_TOKEN_COOKIE]
-        if(!refresh) {
+        if (!refresh) {
             throw new LocalError(ErrKind.ExpiredRefreshToken, 401)
         }
 

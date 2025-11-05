@@ -1,8 +1,14 @@
 import { UserRole } from "generated/prisma/enums";
-import { UserModel } from "generated/prisma/models";
+import { UserModel, UserWhereInput } from "generated/prisma/models";
 import { JwtClaims } from "plugins/jwt/jwt";
 
-export const ADMIN_ACTIVE: { role: UserRole, isActive: true } = { role: 'ADMIN', isActive: true }
+export const USER_ROLES: UserRole[] = ['ADMIN', 'CLIENT', 'ROOT']
+export const ADMIN_ROOT_ACTIVE: UserWhereInput = { 
+    role: {
+        in: ['ADMIN', 'ROOT']
+    },
+    isActive: true
+}
 
 export type UserModelWrapper = ReturnType<typeof userModelWrapper>
 
@@ -16,6 +22,7 @@ export const userModelWrapper = (m: UserModel) => {
     }
 
     const toUserResponse = (token?: string) => {
+        console.log(m)
         return {
             username: m.username,
             email: m.email,

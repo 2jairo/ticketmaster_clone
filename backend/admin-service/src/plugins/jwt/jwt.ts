@@ -3,7 +3,7 @@ import { FastifyReply, FastifyRequest } from 'fastify';
 import jwt from 'jsonwebtoken'
 import fp from 'fastify-plugin'
 import { UserRole } from 'generated/prisma/enums';
-import { ADMIN_ACTIVE } from 'schemas/user';
+import { ADMIN_ROOT_ACTIVE } from 'schemas/user';
 
 export type JwtClaims = {
     userId: string
@@ -44,7 +44,9 @@ export const jwtPlugin = fp((fastify) => {
         const accessToken = authHeader.split(' ')[1]!
         const claims = await fastify.authenticateAccessToken(accessToken)
 
-        const user = await fastify.prismaW.user.findFirst({ where: {  id: claims.userId, ...ADMIN_ACTIVE } })
+        const user = await fastify.prismaW.user.findFirst({ 
+            where: { id: claims.userId, ...ADMIN_ROOT_ACTIVE }
+        })
         if(!user || user.v !== claims.v) {
             throw new LocalError(ErrKind.Unauthorized, 401)
         }

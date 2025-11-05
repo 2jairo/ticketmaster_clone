@@ -4,7 +4,6 @@ import dotenv from 'dotenv'
 import { connectMongoDb } from './config/mongoConnection'
 import concertsRoutes from './routes/concertRoutes'
 import categoryRoutes from './routes/categoryRoutes'
-import userRoutes from './routes/userRoutes'
 import commentsRoutes from './routes/commentsRoutes'
 import musicGroupsRoutes from './routes/musicGroupRoutes'
 import profileRoutes from './routes/profileRoutes'
@@ -24,7 +23,6 @@ async function main() {
     app.use(express.json())
     app.use(cookieParser())
     
-    app.use('/api/auth', userRoutes)
     app.use('/api', concertsRoutes)
     app.use('/api', categoryRoutes)
     app.use('/api/comments', commentsRoutes)
