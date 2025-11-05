@@ -6,10 +6,13 @@ import { formatViews } from '../../../utils/format';
 import { MusicGroupCard } from '../../music-group-card/music-group-card';
 import { UsernameCard } from '../../username-card/username-card';
 import { JwtService } from '../../../services/jwt.service';
+import { UserAuthService } from '../../../services/userAuth.service';
+import { AsyncPipe } from '@angular/common';
+import { UserRole } from '../../../types/userAuth';
 
 @Component({
   selector: 'app-profile',
-  imports: [MusicGroupCard, UsernameCard],
+  imports: [MusicGroupCard, UsernameCard, AsyncPipe],
   templateUrl: './profile.html'
 })
 export class Profile implements OnInit {
@@ -17,6 +20,7 @@ export class Profile implements OnInit {
   private route = inject(ActivatedRoute)
   private router = inject(Router)
   private jwtService = inject(JwtService)
+  readonly userAuthService = inject(UserAuthService)
 
   profile: UserProfileResponse | null = null
 
@@ -54,5 +58,11 @@ export class Profile implements OnInit {
 
   formatFollows(n: number) {
     return formatViews(n)
+  }
+
+  formatUserRole(r: UserRole) {
+    if(r === 'ADMIN') return 'Administrator'
+    if(r === 'CLIENT') return 'Client'
+    return 'Super Administrator'
   }
 }

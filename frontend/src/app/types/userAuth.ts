@@ -4,10 +4,14 @@ export interface LoginRequestBody {
   password: string
 }
 
+export type UserRole = 'ADMIN' | 'CLIENT' | 'ROOT'
+export const USER_ROLES = ['ADMIN', 'CLIENT', 'ROOT']
+
 export interface LoginSigninResponse {
   username: string
   email: string
   image: string
+  role: UserRole
 }
 
 export interface SigninRequestBody {
@@ -25,4 +29,10 @@ export interface ChangeCredentialsRequestBody {
 export interface ChangePasswordRequestBody {
   new: string
   old: string
+}
+
+export interface JwtClaims {
+  userId: string
+  v: number
+  role: UserRole
 }

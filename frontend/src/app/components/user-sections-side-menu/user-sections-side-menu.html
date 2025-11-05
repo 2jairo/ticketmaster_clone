@@ -1,5 +1,5 @@
 @if(userAuthService.user | async; as user) {
-  @if(section() !== 'profile' || sectionAll() ===  `profile/${user.username}`) {
-    <app-user-sections-side-menu-inner [section]="section()" />
+  @if(sideMenuSections.section() !== 'profile' || sideMenuSections.sectionAll() ===  `profile/${user.username}`) {
+    <app-user-sections-side-menu-inner [section]="sideMenuSections.section()" />
   }
 }

@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { JwtService } from './jwt.service';
 import { HttpApiService } from './httpApi.service';
-import { ChangeCredentialsRequestBody, ChangePasswordRequestBody, LoginRequestBody, LoginSigninResponse, SigninRequestBody } from '../types/userAuth';
+import { ChangeCredentialsRequestBody, ChangePasswordRequestBody, JwtClaims, LoginRequestBody, LoginSigninResponse, SigninRequestBody, UserRole } from '../types/userAuth';
 import { BehaviorSubject, ReplaySubject, tap } from 'rxjs';
 import { ErrKind, LocalErrorResponse } from '../types/error';
 import { environment } from '../../environments/environment';
@@ -16,28 +16,41 @@ export class UserAuthService {
   private userSubject = new BehaviorSubject<LoginSigninResponse | null>(null)
   readonly user = this.userSubject.asObservable()
 
-  private isAuthenticatedSubject = new ReplaySubject<boolean>(1);
+  private isAuthenticatedSubject = new ReplaySubject<{ authenticated: boolean, role: UserRole | null }>(1);
   readonly isAuthenticated = this.isAuthenticatedSubject.asObservable();
 
   private setUser(user: LoginSigninResponse) {
     this.userSubject.next(user)
-    this.isAuthenticatedSubject.next(true)
+    this.isAuthenticatedSubject.next({ authenticated: true, role: user.role })
   }
 
   private logoutInner(destroyToken: boolean) {
     return new Promise((r) => {
       this.userSubject.next(null)
-      this.isAuthenticatedSubject.next(false)
-      if(destroyToken) {
+      this.isAuthenticatedSubject.next({ authenticated: false, role: null })
+      if (destroyToken) {
         this.jwtService.destroyAccessToken()
         this.httpService
-          .post<void>(environment.USER_API_URL, '/auth/logout', undefined, { credentials: 'include' })
+          .post<void>(environment.ADMIN_API_URL, '/auth/logout', undefined, { credentials: 'include' })
           .subscribe(() => r(0))
       }
     })
   }
 
-  checkLogged() {
+  private getUserRole() {
+    const token = this.jwtService.getAccessToken()
+    if (!token) {
+      return null
+    }
+
+    const claimsB64 = token.split('.')[1]
+
+    try {
+      const claims = JSON.parse(atob(claimsB64)) as JwtClaims
+      return claims.role
+    } catch {
+      return null
+    }
   }
 
   logout() {
@@ -45,13 +58,15 @@ export class UserAuthService {
   }
 
   populate() {
-    if(!this.jwtService.getAccessToken()) {
-      this.isAuthenticatedSubject.next(false)
+    const role = this.getUserRole()
+
+    if (!role) {
+      this.isAuthenticatedSubject.next({ authenticated: false, role: null })
       this.userSubject.next(null)
       return
     }
 
-    this.httpService.get<LoginSigninResponse>(environment.USER_API_URL, '/auth/user')
+    this.httpService.get<LoginSigninResponse>(environment.ADMIN_API_URL, '/auth/user')
       .subscribe({
         next: (resp) => this.setUser(resp),
         error: (e: LocalErrorResponse) => {
@@ -61,7 +76,7 @@ export class UserAuthService {
   }
 
   login(body: LoginRequestBody) {
-    return this.httpService.post<LoginSigninResponse & { token: string }>(environment.USER_API_URL, '/auth/login', body)
+    return this.httpService.post<LoginSigninResponse & { token: string }>(environment.ADMIN_API_URL, '/auth/login', body)
       .pipe(tap((resp) => {
         this.setUser(resp)
         this.jwtService.setAccessToken(resp.token)
@@ -69,7 +84,7 @@ export class UserAuthService {
   }
 
   signin(body: SigninRequestBody) {
-    return this.httpService.post<LoginSigninResponse & { token: string }>(environment.USER_API_URL, '/auth/signin', body)
+    return this.httpService.post<LoginSigninResponse & { token: string }>(environment.ADMIN_API_URL, '/auth/register', body)
       .pipe(tap((resp) => {
         this.setUser(resp)
         this.jwtService.setAccessToken(resp.token)
@@ -77,7 +92,7 @@ export class UserAuthService {
   }
 
   updateCredentials(body: ChangeCredentialsRequestBody) {
-    return this.httpService.post<LoginSigninResponse & { token: string }>(environment.USER_API_URL, '/auth/update', body)
+    return this.httpService.post<LoginSigninResponse & { token: string }>(environment.ADMIN_API_URL, '/auth/update', body)
       .pipe(tap((resp) => {
         this.setUser(resp)
         this.jwtService.setAccessToken(resp.token)
@@ -85,7 +100,7 @@ export class UserAuthService {
   }
 
   updatePassword(body: ChangePasswordRequestBody) {
-    return this.httpService.post<LoginSigninResponse & { token: string }>(environment.USER_API_URL, '/auth/update/password', body)
+    return this.httpService.post<LoginSigninResponse & { token: string }>(environment.ADMIN_API_URL, '/auth/update/password', body)
       .pipe(tap((resp) => {
         this.setUser(resp)
         this.jwtService.setAccessToken(resp.token)

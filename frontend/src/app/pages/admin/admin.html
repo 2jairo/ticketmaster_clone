@@ -1,1 +1,20 @@
-<p>admin works!</p>
+<main>
+  <app-admin-sections-side-menu />
+
+  <div>
+    <router-outlet />
+  </div>
+</main>
+
+<style>
+  main {
+    display: flex;
+    height: 100%;
+  }
+  app-user-sections-side-menu {
+    max-width: 20%;
+  }
+  div {
+    flex: 1;
+  }
+</style>

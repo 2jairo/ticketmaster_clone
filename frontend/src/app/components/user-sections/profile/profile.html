@@ -7,7 +7,17 @@
 
       <div>
         <h3>{{ profile.username }}</h3>
-        <p>{{ formatFollows(profile.followers) }} followers</p>
+
+        <div class="userInfo">
+          <p>{{ formatFollows(profile.followers) }} followers</p>
+          <!-- <p class="separation">|</p> -->
+
+          @if(profile.myProfile) {
+            @if(userAuthService.user | async; as user) {
+              <code>{{ formatUserRole(user.role) }}</code>
+            }
+          }
+        </div>
       </div>
 
       <div class="followBtn">
@@ -85,6 +95,14 @@
     flex: 1;
     display: flex;
     justify-content: end;
+  }
+  .userInfo {
+    display: flex;
+    gap: 20px;
+
+    .separation {
+      color: var(--pico-secondary-border)
+    }
   }
 
   .commonFollowing {

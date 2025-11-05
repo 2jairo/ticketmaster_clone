@@ -10,6 +10,10 @@
     <a routerLink="/events">Events</a>
 
     @if(userAuthService.user | async; as user) {
+      @if(user.role === 'ADMIN' || user.role === 'ROOT') {
+        <a routerLink="/admin-dashboard">Dasbhoard</a>
+      }
+
       <a class="profile" routerLink="/user/profile/{{ user.username }}">
         <img [src]="user.image" alt="avatar"/>
       </a>

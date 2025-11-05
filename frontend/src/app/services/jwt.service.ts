@@ -26,7 +26,7 @@ export class JwtService {
     this.isRefreshing = true;
 
     return this.httpApiService.post<{ token: string }>(
-      environment.USER_API_URL,
+      environment.ADMIN_API_URL,
       '/auth/refresh',
       undefined,
       { withCredentials: true }
