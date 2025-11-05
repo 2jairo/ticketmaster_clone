@@ -5,7 +5,6 @@ import { RouteCommonOptions } from 'routes/commonOptions'
 import { authSchema, updateUserInfoRequestBody, updateUserPasswordRequestBody, type loginRequestBody, type registerRequestBody } from './schema'
 import bcrypt from 'bcrypt'
 import { REFRESH_TOKEN_COOKIE } from 'plugins/jwt/jwt'
-import { ADMIN_ROOT_ACTIVE } from 'schemas/user'
 
 export const authRoutes = fp((fastify, options: RouteCommonOptions) => {
     fastify.route({
@@ -48,7 +47,7 @@ export const authRoutes = fp((fastify, options: RouteCommonOptions) => {
         method: 'POST',
         url: `${options.prefix}/register`,
         schema: authSchema.register,
-        onRequest: [fastify.authenticateOptional], // only a root can change role
+        onRequest: [fastify.authenticateOptional({})], // only a root can change role
         handler: register,
     })
     async function register(req: FastifyRequest<{ Body: registerRequestBody }>, reply: FastifyReply) {
@@ -57,7 +56,7 @@ export const authRoutes = fp((fastify, options: RouteCommonOptions) => {
 
         const hashedPassword = await bcrypt.hash(password, hashRounds)
 
-        const userRole = (req.user && req.user.role) === 'ROOT'
+        const userRole = req.user?.role === 'ROOT'
             ? role
             : 'CLIENT'
 
@@ -83,12 +82,12 @@ export const authRoutes = fp((fastify, options: RouteCommonOptions) => {
         method: 'GET',
         url: `${options.prefix}/user`,
         schema: authSchema.user,
-        onRequest: [fastify.authenticate],
+        onRequest: [fastify.authenticate({})],
         handler: userProfile,
     })
     async function userProfile(req: FastifyRequest, reply: FastifyReply) {
         const user = await fastify.prismaW.user.findFirst({
-            where: { id: req.user.userId, ...ADMIN_ROOT_ACTIVE }
+            where: { id: req.user.userId, isActive: true }
         })
         reply.status(200).send(user!.toUserResponse())
     }
@@ -109,7 +108,7 @@ export const authRoutes = fp((fastify, options: RouteCommonOptions) => {
     fastify.route({
         method: 'POST',
         url: `${options.prefix}/update`,
-        onRequest: [fastify.authenticate],
+        onRequest: [fastify.authenticate({})],
         schema: authSchema.updateUserInfo,
         handler: updateUserInfo,
     })
@@ -137,7 +136,7 @@ export const authRoutes = fp((fastify, options: RouteCommonOptions) => {
     fastify.route({
         method: 'POST', 
         url: `${options.prefix}/update/password`,
-        onRequest: [fastify.authenticate],
+        onRequest: [fastify.authenticate({})],
         schema: authSchema.updateUserPassword,
         handler: updateUserPassword,
     })

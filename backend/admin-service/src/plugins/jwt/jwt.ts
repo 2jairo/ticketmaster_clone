@@ -3,7 +3,7 @@ import { FastifyReply, FastifyRequest } from 'fastify';
 import jwt from 'jsonwebtoken'
 import fp from 'fastify-plugin'
 import { UserRole } from 'generated/prisma/enums';
-import { ADMIN_ROOT_ACTIVE } from 'schemas/user';
+import { UserWhereInput } from 'generated/prisma/models';
 
 export type JwtClaims = {
     userId: string
@@ -17,8 +17,8 @@ declare module "fastify" {
     }
 
     interface FastifyInstance {
-        authenticate: (request: FastifyRequest, reply: FastifyReply) => Promise<void>
-        authenticateOptional: (request: FastifyRequest, reply: FastifyReply) => Promise<void>
+        authenticate: (params: UserWhereInput) => (request: FastifyRequest, reply: FastifyReply) => Promise<void>
+        authenticateOptional: (params: UserWhereInput) => (request: FastifyRequest, reply: FastifyReply) => Promise<void>
 
         generateAccessToken: (claims: JwtClaims) => string
         generateRefreshTokenCookie: (claims: JwtClaims, reply: FastifyReply) => void
@@ -31,7 +31,12 @@ declare module "fastify" {
 export const REFRESH_TOKEN_COOKIE = 'jid'
 
 export const jwtPlugin = fp((fastify) => {
-    const authenticateInner = async (req: FastifyRequest, reply: FastifyReply, optional: boolean) => {
+    const authenticateInner = async (
+        req: FastifyRequest,
+        reply: FastifyReply,
+        optional: boolean,
+        params: UserWhereInput
+    ) => {
         const authHeader = (req.headers.authorization || req.headers.Authorization)?.toString()
 
         if (!authHeader || !authHeader?.startsWith('Bearer ')) {
@@ -44,23 +49,28 @@ export const jwtPlugin = fp((fastify) => {
         const accessToken = authHeader.split(' ')[1]!
         const claims = await fastify.authenticateAccessToken(accessToken)
 
-        const user = await fastify.prismaW.user.findFirst({ 
-            where: { id: claims.userId, ...ADMIN_ROOT_ACTIVE }
+        const user = await fastify.prismaW.user.findFirst({
+            where: { id: claims.userId, isActive: true, ...params }
         })
-        if(!user || user.v !== claims.v) {
+        if (!user || user.v !== claims.v) {
             throw new LocalError(ErrKind.Unauthorized, 401)
         }
 
         req.user = claims
     }
 
-    fastify.decorate('authenticate', async (req, reply) => {
-        return authenticateInner(req, reply, false)
+    fastify.decorate('authenticate', (params) => {
+        return (req, reply) => authenticateInner(req, reply, false, params)
     })
-
-    fastify.decorate('authenticateOptional', async (req, reply) => {
-        return authenticateInner(req, reply, true)
+    fastify.decorate('authenticateOptional', (params) => {
+        return (req, reply) => authenticateInner(req, reply, true, params)
     })
+    // fastify.decorate('authenticate', async (req, reply) => {
+    //     return authenticateInner(req, reply, false, {})
+    // })
+    // fastify.decorate('authenticateOptional', async (req, reply) => {
+    //     return authenticateInner(req, reply, true, {})
+    // })
 
     fastify.decorate('generateAccessToken', (claims) => {
         //@ts-ignore
