@@ -2,9 +2,11 @@ import jwt from 'jsonwebtoken'
 import type { Response } from 'express';
 import { ErrKind, LocalError } from '../error/err';
 
+export type UserRole = 'ADMIN' | 'CLIENT'
 export type AccesTokenClaims = {
     userId: string,
-    v: number
+    v: number,
+    role: UserRole
 }
 export const REFRESH_TOKEN_COOKIE = 'jid'
 
@@ -47,7 +49,8 @@ export const authenticateAccessToken = async (accessToken: string) => {
                     const d = decoded as AccesTokenClaims
                     resolve({
                         userId: d.userId,
-                        v: d.v
+                        v: d.v,
+                        role: d.role
                     })
                 }
             }
@@ -68,7 +71,8 @@ export const authenticateRefreshToken = async (refreshToken: string) => {
                     const d = decoded as AccesTokenClaims
                     resolve({
                         userId: d.userId,
-                        v: d.v
+                        v: d.v,
+                        role: d.role,
                     })
                 }
             }

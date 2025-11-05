@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import uniqueValidator from 'mongoose-unique-validator'
 import { MusicGroupModel } from './musicGroup';
-import { generateAccesToken, type AccesTokenClaims } from '../utils/jwt';
+import { generateAccesToken, UserRole, type AccesTokenClaims } from '../utils/jwt';
 
 const userSchema = new mongoose.Schema({
     username: {
@@ -43,14 +43,20 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         required: true,
         default: true
+    },
+    role: {
+        type: String,
+        enum: ['ADMIN', 'CLIENT'],
+        required: true,
+        default: 'CLIENT'
     }
 })
 
 
 userSchema.plugin(uniqueValidator)
 
-userSchema.methods.getJwtClaims = function() {
-    return { userId: this._id.toString(), v: this.__v, role: 'client' }
+userSchema.methods.getJwtClaims = function(): AccesTokenClaims {
+    return { userId: this._id.toString(), v: this.__v, role: this.role }
 }
 
 userSchema.methods.toUserResponse = function(accessToken: boolean) {
@@ -58,6 +64,7 @@ userSchema.methods.toUserResponse = function(accessToken: boolean) {
         username: this.username,
         email: this.email,
         image: this.image,
+        role: this.role,
         ...(accessToken ? { token: generateAccesToken(this.getJwtClaims()) } : {})
     }
 }
@@ -218,6 +225,7 @@ export interface IUserModel {
     followingGroups: mongoose.Types.ObjectId[]
     followingUsers: mongoose.Types.ObjectId[]
     _id?: mongoose.Types.ObjectId
+    role: UserRole
 }
 
 export const UserModel = mongoose.model<IUserModel>('User', userSchema);

@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
 import { ErrKind, LocalError } from '../error/err';
-import { authenticateAccessToken } from '../utils/jwt';
+import { authenticateAccessToken, UserRole } from '../utils/jwt';
 
 declare global {
   namespace Express {
@@ -8,7 +8,7 @@ declare global {
       userId: string
       v: number
       logged: boolean
-      role: string
+      role: UserRole
     }
   }
 }

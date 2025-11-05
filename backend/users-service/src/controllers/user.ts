@@ -36,7 +36,8 @@ export const handleSignin = asyncHandler(async (req, res) => {
     const user = new UserModel({
         username,
         email,
-        password: hashedPassword
+        password: hashedPassword,
+        role: 'CLIENT'
     })
 
     const createdUser = await user.save()
