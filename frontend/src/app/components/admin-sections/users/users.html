@@ -1,0 +1,14 @@
+<div
+  class="users"
+  infiniteScroll
+  [infiniteScrollDistance]="2"
+  [infiniteScrollThrottle]="150"
+  (scrolled)="loadUsers()"
+>
+  @for (user of users; track user.username) {
+    <p>{{ user.email }}</p>
+  }
+  <!-- @empty {
+    <p>No comments yet. Be the first one to comment!</p>
+  } -->
+</div>
