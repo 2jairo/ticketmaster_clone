@@ -35,6 +35,7 @@ const getPrismaClient = () => {
         }
     })
 
+
     return new PrismaClient(getPrismaClientConfig())
         .$extends(updateUserVersion)
 }
@@ -45,7 +46,7 @@ export const prismaClientPlugin = fp(async (fastify) => {
     
     fastify.decorate('prisma', prisma)
     fastify.decorate('prismaW', {
-        user: new ModelWrapper(prisma, 'user', (v) => userModelWrapper(v)),
-        musicGroup: new ModelWrapper(prisma, 'musicGroup', (v) => musicGroupWrapper(v))
+        user: new ModelWrapper(prisma, 'user', (v) => userModelWrapper(fastify, v)),
+        musicGroup: new ModelWrapper(prisma, 'musicGroup', (v) => musicGroupWrapper(fastify, v))
     })
 })

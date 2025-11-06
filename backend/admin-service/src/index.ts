@@ -9,6 +9,7 @@ import { prismaClientPlugin } from 'plugins/prisma/prisma'
 import { jwtPlugin } from 'plugins/jwt/jwt'
 import { corsPlugin } from 'plugins/cors/cors'
 import fastifyCookie from '@fastify/cookie'
+import { dashboardUserRoutes } from 'routes/users/users'
 
 dotenv.config()
 
@@ -24,6 +25,7 @@ async function main() {
     await fastify.register(swaggerPlugin)
 
     await fastify.register(authRoutes, { prefix: '/api/auth' })
+    await fastify.register(dashboardUserRoutes, { prefix: '/api/dashboard/users' })
 
     try {
         await fastify.listen(config)

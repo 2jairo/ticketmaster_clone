@@ -1,7 +1,7 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
 import fp from 'fastify-plugin'
 import { ErrKind, LocalError } from 'plugins/error/error'
-import { RouteCommonOptions } from 'routes/commonOptions'
+import { RouteCommonOptions } from 'types/routesCommon'
 import { authSchema, updateUserInfoRequestBody, updateUserPasswordRequestBody, type loginRequestBody, type registerRequestBody } from './schema'
 import bcrypt from 'bcrypt'
 import { REFRESH_TOKEN_COOKIE } from 'plugins/jwt/jwt'
