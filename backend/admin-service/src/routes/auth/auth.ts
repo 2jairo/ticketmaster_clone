@@ -34,9 +34,8 @@ export const authRoutes = fp((fastify, options: RouteCommonOptions) => {
             const claims = user.getJwtClaims()
             fastify.generateRefreshTokenCookie(claims, reply)
             const token = fastify.generateAccessToken(claims)
-            const resp = user.toUserResponse(token)
 
-            reply.status(200).send(resp)
+            reply.status(200).send(user.withToken(token))
         } else {
             throw new LocalError(ErrKind.UserNotFound, 401)
         }
@@ -72,9 +71,8 @@ export const authRoutes = fp((fastify, options: RouteCommonOptions) => {
         const claims = user.getJwtClaims()
         fastify.generateRefreshTokenCookie(claims, reply)
         const token = fastify.generateAccessToken(claims)
-        const resp = user.toUserResponse(token)
 
-        reply.status(200).send(resp)
+        reply.status(200).send(user.withToken(token))
     }
 
 
@@ -89,7 +87,7 @@ export const authRoutes = fp((fastify, options: RouteCommonOptions) => {
         const user = await fastify.prismaW.user.findFirst({
             where: { id: req.user.userId, isActive: true }
         })
-        reply.status(200).send(user!.toUserResponse())
+        reply.status(200).send(user)
     }
 
 
@@ -128,8 +126,7 @@ export const authRoutes = fp((fastify, options: RouteCommonOptions) => {
         const claims = updatedUser.getJwtClaims()
         fastify.generateRefreshTokenCookie(claims, reply)
         const token = fastify.generateAccessToken(claims)
-        const resp = updatedUser.toUserResponse(token)
-        reply.status(200).send(resp)
+        reply.status(200).send(updatedUser.withToken(token))
     }
 
 
@@ -168,8 +165,7 @@ export const authRoutes = fp((fastify, options: RouteCommonOptions) => {
             const claims = updatedUser.getJwtClaims()
             fastify.generateRefreshTokenCookie(claims, reply)
             const token = fastify.generateAccessToken(claims)
-            const resp = updatedUser.toUserResponse(token)
-            reply.status(200).send(resp)
+            reply.status(200).send(user.withToken(token))
         } else {
             throw new LocalError(ErrKind.PasswordMismatch, 401)
         }

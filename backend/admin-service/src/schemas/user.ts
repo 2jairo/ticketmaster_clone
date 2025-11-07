@@ -22,58 +22,38 @@ export const userModelWrapper = (fastify: FastifyInstance, m: UserModel) => {
         }
     }
 
-    const toUserResponse = (token?: string) => {
+    const withToken = (token: string) => {
         return {
-            username: m.username,
-            email: m.email,
-            image: m.image,
-            role: m.role,
-            ...(token ? { token } : {})
+            ...m,
+            token
         }
     }
 
-    // const toIsActiveResponse = () => {
-    //     return {
-    //         username: m.username,
-    //         email: m.email,
-    //         image: m.image,
-    //         role: m.role,
-    //         isActive: m.isActive,
-    //     }
-    // }
-
-    const toRootResponse = async () => {
-        const groups = await fastify.prismaW.musicGroup.findMany({
+    const populateFollowing = async () => {
+        const groups = await fastify.prisma.musicGroup.findMany({
             where: { 
                 id: { in: m.followingGroups },
                 isActive: true
             }
         })
-        const following = await fastify.prismaW.user.findMany({
+        const following = await fastify.prisma.user.findMany({
             where: {
                 id: { in: m.followingUsers },
                 isActive: true
             }
         })
 
-        const followingUsers = following.map(f => f.toUserResponse()) as ReturnType<typeof toUserResponse>[]
-
         return {
-            username: m.username,
-            email: m.email,
-            image: m.image,
-            role: m.role,
-            isActive: m.isActive,
-            followers: m.followers,
-            followingGroups: groups.map(g => g.toProfileResponse()),
-            followingUsers
+            ...m,
+            followingGroups: groups,
+            followingUsers: following
         }
     }
 
     return {
         ...m,
-        toUserResponse,
+        withToken,
         getJwtClaims,
-        toRootResponse
+        populateFollowing
     }
 }

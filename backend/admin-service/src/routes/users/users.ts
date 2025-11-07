@@ -19,7 +19,7 @@ export const dashboardUserRoutes = fp((fastify, options: RouteCommonOptions) => 
         })
 
         const resp = await Promise.all(
-            users.map((u) => u.toRootResponse())
+            users.map((u) => u.populateFollowing())
         )
         reply.status(200).send(resp)
     }

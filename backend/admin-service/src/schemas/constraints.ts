@@ -1,5 +1,0 @@
-export const USERNAME_MAX_LENGTH = 40
-export const EMAIL_MAX_LENGTH = 80
-export const PASSWORD_MAX_LENGTH = 80
-export const COMMENT_MAX_LENGTH = 500
-export const AVATAR_IMAGE_MAX_LENGTH = 150
