@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import uniqueValidator from 'mongoose-unique-validator'
 import { MusicGroupModel } from './musicGroup';
-import { generateAccesToken, UserRole, type AccesTokenClaims } from '../utils/jwt';
+import { generateAccesToken, USER_ROLES, UserRole, type AccesTokenClaims } from '../utils/jwt';
 
 const userSchema = new mongoose.Schema({
     username: {
@@ -46,7 +46,7 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['ADMIN', 'CLIENT'],
+        enum: USER_ROLES,
         required: true,
         default: 'CLIENT'
     }

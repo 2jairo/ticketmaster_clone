@@ -2,7 +2,9 @@ import jwt from 'jsonwebtoken'
 import type { Response } from 'express';
 import { ErrKind, LocalError } from '../error/err';
 
-export type UserRole = 'ADMIN' | 'CLIENT'
+export type UserRole = 'ADMIN' | 'CLIENT' | 'ROOT'
+export const USER_ROLES: UserRole[] = ['ADMIN', 'CLIENT', 'ROOT']
+
 export type AccesTokenClaims = {
     userId: string,
     v: number,
