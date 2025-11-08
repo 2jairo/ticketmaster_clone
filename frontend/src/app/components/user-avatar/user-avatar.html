@@ -1,0 +1,25 @@
+<div [style.width]="width" [style.height]="height" [class.notLogged]="avatar === ''">
+  @if(avatar === '') {
+    <i class="fa-solid fa-user"></i>
+  } @else {
+    <img [src]="avatar" alt="avatar img" />
+  }
+</div>
+
+<style>
+  img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+  }
+
+  .notLogged {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: var(--pico-border-width) solid var(--pico-secondary-border);
+    border-radius: 50%;
+    border: var(--pico-border-width) solid var(--pico-secondary-border);
+    cursor: pointer;
+  }
+</style>

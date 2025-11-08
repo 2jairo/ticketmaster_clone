@@ -1,3 +1,5 @@
+import { UserRole } from "../types/userAuth"
+
 export const formatViews = (views: number) => {
   if (views >= 1_000_000) return (views / 1_000_000).toFixed(0) + 'M'
   if (views >= 1_000) return (views / 1_000).toFixed(0) + 'K'
@@ -57,4 +59,10 @@ export const getTimeAgoMin = (date: Date) => {
   }
 
   return Math.floor(minsSinceDate / (12 * 30 * 24 * 60)) + 'y'
+}
+
+export const formatUserRole = (r: UserRole) => {
+  if (r === 'ADMIN') return 'Administrator'
+  if (r === 'CLIENT') return 'Client'
+  return 'Super Administrator'
 }

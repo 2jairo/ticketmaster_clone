@@ -5,7 +5,7 @@ export interface LoginRequestBody {
 }
 
 export type UserRole = 'ADMIN' | 'CLIENT' | 'ROOT'
-export const USER_ROLES = ['ADMIN', 'CLIENT', 'ROOT']
+export const USER_ROLES: UserRole[] = ['ADMIN', 'CLIENT', 'ROOT']
 
 export interface LoginSigninResponse {
   username: string

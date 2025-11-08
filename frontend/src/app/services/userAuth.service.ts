@@ -5,6 +5,7 @@ import { ChangeCredentialsRequestBody, ChangePasswordRequestBody, JwtClaims, Log
 import { BehaviorSubject, ReplaySubject, tap } from 'rxjs';
 import { ErrKind, LocalErrorResponse } from '../types/error';
 import { environment } from '../../environments/environment';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -69,8 +70,9 @@ export class UserAuthService {
     this.httpService.get<LoginSigninResponse>(environment.ADMIN_API_URL, '/auth/user')
       .subscribe({
         next: (resp) => this.setUser(resp),
-        error: (e: LocalErrorResponse) => {
-          this.logoutInner(e.error === ErrKind.Status0)
+        error: (e: HttpErrorResponse) => {
+          const err = e.error as LocalErrorResponse
+          this.logoutInner(err.error === ErrKind.Unauthorized)
         }
       })
   }

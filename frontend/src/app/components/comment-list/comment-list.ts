@@ -12,10 +12,11 @@ import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angu
 import { ProfileService } from '../../services/profile.service';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
 import { JwtService } from '../../services/jwt.service';
+import { UserAvatar } from "../user-avatar/user-avatar";
 
 @Component({
   selector: 'app-comment-list',
-  imports: [CommentCard, AsyncPipe, RouterLink, ShowError, ReactiveFormsModule, InfiniteScrollDirective],
+  imports: [CommentCard, AsyncPipe, RouterLink, ShowError, ReactiveFormsModule, InfiniteScrollDirective, UserAvatar],
   templateUrl: './comment-list.html'
 })
 export class CommentList implements OnInit {

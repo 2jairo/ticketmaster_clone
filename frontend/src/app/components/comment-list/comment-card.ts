@@ -3,10 +3,11 @@ import { RouterLink } from '@angular/router';
 import { CommentResponseWrapper } from '../../types/comments';
 import { ProfileService } from '../../services/profile.service';
 import { JwtService } from '../../services/jwt.service';
+import { UserAvatar } from "../user-avatar/user-avatar";
 
 @Component({
   selector: 'app-comment-card',
-  imports: [RouterLink],
+  imports: [RouterLink, UserAvatar],
   templateUrl: './comment-card.html'
 })
 export class CommentCard {

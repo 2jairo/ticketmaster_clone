@@ -14,13 +14,13 @@
         <a routerLink="/admin-dashboard">Dasbhoard</a>
       }
 
-      <a class="profile" routerLink="/user/profile/{{ user.username }}">
-        <img [src]="user.image" alt="avatar"/>
+      <a routerLink="/user/profile/{{ user.username }}">
+        <app-user-avatar [avatar]="user.image" />
       </a>
 
     } @else {
-      <a class="profile notLogged" routerLink="/auth/login">
-        <i class="fa-solid fa-user"></i>
+      <a routerLink="/auth/login">
+        <app-user-avatar avatar="" />
       </a>
     }
 
@@ -65,18 +65,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-    }
-
-    .profile.notLogged {
-      border-radius: 50%;
-      border: var(--pico-border-width) solid var(--pico-secondary-border);
-      width: 2em;
-      height: 2em;
-    }
-    .profile img {
-      width: 2em;
-      height: 2em;
-      border-radius: 50%;
     }
   }
 </style>

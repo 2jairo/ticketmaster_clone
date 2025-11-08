@@ -5,10 +5,20 @@
   [infiniteScrollThrottle]="150"
   (scrolled)="loadUsers()"
 >
-  @for (user of users; track user.username) {
-    <p>{{ user.email }}</p>
+  @for (user of users(); track user.username) {
+    <app-admin-user-card [user]="user" (onUpdatedUser)="updateUser($event)" (onDeletedUser)="deleteUser($event)" />
   }
   <!-- @empty {
     <p>No comments yet. Be the first one to comment!</p>
   } -->
 </div>
+
+
+<style>
+  .users {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+  }
+</style>

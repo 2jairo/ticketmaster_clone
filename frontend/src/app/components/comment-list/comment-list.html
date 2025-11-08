@@ -6,12 +6,10 @@
     <div>
       <div class="avatar">
         @if(userAuthService.user | async; as user) {
-          <div class="profile">
-            <img [src]="user.image" alt="current user img"/>
-          </div>
+          <app-user-avatar [avatar]="user.image"/>
         } @else {
           <a class="profile notLogged" routerLink="/auth/login">
-            <i class="fa-solid fa-user"></i>
+            <app-user-avatar avatar=""/>
           </a>
         }
       </div>
@@ -86,25 +84,6 @@
     textarea {
       resize: none;
       field-sizing: content;
-    }
-  }
-
-  .profile {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    &.notLogged {
-      width: 2em;
-      height: 2em;
-      border-radius: 50%;
-      border: var(--pico-border-width) solid var(--pico-secondary-border);
-      cursor: pointer;
-    }
-    & img {
-      width: 2em;
-      height: 2em;
-      border-radius: 50%;
     }
   }
 </style>

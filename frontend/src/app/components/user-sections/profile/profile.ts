@@ -2,7 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { ProfileService } from '../../../services/profile.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserProfileResponse } from '../../../types/profile';
-import { formatViews } from '../../../utils/format';
+import { formatUserRole, formatViews } from '../../../utils/format';
 import { MusicGroupCard } from '../../music-group-card/music-group-card';
 import { UsernameCard } from '../../username-card/username-card';
 import { JwtService } from '../../../services/jwt.service';
@@ -61,8 +61,6 @@ export class Profile implements OnInit {
   }
 
   formatUserRole(r: UserRole) {
-    if(r === 'ADMIN') return 'Administrator'
-    if(r === 'CLIENT') return 'Client'
-    return 'Super Administrator'
+    return formatUserRole(r)
   }
 }

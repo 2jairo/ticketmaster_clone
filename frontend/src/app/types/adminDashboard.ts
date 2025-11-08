@@ -9,5 +9,16 @@ export interface AdminDashboardUserResponse {
   isActive: boolean;
   followers: number;
   followingGroups: AdminDashboardMusicGroupResponse[]
+  followingGroupsLength: number
   followingUsers: LoginSigninResponse[]
+  followingUsersLength: number
+}
+
+export interface AdminDashboardUpdateUserBody {
+  username?: string;
+  email?: string;
+  password?: string
+  image?: string;
+  role?: UserRole;
+  isActive?: boolean;
 }
