@@ -29,16 +29,16 @@ export const userModelWrapper = (fastify: FastifyInstance, m: UserModel) => {
         }
     }
 
-    const populateFollowing = async () => {
+    const populateFollowing = async (limit: number) => {
         const groups = await fastify.prisma.musicGroup.findMany({
-            where: { 
-                id: { in: m.followingGroups },
+            where: {
+                id: { in: m.followingGroups.slice(0, limit) },
                 isActive: true
             }
         })
         const following = await fastify.prisma.user.findMany({
             where: {
-                id: { in: m.followingUsers },
+                id: { in: m.followingUsers.slice(0, limit) },
                 isActive: true
             }
         })
@@ -46,7 +46,9 @@ export const userModelWrapper = (fastify: FastifyInstance, m: UserModel) => {
         return {
             ...m,
             followingGroups: groups,
-            followingUsers: following
+            followingGroupsLength: m.followingGroups.length,
+            followingUsers: following,
+            followingUsersLength: m.followingUsers.length,
         }
     }
 
