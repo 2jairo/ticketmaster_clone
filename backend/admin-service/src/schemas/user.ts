@@ -4,11 +4,10 @@ import { UserModel, UserWhereInput } from "generated/prisma/models";
 import { JwtClaims } from "plugins/jwt/jwt";
 
 export const USER_ROLES: UserRole[] = ['ADMIN', 'CLIENT', 'ROOT']
-export const ADMIN_ROOT_ACTIVE: UserWhereInput = {
+export const ADMIN_ROOT: UserWhereInput = {
     role: {
         in: ['ADMIN', 'ROOT']
-    },
-    isActive: true
+    }
 }
 
 export type UserModelWrapper = ReturnType<typeof userModelWrapper>
@@ -30,18 +29,23 @@ export const userModelWrapper = (fastify: FastifyInstance, m: UserModel) => {
     }
 
     const populateFollowing = async (limit: number) => {
-        const groups = await fastify.prisma.musicGroup.findMany({
-            where: {
-                id: { in: m.followingGroups.slice(0, limit) },
-                isActive: true
-            }
-        })
-        const following = await fastify.prisma.user.findMany({
-            where: {
-                id: { in: m.followingUsers.slice(0, limit) },
-                isActive: true
-            }
-        })
+        const groups = limit === 0
+            ? []
+            : await fastify.prisma.musicGroup.findMany({
+                where: {
+                    id: { in: m.followingGroups.slice(0, limit) },
+                    isActive: true
+                }
+            })
+
+        const following = limit === 0
+            ? []
+            : await fastify.prisma.user.findMany({
+                where: {
+                    id: { in: m.followingUsers.slice(0, limit) },
+                    isActive: true
+                }
+            })
 
         return {
             ...m,

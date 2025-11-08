@@ -20,7 +20,7 @@ export const dashboardUserRoutes = fp((fastify, options: RouteCommonOptions) => 
         })
 
         const resp = await Promise.all(
-            users.map((u) => u.populateFollowing(3))
+            users.map((u) => u.populateFollowing(0))
         )
         reply.status(200).send(resp)
     }
@@ -49,7 +49,7 @@ export const dashboardUserRoutes = fp((fastify, options: RouteCommonOptions) => 
             data: req.body
         })
 
-        const resp = await user.populateFollowing(3)
+        const resp = await user.populateFollowing(0)
         reply.status(200).send(resp)
     }
 
