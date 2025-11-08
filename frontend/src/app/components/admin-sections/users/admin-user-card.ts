@@ -118,7 +118,7 @@ export class AdminUserCard implements OnInit {
         this.updateInfoDialog.closeDialog()
         this.onUpdatedUser.emit({ username: this.user.username, newUser })
 
-        const { followers, followingGroups, followingGroupsLength, followingUsers, followingUsersLength, ...rest } = newUser
+        const { followers, followingGroupsLength, followingUsersLength, ...rest } = newUser
         this.form.setValue({ ...rest, password: '' })
       },
       complete: () => this.fetching = false

@@ -1,5 +1,4 @@
-import { AdminDashboardMusicGroupResponse } from "./musicGroupts";
-import { LoginSigninResponse, UserRole } from "./userAuth";
+import { UserRole } from "./userAuth";
 
 export interface AdminDashboardUserResponse {
   username: string;
@@ -8,9 +7,7 @@ export interface AdminDashboardUserResponse {
   role: UserRole;
   isActive: boolean;
   followers: number;
-  followingGroups: AdminDashboardMusicGroupResponse[]
   followingGroupsLength: number
-  followingUsers: LoginSigninResponse[]
   followingUsersLength: number
 }
 
