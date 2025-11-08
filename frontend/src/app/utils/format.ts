@@ -1,3 +1,4 @@
+import { MusicGroupStatus } from "../types/musicGroupts"
 import { UserRole } from "../types/userAuth"
 
 export const formatViews = (views: number) => {
@@ -63,6 +64,12 @@ export const getTimeAgoMin = (date: Date) => {
 
 export const formatUserRole = (r: UserRole) => {
   if (r === 'ADMIN') return 'Administrator'
-  if (r === 'CLIENT') return 'Client'
-  return 'Super Administrator'
+  if (r === 'ROOT') return 'Super Administrator'
+  return 'Client'
+}
+
+export const formatMusicGroupStatus = (s: MusicGroupStatus) => {
+  if(s === 'ACCEPTED') return 'Accepted'
+  if(s === 'REJECTED') return 'Rejected'
+  return 'Pending'
 }

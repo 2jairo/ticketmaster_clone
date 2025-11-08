@@ -1,1 +1,23 @@
-<p>music-groups works!</p>
+<div
+  class="groups"
+  infiniteScroll
+  [infiniteScrollDistance]="2"
+  [infiniteScrollThrottle]="150"
+  (scrolled)="loadMusicGroups()"
+>
+  @for (group of musicGroups(); track group.slug) {
+  <app-admin-music-group-card [group]="group" (onDeletedGroup)="deleteMusicGroup($event)" (onUpdatedGroup)="updateUser($event)" />
+  } @empty {
+    <p class="no-groups">There are no music groups.</p>
+  }
+</div>
+
+
+<style>
+  .groups {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+  }
+</style>
