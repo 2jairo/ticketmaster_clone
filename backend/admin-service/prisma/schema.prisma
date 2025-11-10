@@ -71,7 +71,7 @@ model MusicGroup {
   id String @id @map("_id") @default(auto()) @db.ObjectId
   title String
   slug String @unique
-  description String
+  description String @default("")
   image String @default("https://static.productionready.io/images/smiley-cyrus.jpg")
   followers Int @default(0)
   status MusicGroupStatus @default(PENDING)

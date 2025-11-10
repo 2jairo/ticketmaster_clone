@@ -37,7 +37,10 @@ export const dashboardMusicGroupsRoutes = fp((fastify, options: RouteCommonOptio
         reply: FastifyReply
     ) {
         const group = await fastify.prismaW.musicGroup.create({ 
-            data: req.body 
+            data: {
+                ...req.body,
+                slug: '', // auto generated
+            }
         })
         
         reply.status(201).send({ ...group, concerts: 0 })

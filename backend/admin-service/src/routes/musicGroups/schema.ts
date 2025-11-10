@@ -25,21 +25,20 @@ const groupList: FastifySchema = {
 
 export interface createGroupBody {
 	title: string
-	slug: string
-	description: string
-	image: string
+	description?: string
+	image?: string
 	status?: MusicGroupStatus
+    isActive?: boolean
 }
 
 const createGroup: FastifySchema = {
 	body: S.object()
 		.prop("title", S.string())
-		.prop("slug", S.string())
 		.prop("description", S.string())
 		.prop("image", S.string())
 		.prop("status", S.enum(MUSIC_GROUP_STATUS))
 		.prop("isActive", S.boolean())
-		.required(["title", "slug", "description", "image"]),
+		.required(["title"]),
 	response: {
 		201: groupResponse
 	}
