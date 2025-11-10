@@ -3,20 +3,27 @@ import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
 import { Pagination } from '../../categories/filters';
 import { AdminsService } from '../../../services/admins.service';
 import { environment } from '../../../../environments/environment';
-import { AdminDashboardMusicGroupResponse } from '../../../types/musicGroupts';
+import { AdminDashboardMusicGroupResponse, DEFAULT_MUSIC_GROUP } from '../../../types/musicGroupts';
 import { AdminMusicGroupCard } from './admin-music-group-card';
+import { AdminMusicGroupDialog } from "./admin-music-group-dialog";
 
 @Component({
   selector: 'app-music-groups',
-  imports: [InfiniteScrollDirective, AdminMusicGroupCard],
+  imports: [InfiniteScrollDirective, AdminMusicGroupCard, AdminMusicGroupDialog],
   templateUrl: './music-groups.html',
 })
 export class MusicGroups implements OnInit {
   private adminsService = inject(AdminsService)
   musicGroups = signal<AdminDashboardMusicGroupResponse[]>([])
 
+  openDialog!: (e: PointerEvent) => void
+
   ngOnInit(): void {
     this.loadMusicGroups()
+  }
+
+  setOpenDialog(event: (e: PointerEvent) => void) {
+    this.openDialog = event
   }
 
   pagination: Pagination = {
@@ -43,7 +50,7 @@ export class MusicGroups implements OnInit {
     })
   }
 
-  updateUser({ slug, newGroup }: { slug: string, newGroup: AdminDashboardMusicGroupResponse }) {
+  updateMusicGroup({ slug, newGroup }: { slug: string, newGroup: AdminDashboardMusicGroupResponse }) {
     this.musicGroups.update(prev => {
       const idx = prev.findIndex(u => u.slug === slug)
       if (idx === -1) return prev
@@ -52,6 +59,11 @@ export class MusicGroups implements OnInit {
       copy[idx] = newGroup
       return copy
     })
+  }
+
+  addMusicGroup(newGroup: AdminDashboardMusicGroupResponse) {
+    this.musicGroups.update(prev => [newGroup, ...prev])
+    this.pagination.offset += 1
   }
 
   deleteMusicGroup({ slug }: { slug: string }) {
@@ -67,4 +79,7 @@ export class MusicGroups implements OnInit {
     })
   }
 
+  getDefaultMusicGroup() {
+    return structuredClone(DEFAULT_MUSIC_GROUP)
+  }
 }

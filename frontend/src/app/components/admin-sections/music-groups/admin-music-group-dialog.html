@@ -1,0 +1,126 @@
+<dialog appDialog>
+  <article #dialogContent>
+    <header>
+      <h3>{{ group.slug ? group.title : 'Create new' }}</h3>
+
+      <div (click)="updateInfoDialog.closeDialog()">
+        <i class="fa-solid fa-xmark"></i>
+      </div>
+    </header>
+
+    <form [formGroup]="form" (submit)="submitForm()">
+      <app-show-error [generalError]="true" [error]="errors.general" />
+
+      <div>
+        <div class="content">
+          <i class="fa-solid fa-music"></i>
+          <input type="text" placeholder="title" formControlName="title" autocomplete="off"
+            [attr.aria-invalid]="isInvalid(errors.title)" />
+        </div>
+
+        <app-show-error [error]="errors.title" />
+      </div>
+
+      <div>
+        <div class="content">
+          <img [src]="form.get('image')?.value || ''" alt="Group image" />
+          <input type="text" placeholder="image" formControlName="image"
+            [attr.aria-invalid]="isInvalid(errors.image)" />
+        </div>
+
+        <app-show-error [error]="errors.image" />
+      </div>
+
+      <div>
+        <div class="content">
+          <i class="fa-solid fa-align-left"></i>
+          <textarea placeholder="description" formControlName="description"></textarea>
+        </div>
+
+        <app-show-error [error]="errors.description" />
+      </div>
+
+      <div>
+        <div class="content">
+          <p>Status</p>
+          <select formControlName="status">
+            @for (s of MUSIC_GROUP_STATUS; track s) {
+            <option [value]="s">{{ formatMusicGroupStatus(s) }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <div class="content">
+          <p>Active</p>
+          <input type="checkbox" formControlName="isActive" />
+        </div>
+      </div>
+    </form>
+
+    <footer>
+      <button (click)="updateInfoDialog.closeDialog()" class="secondary">Cancel</button>
+      <button (click)="submitForm()" [disabled]="!form.valid || !errors.canSubmit || fetching"
+        [class.outline]="!form.valid || !errors.canSubmit || fetching">
+        @if(fetching) {
+          <app-loading-gif />
+        } @else {
+          {{ group.slug ? 'Update' : 'Create' }}
+        }
+      </button>
+    </footer>
+  </article>
+</dialog>
+
+
+<style>
+  dialog article {
+    padding: 0;
+
+    header,
+    header>div {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header>div {
+      cursor: pointer;
+    }
+
+    footer {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: end;
+    }
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+    padding: 20px;
+
+    input:-webkit-autofill {
+      transition: background-color 9999s;
+    }
+
+    textarea {
+      field-sizing: content;
+    }
+  }
+
+  form>div .content {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+
+    img {
+      width: 1.125em;
+      height: 1.125em;
+    }
+  }
+</style>

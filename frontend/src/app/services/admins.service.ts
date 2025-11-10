@@ -3,7 +3,7 @@ import { HttpApiService } from './httpApi.service';
 import { environment } from '../../environments/environment';
 import { AdminDashboardUpdateUserBody, AdminDashboardUserResponse } from '../types/adminDashboard';
 import { Pagination } from '../types/filters';
-import { AdminDashboardMusicGroupResponse } from '../types/musicGroupts';
+import { AdminDashboardCreateMusicGroupBody, AdminDashboardMusicGroupResponse, AdminDashboardUpdateMusicGroupBody } from '../types/musicGroupts';
 
 
 @Injectable({
@@ -30,7 +30,7 @@ export class AdminsService {
     return this.http.get<AdminDashboardMusicGroupResponse[]>(environment.ADMIN_API_URL, '/dashboard/groups', { params })
   }
 
-  updateMusicGroup(slug: string, body: any) {
+  updateMusicGroup(slug: string, body: AdminDashboardUpdateMusicGroupBody) {
     return this.http.post<AdminDashboardMusicGroupResponse>(environment.ADMIN_API_URL, `/dashboard/groups/${slug}`, body)
   }
 
@@ -38,7 +38,7 @@ export class AdminsService {
     return this.http.delete<void>(environment.ADMIN_API_URL, `/dashboard/groups/${slug}`)
   }
 
-  createMusicGroup(body: any) {
+  createMusicGroup(body: AdminDashboardCreateMusicGroupBody) {
     return this.http.post<AdminDashboardMusicGroupResponse>(environment.ADMIN_API_URL, `/dashboard/groups`, body)
   }
 }

@@ -1,3 +1,15 @@
+<div class="create">
+  <button (click)="openDialog($event)">Create new</button>
+</div>
+
+<app-admin-music-group-dialog
+  [group]="getDefaultMusicGroup()"
+  (getOpenDialog)="setOpenDialog($event)"
+  (onCreatedGroup)="addMusicGroup($event)"
+  (onUpdatedGroup)="updateMusicGroup($event)"
+/>
+
+
 <div
   class="groups"
   infiniteScroll
@@ -6,7 +18,7 @@
   (scrolled)="loadMusicGroups()"
 >
   @for (group of musicGroups(); track group.slug) {
-  <app-admin-music-group-card [group]="group" (onDeletedGroup)="deleteMusicGroup($event)" (onUpdatedGroup)="updateUser($event)" />
+    <app-admin-music-group-card [group]="group" (onDeletedGroup)="deleteMusicGroup($event)" (onUpdatedGroup)="updateMusicGroup($event)" />
   } @empty {
     <p class="no-groups">There are no music groups.</p>
   }
@@ -14,10 +26,17 @@
 
 
 <style>
-  .groups {
+  .groups, .create {
     display: flex;
     flex-direction: column;
     gap: 20px;
     padding: 20px;
+  }
+  .create {
+    align-items: end;
+
+    button {
+      width: fit-content;
+    }
   }
 </style>
