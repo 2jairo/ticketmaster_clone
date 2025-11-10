@@ -1,4 +1,5 @@
 <div class="create">
+  <h2>Music groups</h2>
   <button (click)="openDialog($event)">Create new</button>
 </div>
 
@@ -20,7 +21,15 @@
   @for (group of musicGroups(); track group.slug) {
     <app-admin-music-group-card [group]="group" (onDeletedGroup)="deleteMusicGroup($event)" (onUpdatedGroup)="updateMusicGroup($event)" />
   } @empty {
-    <p class="no-groups">There are no music groups.</p>
+     @if(!loading) {
+      <p class="no-groups">There are no music groups.</p>
+    }
+  }
+
+  @if(loading) {
+    <div class="loading">
+      <app-loading-gif />
+    </div>
   }
 </div>
 
@@ -33,10 +42,17 @@
     padding: 20px;
   }
   .create {
-    align-items: end;
+    flex-direction: row;
+		align-items: center;
+    justify-content: space-between;
 
-    button {
-      width: fit-content;
-    }
+		button {
+			width: fit-content;
+		}
+  }
+  .loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 </style>

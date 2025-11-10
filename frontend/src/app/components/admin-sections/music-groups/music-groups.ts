@@ -6,10 +6,11 @@ import { environment } from '../../../../environments/environment';
 import { AdminDashboardMusicGroupResponse, DEFAULT_MUSIC_GROUP } from '../../../types/musicGroupts';
 import { AdminMusicGroupCard } from './admin-music-group-card';
 import { AdminMusicGroupDialog } from "./admin-music-group-dialog";
+import { LoadingGif } from "../../loading-gif/loading-gif";
 
 @Component({
   selector: 'app-music-groups',
-  imports: [InfiniteScrollDirective, AdminMusicGroupCard, AdminMusicGroupDialog],
+  imports: [InfiniteScrollDirective, AdminMusicGroupCard, AdminMusicGroupDialog, LoadingGif],
   templateUrl: './music-groups.html',
 })
 export class MusicGroups implements OnInit {

@@ -5,10 +5,11 @@ import { Pagination } from '../../categories/filters';
 import { environment } from '../../../../environments/environment';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
 import { AdminUserCard } from './admin-user-card';
+import { LoadingGif } from "../../loading-gif/loading-gif";
 
 @Component({
   selector: 'app-users',
-  imports: [InfiniteScrollDirective, AdminUserCard],
+  imports: [InfiniteScrollDirective, AdminUserCard, LoadingGif],
   templateUrl: './users.html',
 })
 export class Users implements OnInit {
