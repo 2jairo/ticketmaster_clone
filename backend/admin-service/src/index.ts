@@ -12,6 +12,7 @@ import fastifyCookie from '@fastify/cookie'
 import { dashboardUserRoutes } from 'routes/users/users'
 import { dashboardMusicGroupsRoutes } from 'routes/musicGroups/groups'
 import { dashboardCategoriesRoutes } from 'routes/categories/category'
+import { dashboardConcertRotues } from 'routes/concerts/concerts'
 
 dotenv.config()
 
@@ -30,6 +31,7 @@ async function main() {
     await fastify.register(dashboardUserRoutes, { prefix: '/api/dashboard/users' })
     await fastify.register(dashboardMusicGroupsRoutes, { prefix: '/api/dashboard/groups' })
     await fastify.register(dashboardCategoriesRoutes, { prefix: '/api/dashboard/categories' })
+    await fastify.register(dashboardConcertRotues, { prefix: '/api/dashboard/concerts' })
     
     try {
         await fastify.listen(config)
