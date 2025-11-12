@@ -3,7 +3,7 @@ import { UserRole } from "generated/prisma/enums";
 import { UserModel, UserWhereInput } from "generated/prisma/models";
 import { JwtClaims } from "plugins/jwt/jwt";
 
-export const USER_ROLES: UserRole[] = ['ADMIN', 'CLIENT', 'ROOT']
+export const USER_ROLES: UserRole[] = ['ADMIN', 'CLIENT', 'ROOT', 'ENTERPRISE']
 export const ADMIN_ROOT: UserWhereInput = {
     role: {
         in: ['ADMIN', 'ROOT']

@@ -66,6 +66,7 @@ export const getTimeAgoMin = (date: Date) => {
 export const formatUserRole = (r: UserRole) => {
   if (r === 'ADMIN') return 'Administrator'
   if (r === 'ROOT') return 'Super Administrator'
+  if (r === 'ENTERPRISE') return 'Enterprise'
   return 'Client'
 }
 

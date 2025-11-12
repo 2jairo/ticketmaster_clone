@@ -12,6 +12,7 @@ enum UserRole {
   CLIENT
   ADMIN
   ROOT
+  ENTERPRISE
 }
 
 model User {
