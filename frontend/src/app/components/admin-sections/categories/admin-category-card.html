@@ -1,0 +1,177 @@
+<div class="card">
+  @if(category.images.length) {
+    <div class="image">
+      <img [src]="category.images[0]" alt="category image" />
+    </div>
+  }
+
+  <div class="cardInfoHeader">
+    <div class="head">
+      <div>
+        <h3>{{ category.title }}</h3>
+        <code>{{ formatCategoryStatus(category.status) }}</code>
+        <div class="isActive" [class.active]="category.isActive"></div>
+      </div>
+
+      <div>
+        <details #settings class="settings dropdown">
+          <summary>
+            <i class="fa-solid fa-gear"></i>
+          </summary>
+
+          <div class="content">
+            <div (click)="settingsDeleteCategory()">
+              <i class="fa-solid fa-trash"></i>
+              <p>Delete</p>
+            </div>
+          </div>
+        </details>
+
+        <div class="edit" (click)="openDialog($event)">
+          <i class="fa-solid fa-pen"></i>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="body">
+      <p>Concerts: {{ category.concerts }}</p>
+    </div>
+
+  </div>
+</div>
+
+
+<app-admin-category-dialog
+  [group]="category"
+  (onUpdatedCategory)="pipeOnUpdated($event)"
+  (getOpenDialog)="setOpenDialog($event)"
+/>
+
+<style>
+  .image img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: var(--pico-border-radius)
+  }
+
+  .card {
+    padding: 20px;
+    border: var(--pico-border-width) solid var(--pico-secondary-border);
+    border-radius: var(--pico-border-radius);
+    display: flex;
+    gap: 20px;
+    max-width: 1200px;
+    margin: auto !important;
+  }
+
+  .cardInfoHeader {
+    flex: 1;
+  }
+
+  .cardInfoHeader .head {
+    display: flex;
+    justify-content: space-between;
+
+    &>div {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .edit {
+      cursor: pointer;
+    }
+  }
+
+  .cardInfoHeader .body {
+    display: flex;
+    gap: 20px;
+
+    * {
+      font-size: smaller;
+      color: var(--pico-secondary-border)
+    }
+  }
+
+  .isActive {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: red;
+  }
+
+  .isActive.active {
+    background-color: green
+  }
+
+  dialog article {
+    padding: 0;
+
+    header,
+    header>div {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header>div {
+      cursor: pointer;
+    }
+
+    footer {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: end;
+    }
+  }
+
+  .settings {
+    flex: 1;
+    cursor: pointer;
+    display: flex;
+    justify-content: end;
+
+    summary {
+      border: unset;
+      padding: 0;
+      height: fit-content;
+      box-shadow: unset !important;
+      background-color: unset !important;
+    }
+
+    summary::after {
+      all: unset;
+    }
+
+    .content {
+      position: absolute;
+      right: 2em;
+      top: 0;
+      background-color: var(--pico-background-color);
+      border-radius: var(--pico-border-radius);
+      border: var(--pico-border-width) solid var(--pico-secondary-border);
+      z-index: 999;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    .content>div {
+      padding: 10px 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .content>div:hover {
+      background-color: var(--pico-form-element-background-color);
+    }
+
+    .content>div:not(:last-child) {
+      border-bottom: var(--pico-border-width) solid var(--pico-secondary-border);
+    }
+  }
+</style>

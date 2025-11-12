@@ -4,6 +4,7 @@ import { environment } from '../../environments/environment';
 import { AdminDashboardUpdateUserBody, AdminDashboardUserResponse } from '../types/adminDashboard';
 import { Pagination } from '../types/filters';
 import { AdminDashboardCreateMusicGroupBody, AdminDashboardMusicGroupResponse, AdminDashboardUpdateMusicGroupBody } from '../types/musicGroupts';
+import { AdminDashboardCategoryResponse, AdminDashboardCreateCategoryBody, AdminDashboardUpdateCategoryBody } from '../types/categories';
 
 
 @Injectable({
@@ -40,5 +41,23 @@ export class AdminsService {
 
   createMusicGroup(body: AdminDashboardCreateMusicGroupBody) {
     return this.http.post<AdminDashboardMusicGroupResponse>(environment.ADMIN_API_URL, `/dashboard/groups`, body)
+  }
+
+  /* Categories admin endpoints */
+  getCategoryList(pagination: Pagination) {
+    const params = { ...pagination }
+    return this.http.get<AdminDashboardCategoryResponse[]>(environment.ADMIN_API_URL, '/dashboard/categories', { params })
+  }
+
+  updateCategory(slug: string, body: AdminDashboardUpdateCategoryBody) {
+    return this.http.post<AdminDashboardCategoryResponse>(environment.ADMIN_API_URL, `/dashboard/categories/${slug}`, body)
+  }
+
+  deleteCategory(slug: string) {
+    return this.http.delete<void>(environment.ADMIN_API_URL, `/dashboard/categories/${slug}`)
+  }
+
+  createCategory(body: AdminDashboardCreateCategoryBody) {
+    return this.http.post<AdminDashboardCategoryResponse>(environment.ADMIN_API_URL, `/dashboard/categories`, body)
   }
 }

@@ -1,1 +1,58 @@
-<p>categories works!</p>
+<div class="create">
+  <h2>Categories</h2>
+	<button (click)="openDialog($event)">Create new</button>
+</div>
+
+<app-admin-category-dialog
+	[group]="getDefaultCategory()"
+	(getOpenDialog)="setOpenDialog($event)"
+	(onCreatedCategory)="addCategory($event)"
+	(onUpdatedCategory)="updateCategory($event)"
+/>
+
+
+<div
+	class="categories"
+	infiniteScroll
+	[infiniteScrollDistance]="2"
+	[infiniteScrollThrottle]="150"
+	(scrolled)="loadCategories()"
+>
+	@for (category of categories(); track category.slug) {
+		<app-admin-category-card [category]="category" (onDeletedCategory)="deleteCategory($event)" (onUpdatedCategory)="updateCategory($event)" />
+  } @empty {
+    @if(!loading) {
+      <p class="no-groups">There are no categories.</p>
+    }
+  }
+
+  @if(loading) {
+    <div class="loading">
+      <app-loading-gif />
+    </div>
+  }
+</div>
+
+
+<style>
+	.categories, .create {
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+		padding: 20px;
+	}
+	.create {
+    flex-direction: row;
+		align-items: center;
+    justify-content: space-between;
+
+		button {
+			width: fit-content;
+		}
+	}
+  .loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+</style>

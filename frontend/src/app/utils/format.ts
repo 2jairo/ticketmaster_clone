@@ -1,3 +1,4 @@
+import { CategoryStatus } from "../types/categories"
 import { MusicGroupStatus } from "../types/musicGroupts"
 import { UserRole } from "../types/userAuth"
 
@@ -69,6 +70,12 @@ export const formatUserRole = (r: UserRole) => {
 }
 
 export const formatMusicGroupStatus = (s: MusicGroupStatus) => {
+  if(s === 'ACCEPTED') return 'Accepted'
+  if(s === 'REJECTED') return 'Rejected'
+  return 'Pending'
+}
+
+export const formatCategoryStatus = (s: CategoryStatus) => {
   if(s === 'ACCEPTED') return 'Accepted'
   if(s === 'REJECTED') return 'Rejected'
   return 'Pending'
