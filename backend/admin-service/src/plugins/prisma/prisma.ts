@@ -3,6 +3,7 @@ import fp from 'fastify-plugin'
 import { Prisma, PrismaClient } from 'generated/prisma/client'
 import { userModelWrapper } from 'schemas/user'
 import { musicGroupWrapper } from 'schemas/musicGroup'
+import { categoryWrapper } from 'schemas/category'
 import { ModelWrapper, PrismaModelWrappers } from 'schemas/wrapper'
 import slugify from 'slugify'
 
@@ -73,5 +74,7 @@ export const prismaClientPlugin = fp(async (fastify) => {
     fastify.decorate('prismaW', {
         user: new ModelWrapper(prisma, 'user', (v) => userModelWrapper(fastify, v)),
         musicGroup: new ModelWrapper(prisma, 'musicGroup', (v) => musicGroupWrapper(fastify, v))
+        ,
+        category: new ModelWrapper(prisma, 'category', (v) => categoryWrapper(fastify, v))
     })
 })

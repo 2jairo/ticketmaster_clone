@@ -1,5 +1,6 @@
 import { UserModelWrapper } from "./user";
 import { MusicGroupWrapper } from "./musicGroup";
+import { CategoryWrapper } from "./category";
 import { ExtendedPrismaClient } from '../plugins/prisma/prisma'
 
 export interface PrismaModelWrappers {
@@ -7,6 +8,7 @@ export interface PrismaModelWrappers {
     // category: CategoryModel
     // comment: CommentModel
     musicGroup: MusicGroupWrapper
+    category: CategoryWrapper
     // concert: ConcertModel
 }
 
