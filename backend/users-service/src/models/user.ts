@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import uniqueValidator from 'mongoose-unique-validator'
 import { MusicGroupModel } from './musicGroup';
-import { generateAccesToken, USER_ROLES, UserRole, type AccesTokenClaims } from '../utils/jwt';
+import { USER_ROLES, UserRole, type AccesTokenClaims } from '../utils/jwt';
 
 const userSchema = new mongoose.Schema({
     username: {
@@ -57,16 +57,6 @@ userSchema.plugin(uniqueValidator)
 
 userSchema.methods.getJwtClaims = function(): AccesTokenClaims {
     return { userId: this._id.toString(), v: this.__v, role: this.role }
-}
-
-userSchema.methods.toUserResponse = function(accessToken: boolean) {
-    return {
-        username: this.username,
-        email: this.email,
-        image: this.image,
-        role: this.role,
-        ...(accessToken ? { token: generateAccesToken(this.getJwtClaims()) } : {})
-    }
 }
 
 
@@ -211,7 +201,6 @@ userSchema.methods.updateFollowers = function(offset: number) {
 }
 
 export interface IUserModel {
-    toUserResponse(accessToken: boolean): any
     getJwtClaims(): AccesTokenClaims
     toProfileResponse(user?: IUserModel, currentUserId?: string): Promise<any>
     toCommentAuthorResponse(user?: IUserModel): any
