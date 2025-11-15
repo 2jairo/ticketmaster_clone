@@ -1,6 +1,11 @@
-generator client {
+generator adminClient {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
+}
+
+generator enterpriseClient {
+  provider = "prisma-client"
+  output   = "../../enterprise-service/apps/shared/generated/prisma"
 }
 
 datasource db {
