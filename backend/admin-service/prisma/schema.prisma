@@ -5,7 +5,7 @@ generator adminClient {
 
 generator enterpriseClient {
   provider = "prisma-client"
-  output   = "../../enterprise-service/apps/shared/generated/prisma"
+  output   = "../../enterprise-service/apps/shared2/src/generated/prisma"
 }
 
 datasource db {
@@ -87,7 +87,28 @@ model MusicGroup {
   @@map("musicgroups")
 }
 
+model MerchCategory {
+  id String @id @map("_id") @default(auto()) @db.ObjectId
+  title String
+  slug String @unique
+  image String @default("https://static.productionready.io/images/smiley-cyrus.jpg")
+  products Merch[] @relation("MerchCategory")
+}
 
+model Merch {
+  id String @id @map("_id") @default(auto()) @db.ObjectId
+  title String
+  slug String @unique
+  images String[] @default([])
+  description String @default("")
+  categoryId String @db.ObjectId
+  category MerchCategory @relation("MerchCategory", fields: [categoryId], references: [id])
+
+  stock Int @default(0)
+  sold Int @default(0)
+  price Int @default(0)
+}
+ 
 type ConcertLocation {
   type String
   coordinates Float[]
