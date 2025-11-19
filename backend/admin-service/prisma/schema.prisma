@@ -93,6 +93,8 @@ model MerchCategory {
   slug String @unique
   image String @default("https://static.productionready.io/images/smiley-cyrus.jpg")
   products Merch[] @relation("MerchCategory")
+
+  @@map("merchcategories")
 }
 
 model Merch {
@@ -107,6 +109,8 @@ model Merch {
   stock Int @default(0)
   sold Int @default(0)
   price Int @default(0)
+
+  @@map("merch")
 }
  
 type ConcertLocation {
