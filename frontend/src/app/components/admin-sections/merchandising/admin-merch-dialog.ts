@@ -50,6 +50,7 @@ export class AdminMerchDialog implements OnInit, AfterViewInit {
       const changed = this.getChangedProps(group)
       return Object.keys(changed).length === 0 ? { sameCredentials: true } : null
     })
+
     this.images.valueChanges.subscribe(() => {
       this.form.updateValueAndValidity({ onlySelf: true })
     })
@@ -162,6 +163,7 @@ export class AdminMerchDialog implements OnInit, AfterViewInit {
           idx: i,
           value: 'Image URL must start with https://'
         }
+        break
       }
       else if(c.hasError('maxlength')) {
         this.errors.images = {
@@ -169,6 +171,7 @@ export class AdminMerchDialog implements OnInit, AfterViewInit {
           value: `Image URL must be at most ${environment.AVATAR_IMAGE_MAX_LENGTH} characters.`,
         }
       }
+      break
     }
   }
 
