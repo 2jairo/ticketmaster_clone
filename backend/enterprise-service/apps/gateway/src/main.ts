@@ -13,10 +13,10 @@ async function bootstrap() {
   const gatewayPort = process.env.GATEWAY_PORT!
   const merchPort = process.env.MERCH_PORT!
 
-  server.use('/api/dashboard/merch',  createProxyMiddleware({
+  server.use('/api/merch',  createProxyMiddleware({
     target: `http://${host}:${merchPort}`,
     changeOrigin: true,
-    pathRewrite: { '^/api/dashboard/merch': '' },
+    pathRewrite: { '^/api/merch': '' },
   }))
 
   await app.listen(gatewayPort, host);

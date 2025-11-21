@@ -1,5 +1,5 @@
 import { IsInt, IsOptional } from "class-validator"
-import {  } from 'class-transformer'
+import { Type } from 'class-transformer'
 import { ArgumentMetadata, PipeTransform } from "@nestjs/common"
 
 export interface Pagination {
@@ -8,10 +8,12 @@ export interface Pagination {
 }
 
 export class PaginationDto {
+  @Type(() => Number)
   @IsInt()
   @IsOptional()
   offset: number = 0
-  
+
+  @Type(() => Number)
   @IsInt()
   @IsOptional()
   size: number = 0

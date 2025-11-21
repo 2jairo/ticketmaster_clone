@@ -1,0 +1,59 @@
+<div class="create">
+	<h2>Merchandising</h2>
+	<button (click)="openDialog($event)">Create new</button>
+</div>
+
+<app-admin-merch-dialog
+	[group]="getDefaultMerch()"
+	(getOpenDialog)="setOpenDialog($event)"
+	(onCreatedMerch)="addMerch($event)"
+	(onUpdatedMerch)="updateMerch($event)"
+/>
+
+
+<div
+	class="merch"
+	infiniteScroll
+	[infiniteScrollDistance]="2"
+	[infiniteScrollThrottle]="150"
+	(scrolled)="loadMerchandising()"
+>
+	@for (m of merch(); track m.slug) {
+		<app-admin-merch-card [merch]="m" (onDeletedMerch)="deleteMerch($event)" (onUpdatedMerch)="updateMerch($event)" />
+	} @empty {
+		@if(!loading) {
+			<p class="no-merch">There is no merchandising.</p>
+		}
+	}
+
+	@if(loading) {
+		<div class="loading">
+			<app-loading-gif />
+		</div>
+	}
+</div>
+
+
+<style>
+	.merch, .create {
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+		padding: 20px;
+	}
+	.create {
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+
+		button {
+			width: fit-content;
+		}
+	}
+	.loading {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+</style>
+

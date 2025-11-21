@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { MerchController } from './merch.controller';
-import { MerchService } from './merch.service';
+import { MerchController } from './controllers/merch.controller';
+import { MerchService } from './services/merch.service';
 import { SharedModule } from 'apps/shared2/src/shared.module';
 
 @Module({

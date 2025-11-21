@@ -32,12 +32,16 @@
         @for (img of images.controls; track $index) {
           <div class="content">
 					  <img [src]="img.value" alt="Category image" />
-            <input [formControlName]="$index" placeholder="https://"/>
+            <input [formControlName]="$index" placeholder="https://" [attr.aria-invalid]="isInvalid(errors.images.idx === $index)"/>
 
             <div class="rm" (click)="removeImage($index)">
               <i class="fa-solid fa-xmark"></i>
             </div>
           </div>
+
+          @if($index === errors.images.idx) {
+            <app-show-error [error]="errors.images.value"  />
+          }
         }
 			</div>
 

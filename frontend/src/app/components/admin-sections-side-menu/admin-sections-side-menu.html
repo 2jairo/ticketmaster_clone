@@ -2,18 +2,30 @@
   <div class="content">
     <details open>
       <summary>
-        <i class="fa-solid fa-calendar-days"></i>
-        <h3>Events</h3>
+        <i class="fa-regular fa-calendar"></i>
+        <h3>Concerts</h3>
       </summary>
 
       <div class="detailsContent">
         <a routerLink="/admin-dashboard/concerts" [class.current]="sideMenuSections.section() === 'concerts'">Concerts</a>
-        <a routerLink="/admin-dashboard/categories" [class.current]="sideMenuSections.section() === 'categories'">Categories</a>
-        <a routerLink="/admin-dashboard/music-groups" [class.current]="sideMenuSections.section() === 'music-groups'">Music groups</a>
       </div>
     </details>
 
     @if(userAuthService.user | async; as user) {
+      @if(user.role === 'ADMIN' || user.role === 'ROOT') {
+        <details open>
+          <summary>
+            <i class="fa-solid fa-calendar-days"></i>
+            <h3>Events</h3>
+          </summary>
+
+          <div class="detailsContent">
+            <a routerLink="/admin-dashboard/concert-categories" [class.current]="sideMenuSections.section() === 'concert-categories'">Categories</a>
+            <a routerLink="/admin-dashboard/music-groups" [class.current]="sideMenuSections.section() === 'music-groups'">Music groups</a>
+          </div>
+        </details>
+      }
+
       @if(user.role === 'ROOT') {
         <details open>
           <summary>
@@ -26,7 +38,20 @@
           </div>
         </details>
       }
-    }
+
+      @if(user.role === 'ENTERPRISE' || user.role === 'ROOT') {
+        <details open>
+          <summary>
+            <i class="fa-solid fa-building"></i>
+            <h3>Company</h3>
+          </summary>
+
+          <div class="detailsContent">
+            <a routerLink="/admin-dashboard/merchandising" [class.current]="sideMenuSections.section() === 'merchandising'">Merchandising</a>
+          </div>
+        </details>
+      }
+     }
 
   </div>
 </div>

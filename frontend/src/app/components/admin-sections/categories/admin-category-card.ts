@@ -4,10 +4,11 @@ import { AdminsService } from '../../../services/admins.service';
 import { AdminDashboardCategoryResponse, CategoryStatus } from '../../../types/categories';
 import { AdminCategoryDialog } from './admin-category-dialog';
 import { formatCategoryStatus } from '../../../utils/format';
+import { Carousel } from "../../carousel/carousel";
 
 @Component({
   selector: 'app-admin-category-card',
-  imports: [ReactiveFormsModule, AdminCategoryDialog],
+  imports: [ReactiveFormsModule, AdminCategoryDialog, Carousel],
   templateUrl: './admin-category-card.html',
 })
 export class AdminCategoryCard {
@@ -37,5 +38,11 @@ export class AdminCategoryCard {
 
   formatCategoryStatus(s: CategoryStatus) {
     return formatCategoryStatus(s)
+  }
+  formatCarouselImages(imgs: string[]) {
+    return imgs.map(img => ({
+      src: img,
+      navigateTo: `/events?category=${this.category.slug}`
+    }))
   }
 }

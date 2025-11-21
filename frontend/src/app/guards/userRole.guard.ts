@@ -13,10 +13,12 @@ export class UserRoleGuard implements CanActivate {
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): MaybeAsync<GuardResult> {
     const roles = route.data['roles'] as UserRole[]
+    const redirectTo = route.data['redirectTo'] as (r: UserRole) => string | undefined
 
     return this.userAuthService.isAuthenticated.pipe(
       take(1),
       map((logged) => {
+        console.log('roles', roles, logged.role)
         const includes = logged.role
           ? roles.includes(logged.role)
           : false
@@ -24,13 +26,18 @@ export class UserRoleGuard implements CanActivate {
         if(includes) {
           return true
         } else {
-          return this.router.createUrlTree(['/'])
+          const url = logged.role && redirectTo
+            ? redirectTo(logged.role)
+            : '/'
+
+          return this.router.createUrlTree([url])
         }
       })
     )
   }
 }
 
-export const setUserRoleGuardData = (...roles: UserRole[]) => {
-  return { roles }
+export const setUserRoleGuardData = (conf: { roles?: UserRole[], redirectTo?: (r: UserRole) => string }) => {
+  conf.roles = conf.roles || []
+  return conf
 }

@@ -1,13 +1,12 @@
 import { AfterViewInit, Component, EventEmitter, inject, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { AdminDashboardCreateCategoryBody, AdminDashboardCategoryResponse, AdminDashboardUpdateCategoryBody, DEFAULT_CATEGORY, CATEGORY_STATUS, CategoryStatus } from '../../../types/categories';
-import { FormArray, FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { AdminsService } from '../../../services/admins.service';
+import { FormBuilder, FormControl, FormArray, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Dialog } from '../../../utils/dialog';
+import { LoadingGif } from '../../loading-gif/loading-gif';
+import { ShowError } from '../../auth-form/show-error';
+import { MerchDashboardMerchandisingResponse, MerchDashboardUpdateMerchandisingBody, MerchDashboardCreateMerchandisingBody } from '../../../types/merchDashboard';
+import { MerchandisingService } from '../../../services/merchandising.service';
 import { environment } from '../../../../environments/environment';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Dialog } from '../../../utils/dialog';
-import { ShowError } from '../../auth-form/show-error';
-import { LoadingGif } from '../../loading-gif/loading-gif';
-import { formatCategoryStatus } from '../../../utils/format';
 import { arraysHaveSameUniqueValues } from '../../../utils/arrays';
 
 const ERRORS_DEFAULT = {
@@ -21,26 +20,26 @@ const ERRORS_DEFAULT = {
 }
 
 @Component({
-  selector: 'app-admin-category-dialog',
+  selector: 'app-admin-merch-dialog',
   imports: [ShowError, LoadingGif, ReactiveFormsModule, Dialog],
-  templateUrl: './admin-category-dialog.html',
+  templateUrl: './admin-merch-dialog.html',
 })
-export class AdminCategoryDialog implements OnInit, AfterViewInit {
+export class AdminMerchDialog implements OnInit, AfterViewInit {
   private fb = inject(FormBuilder)
-  private adminsService = inject(AdminsService)
+  private merchService = inject(MerchandisingService)
 
-  @Input({ required: true }) group!: AdminDashboardCategoryResponse
-  @Output() onUpdatedCategory = new EventEmitter<{ slug: string, newCategory: AdminDashboardCategoryResponse }>()
-  @Output() onCreatedCategory = new EventEmitter<AdminDashboardCategoryResponse>()
+  @Input({ required: true }) group!: MerchDashboardMerchandisingResponse
+  @Output() onUpdatedMerch = new EventEmitter<{ slug: string, newMerch: MerchDashboardMerchandisingResponse }>()
+  @Output() onCreatedMerch = new EventEmitter<MerchDashboardMerchandisingResponse>()
   @Output() getOpenDialog = new EventEmitter<(e: PointerEvent) => void>()
   @ViewChild(Dialog) updateInfoDialog!: Dialog
 
-  CATEGORY_STATUS = CATEGORY_STATUS
   form = this.fb.group({
     title: new FormControl('', [Validators.required, Validators.maxLength(environment.TITLE_MAX_LENGTH)]),
     images: this.fb.array([]),
-    status: new FormControl('', { validators: [Validators.required] }),
-    isActive: new FormControl(true, { validators: [Validators.required] })
+    description: new FormControl('', []),
+    stock: new FormControl(0, [Validators.min(0), Validators.required]),
+    price: new FormControl(0, [Validators.min(0), Validators.required])
   })
 
   ngOnInit(): void {
@@ -58,18 +57,18 @@ export class AdminCategoryDialog implements OnInit, AfterViewInit {
     this.form.valueChanges.subscribe(() => this.handleClientErrors())
   }
 
-  formPatchValue(group: AdminDashboardCategoryResponse) {
-    const { images, ...groupRest } = group
-    this.form.patchValue(groupRest)
-
-    this.images.clear()
-    for (const img of images) {
-      this.addImage({ img })
-    }
-  }
-
   ngAfterViewInit(): void {
     this.getOpenDialog.emit((e) => this.updateInfoDialog.openDialog(e))
+  }
+
+  formPatchValue(group: MerchDashboardMerchandisingResponse) {
+    const { images, price, ...rest } = group
+    this.form.patchValue({ ...rest, price: price / 100 })
+
+    this.images.clear()
+    for (const img of images || []) {
+      this.addImage({ img })
+    }
   }
 
   get images() {
@@ -78,16 +77,13 @@ export class AdminCategoryDialog implements OnInit, AfterViewInit {
 
   createImage(value?: string) {
     return new FormControl(
-      value ? value : DEFAULT_CATEGORY.images[0],
+      value ? value : '',
       [Validators.required, Validators.pattern(/^https:\/\/.+/), Validators.maxLength(environment.AVATAR_IMAGE_MAX_LENGTH)]
     )
   }
 
   addImage({ img, event }: { img?: string, event?: PointerEvent }) {
-    if (event) {
-      event.preventDefault()
-    }
-
+    if (event) event.preventDefault()
     this.images.push(this.createImage(img))
   }
 
@@ -97,15 +93,17 @@ export class AdminCategoryDialog implements OnInit, AfterViewInit {
 
   getChangedProps(form: any) {
     const title = form.get('title')?.value
-    const status = form.get('status')?.value
-    const isActive = form.get('isActive')?.value
+    const description = form.get('description')?.value
+    const stock = form.get('stock')?.value
+    const price = form.get('price')?.value
     const images = (form.get('images') as FormArray).value
     const sameImages = arraysHaveSameUniqueValues(images, this.group ? this.group.images : [])
 
-    const changed: AdminDashboardUpdateCategoryBody = {}
+    const changed: MerchDashboardUpdateMerchandisingBody = {}
     if (title && title !== this.group?.title) changed.title = title
-    if (status && status !== this.group?.status) changed.status = status
-    if ((isActive === false || isActive === true) && isActive !== this.group?.isActive) changed.isActive = isActive
+    if (description && description !== this.group?.description) changed.description = description
+    if (stock !== undefined && stock !== this.group?.stock) changed.stock = stock
+    if (price !== undefined && price * 100 !== this.group?.price) changed.price = Math.round(price * 100)
     if (!sameImages) changed.images = images
 
     return changed
@@ -120,13 +118,14 @@ export class AdminCategoryDialog implements OnInit, AfterViewInit {
 
     if (!this.group?.slug) {
       const props = this.getChangedProps(this.form)
+      props.price = props.price !== undefined ? props.price : Math.round((this.form.value.price || 0) * 100)
 
-      this.adminsService.createCategory(props as AdminDashboardCreateCategoryBody).subscribe({
-        error: (e) => this.handleHttpErrors(e),
-        next: (newCategory) => {
+      this.merchService.createMerchandise(props as MerchDashboardCreateMerchandisingBody).subscribe({
+        error: (e: HttpErrorResponse) => this.handleHttpErrors(e),
+        next: (newMerch: MerchDashboardMerchandisingResponse) => {
           this.updateInfoDialog.closeDialog()
-          this.onCreatedCategory.emit(newCategory)
-          this.form.patchValue(DEFAULT_CATEGORY)
+          this.onCreatedMerch.emit(newMerch)
+          this.form.reset()
         },
         complete: () => this.fetching = false
       })
@@ -134,21 +133,25 @@ export class AdminCategoryDialog implements OnInit, AfterViewInit {
     }
 
     const props = this.getChangedProps(this.form)
-    this.adminsService.updateCategory(this.group.slug, props).subscribe({
-      error: (e) => this.handleHttpErrors(e),
-      next: (newCategory) => {
+    this.merchService.updateMerchandise(this.group.slug, props).subscribe({
+      error: (e: HttpErrorResponse) => this.handleHttpErrors(e),
+      next: (newMerch: MerchDashboardMerchandisingResponse) => {
         this.updateInfoDialog.closeDialog()
-        this.onUpdatedCategory.emit({ slug: this.group.slug, newCategory })
-        this.formPatchValue(newCategory)
+        this.onUpdatedMerch.emit({ slug: this.group.slug, newMerch })
+        this.formPatchValue(newMerch)
       },
       complete: () => this.fetching = false
     })
   }
 
   handleClientErrors() {
+    console.log(this.images.controls.map(c => c.errors))
+
     this.errors = structuredClone(ERRORS_DEFAULT)
     const title = this.form.get('title')
-    const image = this.form.get('image')
+    const images = this.images
+
+    images.controls.some((c) => c.hasError(''))
 
     if (title?.hasError('maxlength')) this.errors.title = `Title must be at most ${environment.TITLE_MAX_LENGTH} characters.`
 
@@ -159,14 +162,12 @@ export class AdminCategoryDialog implements OnInit, AfterViewInit {
           idx: i,
           value: 'Image URL must start with https://'
         }
-        break
       }
       else if(c.hasError('maxlength')) {
         this.errors.images = {
           idx: i,
           value: `Image URL must be at most ${environment.AVATAR_IMAGE_MAX_LENGTH} characters.`,
         }
-        break
       }
     }
   }
@@ -181,10 +182,6 @@ export class AdminCategoryDialog implements OnInit, AfterViewInit {
     this.errors.canSubmit = true
   }
 
-
-  formatCategoryStatus(s: CategoryStatus) {
-    return formatCategoryStatus(s)
-  }
   isInvalid(err: any) {
     return err ? 'true' : ''
   }

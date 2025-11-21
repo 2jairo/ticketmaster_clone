@@ -1,0 +1,144 @@
+<dialog appDialog>
+  <article #dialogContent>
+    <header>
+      <h3>{{ group.slug ? group.title : 'Create new' }}</h3>
+
+      <div (click)="updateInfoDialog.closeDialog()">
+        <i class="fa-solid fa-xmark"></i>
+      </div>
+    </header>
+
+    <form [formGroup]="form" (submit)="submitForm()">
+      <app-show-error [generalError]="true" [error]="errors.general" />
+
+      <div>
+        <div class="content">
+          <i class="fa-solid fa-shirt"></i>
+          <input type="text" placeholder="title" formControlName="title" autocomplete="off"
+            [attr.aria-invalid]="isInvalid(errors.title)" />
+        </div>
+
+        <app-show-error [error]="errors.title" />
+      </div>
+
+      <div>
+        <div class="content">
+          <p>Category</p>
+
+          <select>
+            <option>TESTING</option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <div class="content space-between">
+          <p>Images ({{ images.controls.length }})</p>
+          <button (click)="addImage({ event: $event })">Add image</button>
+        </div>
+      </div>
+
+      <div formArrayName="images">
+        @for (img of images.controls; track $index) {
+          <div class="content">
+            <img [src]="img.value" alt="Merch image" />
+            <input [formControlName]="$index" placeholder="https://" [attr.aria-invalid]="isInvalid(errors.images.idx === $index)" />
+
+            <div class="rm" (click)="removeImage($index)">
+              <i class="fa-solid fa-xmark"></i>
+            </div>
+          </div>
+
+          @if($index === errors.images.idx) {
+            <app-show-error [error]="errors.images.value"  />
+          }
+        }
+
+      </div>
+
+      <div>
+        <div class="content">
+          <i class="fa-solid fa-align-center"></i>
+          <textarea placeholder="description" formControlName="description"></textarea>
+        </div>
+      </div>
+
+      <div>
+        <div class="content">
+          <p>Stock</p>
+          <input placeholder="stock" type="number" formControlName="stock" />
+        </div>
+      </div>
+
+      <div>
+        <div class="content">
+          <i class="fa-solid fa-money-bill"></i>
+          <input placeholder="price" type="number" formControlName="price" />
+        </div>
+      </div>
+    </form>
+
+    <footer>
+      <button (click)="updateInfoDialog.closeDialog()" class="secondary">Cancel</button>
+      <button (click)="submitForm()" [disabled]="!form.valid || !errors.canSubmit || fetching"
+        [class.outline]="!form.valid || !errors.canSubmit || fetching">
+        @if(fetching) {
+          <app-loading-gif />
+        } @else {
+          {{ group.slug ? 'Update' : 'Create' }}
+        }
+      </button>
+    </footer>
+  </article>
+</dialog>
+
+<style>
+  dialog article {
+    padding: 0;
+
+    header,
+    header>div {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header>div {
+      cursor: pointer;
+    }
+
+    footer {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: end;
+    }
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+    padding: 20px;
+  }
+
+  form>div .content {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+
+    .rm {
+      cursor: pointer;
+    }
+
+    &.space-between {
+      justify-content: space-between;
+    }
+
+    img {
+      width: 1.125em;
+      height: 1.125em;
+    }
+  }
+</style>

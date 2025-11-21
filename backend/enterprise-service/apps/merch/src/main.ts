@@ -7,7 +7,13 @@ import { createSwaggerModule } from './swagger';
 dotenv.config()
 
 async function bootstrap() {
-  const app = await NestFactory.create(MerchModule);
+  const app = await NestFactory.create(MerchModule, {
+    cors: {
+      origin: true,
+      methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
+      credentials: true,
+    }
+  });
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }))
 
@@ -15,7 +21,7 @@ async function bootstrap() {
   const port = process.env.MERCH_PORT!
 
   createSwaggerModule(app)
-  
+
   await app.listen(port, host);
   console.log(`Merch listening on http://${host}:${port}`)
   console.log(`Swagger docs listening on http://${host}:${port}/docs`)
