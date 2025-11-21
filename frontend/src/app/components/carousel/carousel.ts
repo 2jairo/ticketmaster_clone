@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, Input, ViewChild } from '@angular/core';
+import { Autoplay, Navigation, Pagination } from 'swiper/modules';
 import type { SwiperOptions } from 'swiper/types';
 
 type Images = {
@@ -29,6 +30,7 @@ export class Carousel implements AfterViewInit {
       autoplay: {
         delay: 3000
       },
+      modules: [Pagination, Navigation, Autoplay],
       navigation: {
         nextEl: this.navigationNextElmt.nativeElement,
         prevEl: this.navigationPrevElmt.nativeElement,
