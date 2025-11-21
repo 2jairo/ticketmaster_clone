@@ -17,6 +17,7 @@ type Images = {
 export class Carousel implements AfterViewInit {
   @Input() background: '#000' | 'var(--pico-form-element-background-color)' = 'var(--pico-form-element-background-color)'
   @Input() aspectRatio = '16/9'
+  @Input() navigation = true
 
   @Input({ required: true }) images!: Images[]
 

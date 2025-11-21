@@ -19,11 +19,11 @@
     }
   </swiper-container>
 
-  <div #next class="navigation next" [hidden]="images.length === 0">
+  <div #next class="navigation next" [class.enabled]="this.navigation" [hidden]="images.length === 0">
     <i class="fa-solid fa-chevron-right"></i>
   </div>
 
-  <div #prev class="navigation prev" [hidden]="images.length === 0">
+  <div #prev class="navigation prev" [class.enabled]="this.navigation" [hidden]="images.length === 0">
     <i class="fa-solid fa-chevron-left"></i>
   </div>
 </div>
@@ -37,7 +37,7 @@
   .relative {
     position: relative;
 
-    &:hover .navigation {
+    &:hover .navigation.enabled {
       display: flex;
     }
   }
