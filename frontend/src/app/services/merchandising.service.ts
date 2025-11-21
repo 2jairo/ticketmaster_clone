@@ -17,11 +17,11 @@ export class MerchandisingService {
   }
 
   createMerchandise(body: MerchDashboardCreateMerchandisingBody) {
-    return this.http.post<MerchDashboardMerchandisingResponse>(environment.MERCH_API_URL, '/merch', { body })
+    return this.http.post<MerchDashboardMerchandisingResponse>(environment.MERCH_API_URL, '/merch', body)
   }
 
   updateMerchandise(slug: string, body: MerchDashboardUpdateMerchandisingBody) {
-    return this.http.update<MerchDashboardMerchandisingResponse>(environment.MERCH_API_URL, `/merch/${slug}`, { body })
+    return this.http.update<MerchDashboardMerchandisingResponse>(environment.MERCH_API_URL, `/merch/${slug}`, body)
   }
 
   getMerchCategories() {

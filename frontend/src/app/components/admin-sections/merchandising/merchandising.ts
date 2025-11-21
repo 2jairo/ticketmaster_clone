@@ -11,6 +11,7 @@ import { LoadingGif } from "../../loading-gif/loading-gif";
 @Component({
   selector: 'app-merchandising',
   imports: [InfiniteScrollDirective, AdminMerchCard, AdminMerchDialog, LoadingGif],
+  styleUrls: ['../common.css'],
   templateUrl: './merchandising.html',
 })
 export class Merchandising implements OnInit {

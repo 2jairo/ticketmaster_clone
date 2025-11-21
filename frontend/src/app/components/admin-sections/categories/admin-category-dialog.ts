@@ -23,6 +23,7 @@ const ERRORS_DEFAULT = {
 @Component({
   selector: 'app-admin-category-dialog',
   imports: [ShowError, LoadingGif, ReactiveFormsModule, Dialog],
+  styleUrls: ['../common-dialog.css'],
   templateUrl: './admin-category-dialog.html',
 })
 export class AdminCategoryDialog implements OnInit, AfterViewInit {

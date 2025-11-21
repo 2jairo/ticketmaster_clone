@@ -4,7 +4,7 @@
 
 
 <div
-  class="users"
+  class="list"
   infiniteScroll
   [infiniteScrollDistance]="2"
   [infiniteScrollThrottle]="150"
@@ -25,24 +25,4 @@
 </div>
 
 <style>
-  .users, .create {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    padding: 20px;
-  }
-  .create {
-    flex-direction: row;
-		align-items: center;
-    justify-content: space-between;
-
-		button {
-			width: fit-content;
-		}
-  }
-  .loading {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
 </style>

@@ -20,6 +20,7 @@ const ERRORS_DEFAULT = {
 @Component({
   selector: 'app-admin-music-group-dialog',
   imports: [ShowError, LoadingGif, ReactiveFormsModule, Dialog],
+  styleUrls: ['../common-dialog.css'],
   templateUrl: './admin-music-group-dialog.html',
 })
 export class AdminMusicGroupDialog implements OnInit, AfterViewInit {

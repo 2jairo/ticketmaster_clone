@@ -11,6 +11,7 @@ import { LoadingGif } from "../../loading-gif/loading-gif";
 @Component({
   selector: 'app-categories',
   imports: [InfiniteScrollDirective, AdminCategoryCard, AdminCategoryDialog, LoadingGif],
+  styleUrls: ['../common.css'],
   templateUrl: './categories.html',
 })
 export class Categories implements OnInit {

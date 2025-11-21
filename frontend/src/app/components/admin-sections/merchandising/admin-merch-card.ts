@@ -7,6 +7,7 @@ import { formatViews } from '../../../utils/format';
 @Component({
   selector: 'app-admin-merch-card',
   imports: [AdminMerchDialog, Carousel],
+  styleUrls: ['../common-card.css'],
   templateUrl: './admin-merch-card.html',
 })
 export class AdminMerchCard {
@@ -40,7 +41,9 @@ export class AdminMerchCard {
   formatQuantity(n: number) {
     return formatViews(n)
   }
-  isStockDangerous(merch: MerchDashboardMerchandisingResponse) {
-    return merch.stock > 0 && merch.sold / merch.stock >= 0.8
+  getStockStatus(merch: MerchDashboardMerchandisingResponse) {
+    if(merch.stock === 0) return 'red'
+    if(merch.stock < 250) return 'orange'
+    return ''
   }
 }

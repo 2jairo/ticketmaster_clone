@@ -8,6 +8,7 @@ import { AdminMusicGroupDialog } from "./admin-music-group-dialog";
 @Component({
   selector: 'app-admin-music-group-card',
   imports: [ReactiveFormsModule, AdminMusicGroupDialog],
+  styleUrls: ['../common-card.css'],
   templateUrl: './admin-music-group-card.html',
 })
 export class AdminMusicGroupCard {

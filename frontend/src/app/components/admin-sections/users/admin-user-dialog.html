@@ -1,0 +1,94 @@
+<dialog appDialog>
+  <article #dialogContent>
+    <header>
+      <h3>{{ user.username }}</h3>
+
+      <div (click)="updateInfoDialog.closeDialog()">
+        <i class="fa-solid fa-xmark"></i>
+      </div>
+    </header>
+
+    <form [formGroup]="form" (submit)="submitForm()">
+      <app-show-error [generalError]="true" [error]="errors.general" />
+
+      <div>
+        <div class="content">
+          <i class="fa-solid fa-user"></i>
+          <input type="text" placeholder="username" formControlName="username" autocomplete="username"
+            [attr.aria-invalid]="isInvalid(errors.username)" />
+        </div>
+
+        <app-show-error [error]="errors.username" />
+      </div>
+
+      <div>
+        <div class="content">
+          <i class="fa-solid fa-envelope"></i>
+          <input type="text" placeholder="email" formControlName="email" autocomplete="email"
+            [attr.aria-invalid]="isInvalid(errors.email)" />
+        </div>
+
+        <app-show-error [error]="errors.email" />
+      </div>
+
+      <div>
+        <div class="content">
+          <i class="fa-solid fa-key"></i>
+          <input type="password" placeholder="new password" formControlName="password" autocomplete="current-password"
+            [type]="showPassword ? 'text' : 'password'" [attr.aria-invalid]="isInvalid(errors.password)" />
+          <app-show-password [showPassword]="showPassword" (setInputType)="setInputType($event)" />
+        </div>
+
+        <app-show-error [error]="errors.password" />
+      </div>
+
+      <div>
+        <div class="content">
+          <img [src]="form.get('image')?.value || ''" alt="User image" />
+
+          <input type="text" placeholder="image" formControlName="image"
+            [attr.aria-invalid]="isInvalid(errors.image)" />
+        </div>
+
+        <app-show-error [error]="errors.image" />
+      </div>
+
+      <div>
+        <div class="content">
+          <p>Role</p>
+          <select formControlName="role">
+            @for (role of USER_ROLES; track role) {
+              <option [value]="role">{{ formatUserRole(role) }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <div class="content">
+          <p>Active</p>
+          <input type="checkbox" formControlName="isActive" />
+        </div>
+      </div>
+    </form>
+
+    <footer>
+      <button (click)="updateInfoDialog.closeDialog()" class="secondary">Cancel</button>
+      <button
+        (click)="submitForm()"
+        [disabled]="!form.valid || !errors.canSubmit || fetching"
+        [class.outline]="!form.valid || !errors.canSubmit || fetching"
+      >
+        @if(fetching) {
+          <app-loading-gif />
+        } @else {
+          Update
+        }
+      </button>
+    </footer>
+  </article>
+</dialog>
+
+
+<style>
+</style>

@@ -10,6 +10,7 @@ import { LoadingGif } from "../../loading-gif/loading-gif";
 @Component({
   selector: 'app-users',
   imports: [InfiniteScrollDirective, AdminUserCard, LoadingGif],
+  styleUrls: ['../common.css'],
   templateUrl: './users.html',
 })
 export class Users implements OnInit {

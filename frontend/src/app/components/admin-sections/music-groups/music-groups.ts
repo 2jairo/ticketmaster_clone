@@ -11,6 +11,7 @@ import { LoadingGif } from "../../loading-gif/loading-gif";
 @Component({
   selector: 'app-music-groups',
   imports: [InfiniteScrollDirective, AdminMusicGroupCard, AdminMusicGroupDialog, LoadingGif],
+  styleUrls: ['../common.css'],
   templateUrl: './music-groups.html',
 })
 export class MusicGroups implements OnInit {

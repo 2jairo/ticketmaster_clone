@@ -9,6 +9,7 @@ import { Carousel } from "../../carousel/carousel";
 @Component({
   selector: 'app-admin-category-card',
   imports: [ReactiveFormsModule, AdminCategoryDialog, Carousel],
+  styleUrls: ['../common-card.css'],
   templateUrl: './admin-category-card.html',
 })
 export class AdminCategoryCard {

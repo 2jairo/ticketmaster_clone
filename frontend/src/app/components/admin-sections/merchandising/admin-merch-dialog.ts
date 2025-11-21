@@ -22,6 +22,7 @@ const ERRORS_DEFAULT = {
 @Component({
   selector: 'app-admin-merch-dialog',
   imports: [ShowError, LoadingGif, ReactiveFormsModule, Dialog],
+  styleUrls: ['../common-dialog.css'],
   templateUrl: './admin-merch-dialog.html',
 })
 export class AdminMerchDialog implements OnInit, AfterViewInit {
