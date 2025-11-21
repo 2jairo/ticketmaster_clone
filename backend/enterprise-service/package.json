@@ -32,7 +32,8 @@
     "http-proxy-middleware": "^3.0.5",
     "jsonwebtoken": "^9.0.2",
     "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "slugify": "^1.6.6"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",

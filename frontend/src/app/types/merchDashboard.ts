@@ -39,3 +39,9 @@ export const DEFAULT_MERCH: MerchDashboardMerchandisingResponse = {
   sold: 0,
   price: 0,
 }
+
+export interface MerchDashboardMerchCategoryResponse {
+  title: string
+  slug: string
+  image: string
+}

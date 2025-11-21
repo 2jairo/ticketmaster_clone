@@ -15,7 +15,13 @@ async function bootstrap() {
     }
   });
 
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true }))
+  app.useGlobalPipes(new ValidationPipe({ 
+    whitelist: true,
+    transform: true,
+    transformOptions: {
+      enableImplicitConversion: true
+    }
+  }))
 
   const host = process.env.HOST!
   const port = process.env.MERCH_PORT!

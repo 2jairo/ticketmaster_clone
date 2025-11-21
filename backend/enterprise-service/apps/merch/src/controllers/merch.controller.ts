@@ -6,7 +6,7 @@ import { CurrentUser } from 'apps/shared2/src/decorators/jwt-claims.decorator';
 import { PaginationDefaultPageSize, PaginationDto } from 'apps/shared2/src/dto/pagination';
 import { MerchEntity } from '../entities/merch.entity';
 import { plainToInstance } from 'class-transformer';
-import { CreateMerchDto } from '../dto/merch';
+import { CreateMerchDto, UpdateMerchDto } from '../dto/merch';
 
 @Controller('')
 export class MerchController {
@@ -34,7 +34,7 @@ export class MerchController {
   @AuthGuardDecorator()
   async updateMerch(
     @Param('slug') slug: string,
-    @Body() updateMerchDto: string
+    @Body() updateMerchDto: UpdateMerchDto
   ) {
     const resp = await this.merchService.updateMerch(slug, updateMerchDto)
     return plainToInstance(MerchEntity, resp)

@@ -13,7 +13,7 @@ export class CategoryController {
   @Get()
   @AuthGuardDecorator()
   async getMerch(
-    @Query(new PaginationDefaultPageSize(50)) p: PaginationDto
+    @Query(new PaginationDefaultPageSize(999)) p: PaginationDto
   ) {
     const resp = await this.categryService.getCategories(p)
     return resp.map((m) => plainToInstance(MerchCategoryEntity, m))

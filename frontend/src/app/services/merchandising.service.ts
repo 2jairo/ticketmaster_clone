@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { HttpApiService } from './httpApi.service';
 import { environment } from '../../environments/environment';
 import { Pagination } from '../types/filters';
-import { MerchDashboardMerchandisingResponse, MerchDashboardCreateMerchandisingBody, MerchDashboardUpdateMerchandisingBody } from '../types/merchDashboard';
+import { MerchDashboardMerchandisingResponse, MerchDashboardCreateMerchandisingBody, MerchDashboardUpdateMerchandisingBody, MerchDashboardMerchCategoryResponse } from '../types/merchDashboard';
 
 
 @Injectable({
@@ -25,6 +25,6 @@ export class MerchandisingService {
   }
 
   getMerchCategories() {
-    return this.http.get(environment.MERCH_API_URL, '/')
+    return this.http.get<MerchDashboardMerchCategoryResponse[]>(environment.MERCH_API_URL, '/merch/category')
   }
 }

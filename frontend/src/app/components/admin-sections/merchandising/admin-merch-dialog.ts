@@ -39,9 +39,13 @@ export class AdminMerchDialog implements OnInit, AfterViewInit {
     title: new FormControl('', [Validators.required, Validators.maxLength(environment.TITLE_MAX_LENGTH)]),
     images: this.fb.array([]),
     description: new FormControl('', []),
+    categorySlug: new FormControl('', [Validators.required]),
     stock: new FormControl(0, [Validators.min(0), Validators.required]),
     price: new FormControl(0, [Validators.min(0), Validators.required])
   })
+
+  categories: { title: string, slug: string, image: string }[] = []
+  categoriesLoaded = false
 
   ngOnInit(): void {
     this.formPatchValue(this.group)
@@ -64,8 +68,8 @@ export class AdminMerchDialog implements OnInit, AfterViewInit {
   }
 
   formPatchValue(group: MerchDashboardMerchandisingResponse) {
-    const { images, price, ...rest } = group
-    this.form.patchValue({ ...rest, price: price / 100 })
+    const { images, price, category, ...rest } = group
+    this.form.patchValue({ ...rest, categorySlug: category?.slug || '', price: price / 100 })
 
     this.images.clear()
     for (const img of images || []) {
@@ -96,6 +100,7 @@ export class AdminMerchDialog implements OnInit, AfterViewInit {
   getChangedProps(form: any) {
     const title = form.get('title')?.value
     const description = form.get('description')?.value
+    const categorySlug = form.get('categorySlug')?.value
     const stock = form.get('stock')?.value
     const price = form.get('price')?.value
     const images = (form.get('images') as FormArray).value
@@ -104,6 +109,7 @@ export class AdminMerchDialog implements OnInit, AfterViewInit {
     const changed: MerchDashboardUpdateMerchandisingBody = {}
     if (title && title !== this.group?.title) changed.title = title
     if (description && description !== this.group?.description) changed.description = description
+    if (categorySlug && categorySlug !== this.group?.category?.slug) changed.categorySlug = categorySlug
     if (stock !== undefined && stock !== this.group?.stock) changed.stock = stock
     if (price !== undefined && price * 100 !== this.group?.price) changed.price = Math.round(price * 100)
     if (!sameImages) changed.images = images
@@ -147,8 +153,6 @@ export class AdminMerchDialog implements OnInit, AfterViewInit {
   }
 
   handleClientErrors() {
-    console.log(this.images.controls.map(c => c.errors))
-
     this.errors = structuredClone(ERRORS_DEFAULT)
     const title = this.form.get('title')
     const images = this.images
@@ -184,6 +188,20 @@ export class AdminMerchDialog implements OnInit, AfterViewInit {
     const err = e.error
     this.errors.general = `An unexpected error occurred. Please try again (${err?.error || e.status})`
     this.errors.canSubmit = true
+  }
+
+  loadCategories() {
+    if (this.categoriesLoaded) return
+
+    this.categoriesLoaded = true
+    this.merchService.getMerchCategories().subscribe({
+      next: (categories) => {
+        this.categories = categories
+      },
+      error: () => {
+        this.categoriesLoaded = false
+      }
+    })
   }
 
   isInvalid(err: any) {

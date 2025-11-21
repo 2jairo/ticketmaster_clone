@@ -7,7 +7,7 @@ import { CreateMerchDto, UpdateMerchDto } from '../dto/merch';
 export class MerchService {
   constructor(private prismaService: PrismaService) { }
 
-  getMerch(p: PaginationDto) {
+  async getMerch(p: PaginationDto) {
     return this.prismaService.merch.findMany({
       skip: p.offset,
       take: p.size,
@@ -17,20 +17,41 @@ export class MerchService {
     })
   }
 
-  createMerch(dto: CreateMerchDto) {
+  async createMerch(dto: CreateMerchDto) {
+    const category = await this.prismaService.merchCategory.findFirstOrThrow({
+      where: { slug: dto.categorySlug }
+    })
 
-  }
-
-  updateMerch(slug: string, dto: UpdateMerchDto) {
-    return this.prismaService.merch.update({
-      where: { slug },
+    return this.prismaService.merch.create({
       data: {
-
+        slug: '', // auto generated,
+        title: dto.title,
+        description: dto.description,
+        images: dto.images,
+        categoryId: category.id,
+        price: dto.price,
+        stock: dto.stock,
       }
     })
   }
 
-  deleteMerch(slug: string) {
+  async updateMerch(slug: string, dto: UpdateMerchDto) {
+    const { categorySlug, ...rest } = dto
+
+    const category = await this.prismaService.merchCategory.findFirstOrThrow({
+      where: { slug: dto.categorySlug }
+    })
+
+    return this.prismaService.merch.update({
+      where: { slug },
+      data: {
+        ...rest,
+        categoryId: category.id
+      }
+    })
+  }
+
+  async deleteMerch(slug: string) {
     return this.prismaService.merch.delete({
       where: { slug }
     })
