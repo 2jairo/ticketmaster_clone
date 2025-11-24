@@ -1,13 +1,36 @@
 export enum ErrKind {
   InternalServerError = 'InternalServerError',
   RouteNotFound = 'RouteNotFound',
-  UserNotFound = 'UserNotFound',
+
+  // Auth
+  Unauthorized = 'Unauthorized',
+  Forbidden = 'Forbidden',
+  ExpiredAccessToken = 'ExpiredAccessToken',
+  ExpiredRefreshToken = 'ExpiredRefreshToken',
+
+  // Validation / constraints
+  BadRequest = 'BadRequest',
   UniqueConstraintViolation = 'UniqueConstraintViolation',
   RequiredConstraintViolation = 'RequiredConstraintViolation',
   RegexConstraintViolation = 'RegexConstraintViolation',
-  Unauthorized = 'Unauthorized',
-  ExpiredAccessToken = 'ExpiredAccessToken',
-  ExpiredRefreshToken = 'ExpiredRefreshToken',
+
+  // Request-specific
+  MethodNotAllowed = 'MethodNotAllowed',
+  NotAcceptable = 'NotAcceptable',
+  RequestTimeout = 'RequestTimeout',
+  PayloadTooLarge = 'PayloadTooLarge',
+  UnsupportedMediaType = 'UnsupportedMediaType',
+  UnprocessableEntity = 'UnprocessableEntity',
+  TooManyRequests = 'TooManyRequests',
+
+  // Network / gateway
+  BadGateway = 'BadGateway',
+  ServiceUnavailable = 'ServiceUnavailable',
+  GatewayTimeout = 'GatewayTimeout',
+  NotImplemented = 'NotImplemented',
+
+  // Domain
+  UserNotFound = 'UserNotFound',
   ConcertNotFound = 'ConcertNotFound',
   CommentNotFound = 'CommentNotFound',
   MusicGroupNotFound = 'MusicGroupNotFound',

@@ -26,7 +26,6 @@ const getPrismaClient = () => {
     name: 'update slug',
     query: {
       $allOperations: ({ args, operation, model, query }) => {
-        console.log('using this shit')
         if (!model || !SLUG_MODELS.includes(model)) return query(args)
         if (operation !== 'update' && operation !== 'updateMany' && operation !== 'create') return query(args)
 

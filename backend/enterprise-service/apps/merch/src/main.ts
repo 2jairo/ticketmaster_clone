@@ -3,6 +3,7 @@ import { MerchModule } from './merch.module';
 import dotenv from 'dotenv'
 import { ValidationPipe } from '@nestjs/common';
 import { createSwaggerModule } from './swagger';
+import { AllExceptionsFilter } from 'apps/shared2/lib/all-exceptions.filter';
 
 dotenv.config()
 
@@ -22,6 +23,8 @@ async function bootstrap() {
       enableImplicitConversion: true
     }
   }))
+
+  app.useGlobalFilters(new AllExceptionsFilter())
 
   const host = process.env.HOST!
   const port = process.env.MERCH_PORT!
