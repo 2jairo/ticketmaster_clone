@@ -1,8 +1,9 @@
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, inject, Input, Output, ViewChild } from '@angular/core';
 import { AdminMerchDialog } from './admin-merch-dialog';
 import { MerchDashboardMerchandisingResponse } from '../../../types/merchDashboard';
 import { Carousel } from "../../carousel/carousel";
 import { formatViews } from '../../../utils/format';
+import { MerchandisingService } from '../../../services/merchandising.service';
 
 @Component({
   selector: 'app-admin-merch-card',
@@ -11,6 +12,8 @@ import { formatViews } from '../../../utils/format';
   templateUrl: './admin-merch-card.html',
 })
 export class AdminMerchCard {
+  private merchService = inject(MerchandisingService)
+
   @Input({ required: true }) merch!: MerchDashboardMerchandisingResponse
   @Output() onUpdatedMerch = new EventEmitter<{ slug: string, newMerch: MerchDashboardMerchandisingResponse }>()
   @Output() onDeletedMerch = new EventEmitter<{ slug: string }>()
@@ -27,8 +30,11 @@ export class AdminMerchCard {
   }
 
   settingsDeleteMerch() {
-    this.settingsDialog.nativeElement.open = false
-    this.onDeletedMerch.emit({ slug: this.merch.slug })
+    console.log(this.merch)
+    this.merchService.deleteMerchanside(this.merch.slug).subscribe(() => {
+      this.settingsDialog.nativeElement.open = false
+      this.onDeletedMerch.emit({ slug: this.merch.slug })
+    })
   }
 
   formatCarouselImages(imgs: string[]) {

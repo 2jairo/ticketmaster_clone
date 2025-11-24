@@ -26,7 +26,10 @@
           <p>Category</p>
 
           <select formControlName="categorySlug" (click)="loadCategories()">
-            <option value="">Select a category</option>
+            @if(!group.category.slug) {
+              <option value="">Select a category</option>
+            }
+
             @for (category of categories; track category.slug) {
               <option [value]="category.slug">{{ category.title }}</option>
             }
@@ -57,6 +60,9 @@
           }
         }
 
+        @if(-1 === errors.images.idx) {
+          <app-show-error [error]="errors.images.value"  />
+        }
       </div>
 
       <div>

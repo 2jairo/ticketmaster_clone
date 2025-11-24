@@ -28,7 +28,7 @@ export type MerchDashboardUpdateMerchandisingBody = Partial<MerchDashboardCreate
 export const DEFAULT_MERCH: MerchDashboardMerchandisingResponse = {
   title: '',
   slug: '',
-  images: [],
+  images: ['https://static.productionready.io/images/smiley-cyrus.jpg'],
   description: '',
   category: {
     image: '',
@@ -40,8 +40,31 @@ export const DEFAULT_MERCH: MerchDashboardMerchandisingResponse = {
   price: 0,
 }
 
+
+//-----------------
+
 export interface MerchDashboardMerchCategoryResponse {
   title: string
   slug: string
   image: string
+  _count: {
+    products: number
+  }
+}
+
+export interface MerchDashboardCreateMerchCategoryBody {
+  title: string
+  image: string
+}
+
+export type MerchDashboardUpdateMerchCategoryBody = Partial<MerchDashboardCreateMerchCategoryBody>
+
+
+export const DEFAULT_MERCH_CATEGORY: MerchDashboardMerchCategoryResponse = {
+  title: '',
+  slug: '',
+  image: 'https://static.productionready.io/images/smiley-cyrus.jpg',
+  _count: {
+    products: 0
+  }
 }

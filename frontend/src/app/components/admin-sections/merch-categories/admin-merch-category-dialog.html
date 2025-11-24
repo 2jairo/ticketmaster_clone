@@ -1,0 +1,57 @@
+<dialog appDialog>
+	<article #dialogContent>
+		<header>
+			<h3>{{ group.slug ? group.title : 'Create new' }}</h3>
+
+			<div (click)="updateInfoDialog.closeDialog()">
+				<i class="fa-solid fa-xmark"></i>
+			</div>
+		</header>
+
+		<form [formGroup]="form" (submit)="submitForm()">
+			<app-show-error [generalError]="true" [error]="errors.general" />
+
+			<div>
+				<div class="content">
+					<i class="fa-solid fa-tag"></i>
+					<input type="text" placeholder="title" formControlName="title" autocomplete="off"
+						[attr.aria-invalid]="isInvalid(errors.title)" />
+				</div>
+
+				<app-show-error [error]="errors.title" />
+			</div>
+
+			<div>
+        <div class="content">
+					<img [src]="form.get('image')?.value" alt="Merchandise category image" />
+          <input type="text" placeholder="https://" formControlName="image" autocomplete="off"
+						[attr.aria-invalid]="isInvalid(errors.image)" />
+        </div>
+
+				<app-show-error [error]="errors.image" />
+			</div>
+		</form>
+
+		<footer>
+			<button (click)="updateInfoDialog.closeDialog()" class="secondary">Cancel</button>
+			<button (click)="submitForm()" [disabled]="!form.valid || !errors.canSubmit || fetching"
+				[class.outline]="!form.valid || !errors.canSubmit || fetching">
+				@if(fetching) {
+					<app-loading-gif />
+				} @else {
+					{{ group.slug ? 'Update' : 'Create' }}
+				}
+			</button>
+		</footer>
+	</article>
+</dialog>
+
+
+<style>
+  .content img {
+    width: 50px;
+    height: 50px;
+    border-radius: var(--pico-border-radius);
+    object-fit: cover;
+  }
+</style>

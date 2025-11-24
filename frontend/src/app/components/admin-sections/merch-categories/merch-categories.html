@@ -1,0 +1,38 @@
+<div class="create">
+  <h2>Merchandise Categories</h2>
+	<button (click)="openDialog($event)">Create new</button>
+</div>
+
+<app-admin-merch-category-dialog
+	[group]="getDefaultMerchCategory()"
+	(getOpenDialog)="setOpenDialog($event)"
+	(onCreatedMerchCategory)="addMerchCategory($event)"
+	(onUpdatedMerchCategory)="updateMerchCategory($event)"
+/>
+
+
+<div
+	class="list"
+	infiniteScroll
+	[infiniteScrollDistance]="2"
+	[infiniteScrollThrottle]="150"
+	(scrolled)="loadMerchCategories()"
+>
+	@for (merchCategory of merchCategories(); track merchCategory.slug) {
+		<app-admin-merch-category-card [merchCategory]="merchCategory" (onDeletedMerchCategory)="deleteMerchCategory($event)" (onUpdatedMerchCategory)="updateMerchCategory($event)" />
+  } @empty {
+    @if(!loading) {
+      <p class="no-groups">There are no merchandise categories.</p>
+    }
+  }
+
+  @if(loading) {
+    <div class="loading">
+      <app-loading-gif />
+    </div>
+  }
+</div>
+
+
+<style>
+</style>

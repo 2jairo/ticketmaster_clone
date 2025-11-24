@@ -35,6 +35,12 @@ export const ADMIN_ROUTES: Route[] = [
     data: setUserRoleGuardData({ roles: ['ROOT', 'ENTERPRISE'] })
   },
   {
+    path: 'merch-categories',
+    loadComponent: () => import('../../components/admin-sections/merch-categories/merch-categories').then(c => c.MerchCategories),
+    canActivate: [UserRoleGuard],
+    data: setUserRoleGuardData({ roles: ['ROOT', 'ENTERPRISE'] })
+  },
+  {
     path: '**',
     pathMatch: "full",
     redirectTo: DEFAULT_ADMIN_ROUTE_SECTION

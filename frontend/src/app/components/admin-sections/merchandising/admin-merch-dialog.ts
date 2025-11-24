@@ -44,10 +44,11 @@ export class AdminMerchDialog implements OnInit, AfterViewInit {
     price: new FormControl(0, [Validators.min(0), Validators.required])
   })
 
-  categories: { title: string, slug: string, image: string }[] = []
+  categories: MerchDashboardMerchandisingResponse['category'][] = []
   categoriesLoaded = false
 
   ngOnInit(): void {
+    this.categories = [this.group.category]
     this.formPatchValue(this.group)
     this.form.setValidators((group) => {
       if (!this.group?.slug) return null
@@ -109,7 +110,7 @@ export class AdminMerchDialog implements OnInit, AfterViewInit {
     const changed: MerchDashboardUpdateMerchandisingBody = {}
     if (title && title !== this.group?.title) changed.title = title
     if (description && description !== this.group?.description) changed.description = description
-    if (categorySlug && categorySlug !== this.group?.category?.slug) changed.categorySlug = categorySlug
+    if (categorySlug && categorySlug !== this.group?.category.slug) changed.categorySlug = categorySlug
     if (stock !== undefined && stock !== this.group?.stock) changed.stock = stock
     if (price !== undefined && price * 100 !== this.group?.price) changed.price = Math.round(price * 100)
     if (!sameImages) changed.images = images
@@ -125,7 +126,7 @@ export class AdminMerchDialog implements OnInit, AfterViewInit {
     this.fetching = true
 
     if (!this.group?.slug) {
-      const props = this.getChangedProps(this.form)
+      const props = this.form.value
       props.price = props.price !== undefined ? props.price : Math.round((this.form.value.price || 0) * 100)
 
       this.merchService.createMerchandise(props as MerchDashboardCreateMerchandisingBody).subscribe({
@@ -157,7 +158,15 @@ export class AdminMerchDialog implements OnInit, AfterViewInit {
     const title = this.form.get('title')
     const images = this.images
 
-    images.controls.some((c) => c.hasError(''))
+
+    if(images.controls.length === 0) {
+      this.errors.images = {
+        idx: -1,
+        value: 'At least 1 image is required'
+      }
+      this.errors.canSubmit = false
+    }
+
 
     if (title?.hasError('maxlength')) this.errors.title = `Title must be at most ${environment.TITLE_MAX_LENGTH} characters.`
 
@@ -168,6 +177,7 @@ export class AdminMerchDialog implements OnInit, AfterViewInit {
           idx: i,
           value: 'Image URL must start with https://'
         }
+        this.errors.canSubmit = false
         break
       }
       else if(c.hasError('maxlength')) {
@@ -175,6 +185,7 @@ export class AdminMerchDialog implements OnInit, AfterViewInit {
           idx: i,
           value: `Image URL must be at most ${environment.AVATAR_IMAGE_MAX_LENGTH} characters.`,
         }
+        this.errors.canSubmit = false
       }
       break
     }
