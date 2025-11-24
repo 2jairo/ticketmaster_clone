@@ -112,17 +112,22 @@ model Merch {
 
   @@map("merch")
 }
- 
-type ConcertLocation {
-  type String
-  coordinates Float[]
-}
 
-type ConcertTickets {
+model ConcertTickets {
+  id String @id @map("_id") @default(auto()) @db.ObjectId
   sold Int @default(0)
   available Int @default(0)
   price Int
   location String
+  concertId String @db.ObjectId
+  concert Concert @relation("ConcertTickets", fields: [concertId], references: [id])
+
+  @@map("concerttickets")
+}
+ 
+type ConcertLocation {
+  type String
+  coordinates Float[]
 }
 
 enum ConcertStatus {
@@ -144,7 +149,7 @@ model Concert {
   locationName String
   location ConcertLocation
   totalTicketsSold Int @default(0)
-  tickets ConcertTickets[]
+  tickets ConcertTickets[] @relation("ConcertTickets")
   groups String[] @db.ObjectId
   categoroies String[] @db.ObjectId
   comments String[] @db.ObjectId
