@@ -50,7 +50,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
       err = new LocalError(
         this.getErrKind(exception.name),
         exception.getStatus(),
-        typeof res === 'string' ? res : (res as any).message
+        typeof res === 'string' ? exception.message : undefined,
+        typeof res !== 'string' ? (res as any).message : undefined
       )
     } 
 

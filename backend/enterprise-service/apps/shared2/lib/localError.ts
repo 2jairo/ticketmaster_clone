@@ -42,20 +42,25 @@ export class LocalError {
   statusCode: number;
   errKind: ErrKind;
   msg?: string;
+  cause?: any
 
-  constructor(kind: ErrKind, code: number, msg?: string) {
+  constructor(kind: ErrKind, code: number, msg?: string, cause?: any) {
     this.statusCode = code;
     this.errKind = kind;
 
     if (msg) {
       this.msg = msg;
     }
+    if(cause) {
+      this.cause = cause
+    }
   }
 
   toJSON() {
     return {
       error: this.errKind,
-      ...(this.msg ? { message: this.msg } : {})
+      ...(this.msg ? { message: this.msg } : {}),
+      ...(this.cause ? { cause: this.cause } : {})
     };
   }
 }
