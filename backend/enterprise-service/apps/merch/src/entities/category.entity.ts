@@ -1,5 +1,5 @@
 import { Exclude } from "class-transformer"
-import { IsNotEmpty, IsString } from "class-validator"
+import { IsNotEmpty, IsOptional, IsString } from "class-validator"
 
 export class MerchCategoryEntity {
   @Exclude()
@@ -18,4 +18,9 @@ export class MerchCategoryEntity {
   @IsString()
   @IsNotEmpty()
   image: string
+
+  @IsOptional()
+  _count?: {
+    products: number
+  }
 }

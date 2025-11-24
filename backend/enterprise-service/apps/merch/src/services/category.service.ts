@@ -11,6 +11,13 @@ export class CategoryService {
     return this.prismaService.c.merchCategory.findMany({
       skip: p.offset,
       take: p.size,
+      include: {
+        _count: {
+          select: {
+            products: true
+          }
+        }
+      }
     })
   }
 
@@ -20,6 +27,13 @@ export class CategoryService {
         slug: '',
         title: dto.title,
         image: dto.image
+      },
+      include: {
+        _count: {
+          select: {
+            products: true
+          }
+        }
       }
     })
   }
@@ -30,6 +44,13 @@ export class CategoryService {
       data: {
         title: dto.title,
         image: dto.image,
+      },
+      include: {
+        _count: {
+          select: {
+            products: true
+          }
+        }
       }
     })
   }
