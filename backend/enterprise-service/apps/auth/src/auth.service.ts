@@ -21,7 +21,7 @@ export class AuthService {
   async authenticate(token: string, params: UserWhereInput) {
     const claims = this.validateToken(token)
 
-    const user = await this.prismaService.user.findFirst({
+    const user = await this.prismaService.c.user.findFirst({
       where: { id: claims.userId, isActive: true, ...params },
     })
     

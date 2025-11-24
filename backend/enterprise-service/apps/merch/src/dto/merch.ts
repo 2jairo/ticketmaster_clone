@@ -7,13 +7,12 @@ export class CreateMerchDto {
   title: string
 
   @IsArray()
-  @ArrayNotEmpty()
   @IsString({ each: true })
-  images: string[]
+  images: string[] = ['https://static.productionready.io/images/smiley-cyrus.jpg']
 
   @IsString()
-  @IsNotEmpty()
-  description: string
+  @IsOptional()
+  description: string = ''
 
   @IsString()
   @IsNotEmpty()
@@ -22,12 +21,12 @@ export class CreateMerchDto {
   @Type(() => Number)
   @IsInt()
   @Min(0)
-  stock: number
+  stock: number = 0
 
   @Type(() => Number)
   @IsNumber()
   @Min(0)
-  price: number
+  price: number = 0
 }
 
 

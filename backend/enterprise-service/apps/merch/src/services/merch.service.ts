@@ -8,7 +8,7 @@ export class MerchService {
   constructor(private prismaService: PrismaService) { }
 
   async getMerch(p: PaginationDto) {
-    return this.prismaService.merch.findMany({
+    return this.prismaService.c.merch.findMany({
       skip: p.offset,
       take: p.size,
       include: {
@@ -18,11 +18,11 @@ export class MerchService {
   }
 
   async createMerch(dto: CreateMerchDto) {
-    const category = await this.prismaService.merchCategory.findFirstOrThrow({
+    const category = await this.prismaService.c.merchCategory.findFirstOrThrow({
       where: { slug: dto.categorySlug }
     })
 
-    return this.prismaService.merch.create({
+    return this.prismaService.c.merch.create({
       data: {
         slug: '', // auto generated,
         title: dto.title,
@@ -38,11 +38,11 @@ export class MerchService {
   async updateMerch(slug: string, dto: UpdateMerchDto) {
     const { categorySlug, ...rest } = dto
 
-    const category = await this.prismaService.merchCategory.findFirstOrThrow({
+    const category = await this.prismaService.c.merchCategory.findFirstOrThrow({
       where: { slug: dto.categorySlug }
     })
 
-    return this.prismaService.merch.update({
+    return this.prismaService.c.merch.update({
       where: { slug },
       data: {
         ...rest,
@@ -52,7 +52,7 @@ export class MerchService {
   }
 
   async deleteMerch(slug: string) {
-    return this.prismaService.merch.delete({
+    return this.prismaService.c.merch.delete({
       where: { slug }
     })
   }
