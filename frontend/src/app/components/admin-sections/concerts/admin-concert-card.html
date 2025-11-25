@@ -1,0 +1,70 @@
+<div class="card">
+  <div class="image">
+    <app-carousel [navigation]="false" [images]="formatCarouselImages(concert.images)"></app-carousel>
+  </div>
+
+  <div class="cardInfoHeader">
+    <div class="head">
+      <div>
+        <h3>{{ concert.title }}</h3>
+        <code>{{ formatConcertStatus(concert.status) }}</code>
+        <div class="isActive" [class.active]="concert.isActive"></div>
+      </div>
+
+      <div>
+        <details #settings class="settings dropdown">
+          <summary>
+            <i class="fa-solid fa-gear"></i>
+          </summary>
+
+          <div class="content">
+            <div (click)="settingsDeleteConcert()">
+              <i class="fa-solid fa-trash"></i>
+              <p>Delete</p>
+            </div>
+          </div>
+        </details>
+
+        <div class="edit" (click)="openDialog($event)">
+          <i class="fa-solid fa-pen"></i>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="desc">
+      <p>{{ concert.description }}</p>
+    </div>
+
+    <div class="body">
+      <i class="fa-solid fa-location-dot"></i>
+      <p>{{ concert.locationName }}</p>
+    </div>
+
+    <div class="body">
+      <p>Tickets Sold: {{ concert.totalTicketsSold }}</p>
+      <p class="separator">|</p>
+      <p>Groups: {{ concert.groups.length }}</p>
+      <p class="separator">|</p>
+      <p>Categories: {{ concert.categories.length }}</p>
+      <p class="separator">|</p>
+      <p>Ticket types: {{ concert.tickets.length }}</p>
+    </div>
+  </div>
+</div>
+
+
+<app-admin-concert-dialog
+  [concert]="concert"
+  (onUpdatedConcert)="pipeOnUpdated($event)"
+  (getOpenDialog)="setOpenDialog($event)"
+/>
+
+<style>
+  .image {
+    width: 50px;
+    height: 50px;
+    border-radius: var(--pico-border-radius);
+    overflow: hidden;
+  }
+</style>

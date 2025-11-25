@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpApiService } from './httpApi.service';
 import { environment } from '../../environments/environment';
-import { AdminDashboardUpdateUserBody, AdminDashboardUserResponse } from '../types/adminDashboard';
+import { AdminDashboardConcertResponse, AdminDashboardCreateConcertResponse, AdminDashboardUpdateConcertResponse, AdminDashboardUpdateUserBody, AdminDashboardUserResponse } from '../types/adminDashboard';
 import { Pagination } from '../types/filters';
 import { AdminDashboardCreateMusicGroupBody, AdminDashboardMusicGroupResponse, AdminDashboardUpdateMusicGroupBody } from '../types/musicGroupts';
 import { AdminDashboardCategoryResponse, AdminDashboardCreateCategoryBody, AdminDashboardUpdateCategoryBody } from '../types/categories';
@@ -59,5 +59,23 @@ export class AdminsService {
 
   createCategory(body: AdminDashboardCreateCategoryBody) {
     return this.http.post<AdminDashboardCategoryResponse>(environment.ADMIN_API_URL, `/dashboard/categories`, body)
+  }
+
+  // concerts
+  getConcertList(pagination: Pagination) {
+    const params = { ...pagination }
+    return this.http.get<AdminDashboardConcertResponse[]>(environment.ADMIN_API_URL, '/dashboard/concerts', { params })
+  }
+
+  updateConcert(slug: string, body: AdminDashboardUpdateConcertResponse) {
+    return this.http.post<AdminDashboardConcertResponse>(environment.ADMIN_API_URL, `/dashboard/concerts/${slug}`, body)
+  }
+
+  deleteConcert(slug: string) {
+    return this.http.delete<void>(environment.ADMIN_API_URL, `/dashboard/concerts/${slug}`)
+  }
+
+  createConcert(body: AdminDashboardCreateConcertResponse) {
+    return this.http.post<AdminDashboardConcertResponse>(environment.ADMIN_API_URL, `/dashboard/concerts`, body)
   }
 }

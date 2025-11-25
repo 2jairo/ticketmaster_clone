@@ -46,3 +46,8 @@ form>div .content {
     height: 1.125em;
   }
 }
+
+
+textarea {
+  field-sizing: content;
+}

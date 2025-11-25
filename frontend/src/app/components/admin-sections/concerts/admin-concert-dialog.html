@@ -1,0 +1,177 @@
+<dialog appDialog>
+  <article #dialogContent>
+    <header>
+      <h3>{{ concert.slug ? concert.title : 'Create new concert' }}</h3>
+
+      <div (click)="updateInfoDialog.closeDialog()">
+        <i class="fa-solid fa-xmark"></i>
+      </div>
+    </header>
+
+    <form [formGroup]="form" (submit)="submitForm()">
+      <app-show-error [generalError]="true" [error]="errors.general" />
+
+      <div>
+        <div class="content">
+          <i class="fa-solid fa-music"></i>
+          <input type="text" placeholder="title" formControlName="title" autocomplete="off"
+            [attr.aria-invalid]="isInvalid(errors.title)" />
+        </div>
+
+        <app-show-error [error]="errors.title" />
+      </div>
+
+      <div>
+        <div class="content">
+          <i class="fa-solid fa-align-left"></i>
+          <textarea placeholder="description" formControlName="description"></textarea>
+        </div>
+
+        <app-show-error [error]="errors.description" />
+      </div>
+
+      <div>
+        <div class="content">
+          <i class="fa-solid fa-location-dot"></i>
+          <input type="text" placeholder="location name" formControlName="locationName" autocomplete="off"
+            [attr.aria-invalid]="isInvalid(errors.locationName)" />
+        </div>
+
+        <app-show-error [error]="errors.locationName" />
+      </div>
+
+      <div>
+        <div class="content">
+          <p>Start Date</p>
+          <input type="datetime-local" formControlName="dateStart" />
+        </div>
+      </div>
+
+      <div>
+        <div class="content">
+          <p>End Date</p>
+          <input type="datetime-local" formControlName="dateEnd" />
+        </div>
+      </div>
+
+      <div>
+        <div class="content">
+          <p>Status</p>
+          <select formControlName="status">
+            @for (s of CONCERT_STATUS; track s) {
+            <option [value]="s">{{ formatConcertStatus(s) }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <div class="content">
+          <p>Active</p>
+          <input type="checkbox" formControlName="isActive" />
+        </div>
+      </div>
+
+      <div>
+        <div class="content space-between">
+          <p>Music Groups ({{ (form.get('groupSlugs')?.value || []).length }})</p>
+          <button type="button" (click)="loadMusicGroups()">Load Groups</button>
+        </div>
+      </div>
+
+      @if(musicGroups.length > 0) {
+      <div class="multi-select-container">
+        @for (group of musicGroups; track group.slug) {
+        <label class="checkbox-item">
+          <input type="checkbox" [checked]="isGroupSelected(group.slug)" (change)="toggleGroup(group.slug)" />
+          <img [src]="group.image" [alt]="group.title" />
+          <span>{{ group.title }}</span>
+        </label>
+        }
+      </div>
+      }
+
+      <div>
+        <div class="content space-between">
+          <p>Categories ({{ (form.get('categorySlugs')?.value || []).length }})</p>
+          <button type="button" (click)="loadCategories()">Load Categories</button>
+        </div>
+      </div>
+
+      @if(categories.length > 0) {
+      <div class="multi-select-container">
+        @for (category of categories; track category.slug) {
+        <label class="checkbox-item">
+          <input type="checkbox" [checked]="isCategorySelected(category.slug)"
+            (change)="toggleCategory(category.slug)" />
+          <span>{{ category.title }}</span>
+        </label>
+        }
+      </div>
+      }
+    </form>
+
+    <footer>
+      <button (click)="updateInfoDialog.closeDialog()" class="secondary">Cancel</button>
+      <button (click)="submitForm()" [disabled]="!form.valid || !errors.canSubmit || fetching"
+        [class.outline]="!form.valid || !errors.canSubmit || fetching">
+        @if(fetching) {
+          <app-loading-gif />
+        } @else {
+          {{ concert.slug ? 'Update' : 'Create' }}
+        }
+      </button>
+    </footer>
+  </article>
+</dialog>
+
+
+<style>
+  .multi-select-container {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: var(--pico-border-radius);
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    cursor: pointer;
+    border-radius: var(--pico-border-radius);
+    transition: background-color 0.2s;
+  }
+
+  .checkbox-item:hover {
+    background-color: var(--pico-card-background-color);
+  }
+
+  .checkbox-item input[type="checkbox"] {
+    cursor: pointer;
+    margin: 0;
+  }
+
+  .checkbox-item img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .checkbox-item span {
+    flex: 1;
+  }
+
+  .content.space-between {
+    justify-content: space-between;
+  }
+
+  .content.space-between button {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.875rem;
+  }
+</style>

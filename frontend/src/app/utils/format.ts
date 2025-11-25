@@ -81,3 +81,9 @@ export const formatCategoryStatus = (s: CategoryStatus) => {
   if(s === 'REJECTED') return 'Rejected'
   return 'Pending'
 }
+
+export const formatConcertStatus = (s: 'ACCEPTED' | 'PENDING' | 'REJECTED') => {
+  if(s === 'ACCEPTED') return 'Accepted'
+  if(s === 'REJECTED') return 'Rejected'
+  return 'Pending'
+}
