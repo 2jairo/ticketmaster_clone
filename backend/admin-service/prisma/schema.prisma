@@ -3,10 +3,10 @@ generator adminClient {
   output   = "../src/generated/prisma"
 }
 
-generator enterpriseClient {
-  provider = "prisma-client"
-  output   = "../../enterprise-service/apps/shared2/src/generated/prisma"
-}
+// generator enterpriseClient {
+//   provider = "prisma-client"
+//   output   = "../../enterprise-service/apps/shared2/src/generated/prisma"
+// }
 
 datasource db {
   provider = "mongodb"
@@ -151,7 +151,7 @@ model Concert {
   totalTicketsSold Int @default(0)
   tickets ConcertTickets[] @relation("ConcertTickets")
   groups String[] @db.ObjectId
-  categoroies String[] @db.ObjectId
+  categories String[] @db.ObjectId
   comments String[] @db.ObjectId
   isActive Boolean @default(true)
   status ConcertStatus @default(PENDING)

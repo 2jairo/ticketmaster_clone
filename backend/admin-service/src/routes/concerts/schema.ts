@@ -1,6 +1,7 @@
 import { FastifySchema } from "fastify"
 import S from "fluent-json-schema"
 import { ConcertStatus } from "generated/prisma/enums"
+import { CATEGORY_STATUS } from "schemas/category"
 import { paginationSchema } from "types/pagination"
 
 export const CONCERT_STATUS = Object.values(ConcertStatus)
@@ -9,6 +10,26 @@ const concertLocationSchema = S.object()
 	.prop("type", S.string())
 	.prop("coordinates", S.array().items(S.number()))
 
+const musicGroupResponse = S.object()
+	.prop("slug", S.string())
+	.prop("title", S.string())
+	.prop("image", S.string())
+	.prop("status", S.enum(CONCERT_STATUS))
+	.prop("isActive", S.boolean())
+
+const categoriesResponse = S.object()
+	.prop("slug", S.string())
+	.prop("title", S.string())
+	.prop("status", S.enum(CATEGORY_STATUS))
+	.prop("isActive", S.boolean())
+
+const ticketsResponse = S.object()
+	.prop("id", S.string())
+	.prop("location", S.string())
+	.prop("available", S.number())
+	.prop("price", S.number())
+	.prop("sold", S.number())
+	
 const concertResponse = S.object()
 	.prop("slug", S.string())
 	.prop("title", S.string())
@@ -20,10 +41,10 @@ const concertResponse = S.object()
 	.prop("thumbnailImg", S.string())
 	.prop("locationName", S.string())
 	.prop("location", concertLocationSchema)
+	.prop("groups", S.array().items(musicGroupResponse))
+	.prop("categories", S.array().items(categoriesResponse))
+	.prop("tickets", S.array().items(ticketsResponse))
 	.prop("totalTicketsSold", S.number())
-	.prop("groups", S.array().items(S.string()))
-	.prop("categoroies", S.array().items(S.string()))
-	.prop("comments", S.array().items(S.string()))
 	.prop("status", S.enum(CONCERT_STATUS))
 	.prop("isActive", S.boolean())
 

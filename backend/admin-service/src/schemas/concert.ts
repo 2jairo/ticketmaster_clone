@@ -21,15 +21,6 @@ export const concertModelWrapper = (fastify: FastifyInstance, m: ConcertModel) =
                 id: {
                     in: m.groups
                 }
-            },
-            select: {
-                id: true,
-                slug: true,
-                title: true,
-                image: true,
-                followers: true,
-                status: true,
-                isActive: true
             }
         })
 
@@ -37,43 +28,18 @@ export const concertModelWrapper = (fastify: FastifyInstance, m: ConcertModel) =
         const categories = await fastify.prisma.category.findMany({
             where: {
                 id: {
-                    in: m.categoroies
+                    in: m.categories
                 }
-            },
-            select: {
-                id: true,
-                slug: true,
-                title: true,
-                images: true,
-                status: true,
-                isActive: true
             }
         })
+        console.log(categories, m)
 
-        // Fetch comments
-        const comments = await fastify.prisma.comment.findMany({
-            where: {
-                id: {
-                    in: m.comments
-                }
-            },
-            include: {
-                author: {
-                    select: {
-                        id: true,
-                        username: true,
-                        image: true
-                    }
-                }
-            }
-        })
 
         return {
             ...m,
             tickets,
-            groupsData: groups,
-            categoriesData: categories,
-            commentsData: comments
+            groups,
+            categories,
         }
     }
 

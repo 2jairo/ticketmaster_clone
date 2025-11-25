@@ -10,7 +10,7 @@ export const categoryWrapper = (fastify: FastifyInstance, m: CategoryModel) => {
     const withConcertsLength = async () => {
         const concerts = await fastify.prisma.concert.count({
             where: {
-                categoroies: {
+                categories: {
                     has: m.id
                 }
             }
