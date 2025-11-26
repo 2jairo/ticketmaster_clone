@@ -95,11 +95,21 @@
 
       <div class="ticketTypes">
         @for (ticket of concert.tickets; track ticket._id) {
-          <app-concert-details-ticket-card [concert]="concert" [currentTicket]="ticket"/>
+          <app-concert-details-ticket-card
+            [currentTicket]="ticket"
+            [quantity]="getCartTicketItemQuantity(ticket)"
+            (onUpdateQuantity)="updateLocalTickets($event)"
+          />
         }
 
         <div class="ticketBtns">
-          <button class="outline" disabled>Continue</button>
+          <button
+            [class.outline]="localTickets.length === 0"
+            [disabled]="localTickets.length === 0"
+            (click)="updateCart()"
+          >
+            Continue
+          </button>
         </div>
       </div>
     </div>
@@ -232,6 +242,8 @@
     .map {
       width: 50%;
       display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .map img {
       object-fit: contain;

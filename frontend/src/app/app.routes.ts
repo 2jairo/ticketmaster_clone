@@ -4,6 +4,7 @@ import { AUTH_ROUTES } from './pages/auth/auth.routes';
 import { EVENTS_ROUTES } from './pages/events/events.routes';
 import { USER_ROUTES } from './pages/user/user.routes';
 import { ADMIN_ROUTES } from './pages/admin/admin.routes';
+import { CART_ROUTES } from './pages/cart/cart.routes';
 
 
 export const routes: Routes = [
@@ -32,6 +33,10 @@ export const routes: Routes = [
     path: 'user',
     children: USER_ROUTES,
     loadComponent: () => import('./pages/user/user').then(c => c.User)
+  },
+  {
+    path: 'cart',
+    children: CART_ROUTES,
   },
 
   // role: admin

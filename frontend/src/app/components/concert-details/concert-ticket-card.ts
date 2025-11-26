@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core"
+import { Component, EventEmitter, Input, Output } from "@angular/core"
 import { ConcertDetailsResponseWrapper } from "../../types/concert"
 import { formatViews } from "../../utils/format"
 
@@ -8,13 +8,24 @@ import { formatViews } from "../../utils/format"
   templateUrl: './concert-ticket-card.html'
 })
 export class ConcertTicketCard {
-  @Input({ required: true }) concert!: ConcertDetailsResponseWrapper
+  @Input({ required: true }) quantity!: number
   @Input({ required: true }) currentTicket!: ConcertDetailsResponseWrapper['tickets'][0]
+  @Output() onUpdateQuantity = new EventEmitter<{ itemId: string, quantity: number }>()
 
-  ammount = 0
+  updateQuantity(newQuantity: number) {
+    this.onUpdateQuantity.emit({ itemId: this.currentTicket._id, quantity: newQuantity })
 
-  updateAmmount(offset: number) {
-    this.ammount = Math.max(0, this.ammount + offset)
+    // if (newQuantity < 1) {
+    //   this.removeItem()
+    //   return
+    // }
+
+    // this.cartService.updateCart({
+    //   merch: [{
+    //     itemId: this.currentTicket._id,
+    //     quantity: newQuantity
+    //   }]
+    // })
   }
 
   formatViews(n: number) {

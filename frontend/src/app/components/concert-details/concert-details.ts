@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, HostListener, inject, Input, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, inject, Input, OnInit, ViewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ConcertDetailsResponseWrapper } from '../../types/concert';
 import { ConcertTicketCard } from './concert-ticket-card';
@@ -9,6 +9,8 @@ import { CommentList } from '../comment-list/comment-list';
 import { Pagination } from '../categories/filters';
 import { ProfileService } from '../../services/profile.service';
 import { MusicGroupCard } from '../music-group-card/music-group-card';
+import { ShoppingCartService } from '../../services/shoppingCart.service';
+import { ShoppingCartResponse } from '../../types/shoppingCart';
 
 type Sections = 'groups' | 'tickets' | 'description' | 'comments'
 
@@ -17,9 +19,13 @@ type Sections = 'groups' | 'tickets' | 'description' | 'comments'
   imports: [ConcertTicketCard, RouterLink, Carousel, MusicGroupCard, CommentList],
   templateUrl: './concert-details.html'
 })
-export class ConcertDetails implements AfterViewInit {
+export class ConcertDetails implements AfterViewInit, OnInit {
   @Input({ required: true }) concert!: ConcertDetailsResponseWrapper
   private profileService = inject(ProfileService)
+  private cartService = inject(ShoppingCartService)
+
+  cartItems: ShoppingCartResponse = { merch: [], tickets: [] }
+  localTickets: { itemId: string, quantity: number }[] = []
 
   currentSection: Sections = 'groups'
   @ViewChild('tickets') ticketsSectionElmt!: ElementRef<HTMLElement>
@@ -28,6 +34,42 @@ export class ConcertDetails implements AfterViewInit {
   @ViewChild('comments') commentsSectionElmt!: ElementRef<HTMLElement>
 
   @ViewChild('location') leafletMapElmt!: ElementRef<HTMLElement>
+
+  ngOnInit(): void {
+    this.cartService.cart.subscribe((c) => {
+      this.cartItems = c
+    })
+  }
+
+  getCartTicketItemQuantity(ticket: ConcertDetailsResponseWrapper['tickets'][0]) {
+    const localQuantity = this.localTickets
+      .find((t) => t.itemId === ticket._id)
+      ?.quantity
+
+    if(localQuantity !== undefined) {
+      return localQuantity
+    }
+
+    return this.cartItems.tickets
+      .find((t) => t.item.id == ticket._id)
+      ?.quantity || 0
+  }
+
+  updateLocalTickets(item: { itemId: string, quantity: number }) {
+    const merchIdx = this.localTickets.findIndex((i) => i.itemId === item.itemId)
+    if(merchIdx === -1) {
+      this.localTickets.push(item)
+    } else {
+      this.localTickets[merchIdx] = item
+    }
+  }
+
+  updateCart() {
+    this.cartService.updateCart({ tickets: this.localTickets })
+    .subscribe(() => {
+      this.localTickets = []
+    })
+  }
 
   ngAfterViewInit(): void {
     this.updateCurrentSection()

@@ -24,6 +24,13 @@
       </a>
     }
 
+    <a routerLink="/cart" class="noUnderline cart">
+      <i class="fa-solid fa-basket-shopping"></i>
+
+      @if(cartService.cart | async; as cart) {
+        <p class="cartQty">{{ formatCartQty(cart.merch.length + cart.tickets.length) }}</p>
+      }
+    </a>
   </div>
 </header>
 
@@ -66,5 +73,16 @@
       align-items: center;
       justify-content: center;
     }
+  }
+
+  .cart {
+    position: relative;
+  }
+  .cart .cartQty {
+    position: absolute;
+    top: 0;
+    right: 0;
+    transform: translateX(30%) translateY(-30%);
+    font-size: smaller;
   }
 </style>

@@ -7,6 +7,8 @@ import categoryRoutes from './routes/categoryRoutes'
 import commentsRoutes from './routes/commentsRoutes'
 import musicGroupsRoutes from './routes/musicGroupRoutes'
 import profileRoutes from './routes/profileRoutes'
+import shopCartRoutes from './routes/shopCartRoutes'
+import merchRoutes from './routes/merchRoutes'
 import { errorHandler, notFoundHandler } from './error/err'
 import cookieParser from 'cookie-parser'
 
@@ -28,6 +30,8 @@ async function main() {
     app.use('/api/comments', commentsRoutes)
     app.use('/api/groups', musicGroupsRoutes)
     app.use('/api/profile', profileRoutes)
+    app.use('/api/cart', shopCartRoutes)
+    app.use('/api/merch', merchRoutes)
     
     app.use(notFoundHandler)
     app.use(errorHandler)

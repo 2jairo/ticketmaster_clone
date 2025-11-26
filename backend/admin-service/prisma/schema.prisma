@@ -3,10 +3,10 @@ generator adminClient {
   output   = "../src/generated/prisma"
 }
 
-generator enterpriseClient {
-  provider = "prisma-client"
-  output   = "../../enterprise-service/apps/shared2/src/generated/prisma"
-}
+// generator enterpriseClient {
+//   provider = "prisma-client"
+//   output   = "../../enterprise-service/apps/shared2/src/generated/prisma"
+// }
 
 datasource db {
   provider = "mongodb"
@@ -34,6 +34,7 @@ model User {
   role UserRole
 
   comments Comment[] @relation("CommentAuthor")
+  carts ShoppingCart[] @relation("CartOwner")
   @@map("users")
 }
 
@@ -83,7 +84,6 @@ model MusicGroup {
   status MusicGroupStatus @default(PENDING)
   isActive Boolean @default(true)
 
-
   @@map("musicgroups")
 }
 
@@ -110,7 +110,7 @@ model Merch {
   sold Int @default(0)
   price Int @default(0)
 
-  @@map("merch")
+  @@map("merches")
 }
 
 model ConcertTickets {
@@ -123,6 +123,24 @@ model ConcertTickets {
   concert Concert @relation("ConcertTickets", fields: [concertId], references: [id])
 
   @@map("concerttickets")
+}
+
+enum CartStatus {
+  PENDING
+  SUCCESS
+  CANCELED
+}
+
+model ShoppingCart {
+  id String @id @map("_id") @default(auto()) @db.ObjectId
+  v Int @map("__v") @default(0)
+  userId String @db.ObjectId
+  user User @relation("CartOwner", fields: [userId], references: [id])
+  ticketsId String[] @db.ObjectId
+  merch String[] @db.ObjectId
+  status CartStatus @default(PENDING)
+
+  @@map("shoppingcarts")
 }
  
 type ConcertLocation {
