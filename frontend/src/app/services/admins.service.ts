@@ -5,6 +5,7 @@ import { AdminDashboardConcertResponse, AdminDashboardCreateConcertResponse, Adm
 import { Pagination } from '../types/filters';
 import { AdminDashboardCreateMusicGroupBody, AdminDashboardMusicGroupResponse, AdminDashboardUpdateMusicGroupBody } from '../types/musicGroupts';
 import { AdminDashboardCategoryResponse, AdminDashboardCreateCategoryBody, AdminDashboardUpdateCategoryBody } from '../types/categories';
+import { AdminDashboardConcertTicketResponse, AdminDashboardCreateConcertTicket, AdminDashboardUpdateConcertTicket } from '../types/concertTickets';
 
 
 @Injectable({
@@ -77,5 +78,23 @@ export class AdminsService {
 
   createConcert(body: AdminDashboardCreateConcertResponse) {
     return this.http.post<AdminDashboardConcertResponse>(environment.ADMIN_API_URL, `/dashboard/concerts`, body)
+  }
+
+  // concert tickets
+  getConcertTicketList(pagination: Pagination) {
+    const params = { ...pagination }
+    return this.http.get<AdminDashboardConcertTicketResponse[]>(environment.ADMIN_API_URL, '/dashboard/concert-tickets', { params })
+  }
+
+  updateConcertTicket(id: string, body: AdminDashboardUpdateConcertTicket) {
+    return this.http.update<AdminDashboardConcertTicketResponse>(environment.ADMIN_API_URL, `/dashboard/concert-tickets/${id}`, body)
+  }
+
+  deleteConcertTicket(id: string) {
+    return this.http.delete<void>(environment.ADMIN_API_URL, `/dashboard/concert-tickets/${id}`)
+  }
+
+  createConcertTicket(body: AdminDashboardCreateConcertTicket) {
+    return this.http.post<AdminDashboardConcertTicketResponse>(environment.ADMIN_API_URL, `/dashboard/concert-tickets`, body)
   }
 }

@@ -32,8 +32,6 @@ export const concertModelWrapper = (fastify: FastifyInstance, m: ConcertModel) =
                 }
             }
         })
-        console.log(categories, m)
-
 
         return {
             ...m,

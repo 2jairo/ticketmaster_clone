@@ -3,10 +3,10 @@ generator adminClient {
   output   = "../src/generated/prisma"
 }
 
-// generator enterpriseClient {
-//   provider = "prisma-client"
-//   output   = "../../enterprise-service/apps/shared2/src/generated/prisma"
-// }
+generator enterpriseClient {
+  provider = "prisma-client"
+  output   = "../../enterprise-service/apps/shared2/src/generated/prisma"
+}
 
 datasource db {
   provider = "mongodb"

@@ -3,14 +3,7 @@ import slugify from "slugify";
 import type { CategoryDocument } from "./category";
 import type { IMusicGroupModel } from "./musicGroup";
 import type { IUserModel } from "./user";
-
-
-type ConcertTicket = {
-    sold: number
-    available: number
-    price: number
-    location: string
-}
+import { ConcertTicket, TicketModel } from "./tickets";
 
 const ConcertSchema = new mongoose.Schema({
     title: {
@@ -70,26 +63,6 @@ const ConcertSchema = new mongoose.Schema({
         required: true,
         default: 0,
     },
-    tickets: [{
-        sold: {
-            type: Number,
-            default: 0,
-            required: true
-        },
-        available: {
-            type: Number,
-            default: 0,
-            required: true
-        },
-        price: {
-            type: Number,
-            required: true
-        },
-        location: {
-            type: String,
-            required: true
-        },
-    }],
     groups: [{
         type: Schema.Types.ObjectId,
         ref: 'MusicGroup'
@@ -137,8 +110,12 @@ ConcertSchema.pre(/^find/, function() {
     this.where({ isActive: true, status: 'ACCEPTED' });
 })
 
-ConcertSchema.methods.toConcertResponse = function() {
-    const tickets = (this.tickets as ConcertTicket[]).reduce((acc, ticket) => {
+ConcertSchema.methods.toConcertResponse = async function() {
+    const ticketModels = await TicketModel.find({
+        concertId: this.id
+    })
+
+    const tickets = ticketModels.reduce((acc, ticket) => {
         acc.available += ticket.available
         acc.sold += ticket.sold
         acc.priceMax = Math.min(acc.priceMax, ticket.price)
@@ -161,13 +138,16 @@ ConcertSchema.methods.toConcertResponse = function() {
             carousel: this.images || [],
         },
         locationName: this.locationName,
-        tickets: this.tickets.length === 0 ? null : tickets
+        tickets: ticketModels.length === 0 ? null : tickets
     }
 }
 
 ConcertSchema.methods.toConcertDetailsResponse = async function(user?: IUserModel) {
-    await this.populate('categories')
-    await this.populate('groups')
+    await this.populate(['categories', 'groups'])
+
+    const tickets = await TicketModel.find({
+        concertId: this.id
+    })
 
     return {
         title: this.title,
@@ -182,7 +162,7 @@ ConcertSchema.methods.toConcertDetailsResponse = async function(user?: IUserMode
         },
         locationName: this.locationName,
         location: this.location,
-        tickets: this.tickets.sort((a: ConcertTicket, b: ConcertTicket) => b.price - a.price),
+        tickets: tickets,
         categories: this.categories.map((cat: CategoryDocument) => cat.toCategoryConcertDetailsResponse()),
         groups: this.groups.map((g: IMusicGroupModel) => g.toMusicGroupConcertDetailsResponse(user))
     }
@@ -199,7 +179,7 @@ ConcertSchema.methods.removeComment = function (commentId: mongoose.Types.Object
 
 
 interface IConcertModel {
-    toConcertResponse: () => any
+    toConcertResponse: () => Promise<any>
     toConcertDetailsResponse: (user?: IUserModel) => Promise<any>
     addComment: (commentId: mongoose.Types.ObjectId) => void
     removeComment: (commentId: mongoose.Types.ObjectId) => void
@@ -213,7 +193,7 @@ interface IConcertModel {
     mapImg?: string,
     thumbnailImg?: string,
     totalTicketsSold: number
-    tickets: ConcertTicket[]
+    tickets: Schema.Types.ObjectId[]
     categories: Schema.Types.ObjectId[],
     locationName: string,
     location: {

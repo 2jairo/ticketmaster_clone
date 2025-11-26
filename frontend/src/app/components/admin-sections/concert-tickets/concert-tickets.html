@@ -1,0 +1,38 @@
+<div class="create">
+	<h2>Concert Tickets</h2>
+	<button (click)="openDialog($event)">Create new</button>
+</div>
+
+<app-admin-concert-ticket-dialog
+	[group]="getDefaultConcertTicket()"
+	(getOpenDialog)="setOpenDialog($event)"
+	(onCreatedTicket)="addConcertTicket($event)"
+	(onUpdatedTicket)="updateConcertTicket($event)"
+/>
+
+
+<div
+	class="list"
+	infiniteScroll
+	[infiniteScrollDistance]="2"
+	[infiniteScrollThrottle]="150"
+	(scrolled)="loadConcertTickets()"
+>
+	@for (ticket of concertTickets(); track ticket.id) {
+		<app-admin-concert-ticket-card [ticket]="ticket" (onDeletedTicket)="deleteConcertTicket($event)" (onUpdatedTicket)="updateConcertTicket($event)" />
+	} @empty {
+		@if(!loading) {
+			<p class="no-groups">There are no concert tickets.</p>
+		}
+	}
+
+	@if(loading) {
+		<div class="loading">
+			<app-loading-gif />
+		</div>
+	}
+</div>
+
+
+<style>
+</style>

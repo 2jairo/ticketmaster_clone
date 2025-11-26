@@ -1,0 +1,70 @@
+<dialog appDialog>
+  <article #dialogContent>
+    <header>
+      <h3>{{ group.id ? group.location : 'Create new' }}</h3>
+
+      <div (click)="updateInfoDialog.closeDialog()">
+        <i class="fa-solid fa-xmark"></i>
+      </div>
+    </header>
+
+    <form [formGroup]="form" (submit)="submitForm()">
+      <app-show-error [generalError]="true" [error]="errors.general" />
+
+      <div>
+        <div class="content">
+          <i class="fa-solid fa-location-dot"></i>
+          <input type="text" placeholder="location" formControlName="location" autocomplete="off"
+            [attr.aria-invalid]="isInvalid(errors.location)" />
+        </div>
+
+        <app-show-error [error]="errors.location" />
+      </div>
+
+      <div>
+        <div class="content">
+          <p>Concert</p>
+
+          <select formControlName="concertSlug" (click)="loadConcerts()">
+            @if(!group.concertSlug) {
+              <option value="">Select a concert</option>
+            }
+
+            @for (concert of concerts; track concert.slug) {
+              <option [value]="concert.slug">{{ concert.title }} ({{ concert.slug }})</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <div class="content">
+          <p>Available</p>
+          <input placeholder="available" type="number" formControlName="available" />
+        </div>
+      </div>
+
+      <div>
+        <div class="content">
+          <i class="fa-solid fa-money-bill"></i>
+          <input placeholder="price" type="number" formControlName="price" />
+        </div>
+      </div>
+    </form>
+
+    <footer>
+      <button (click)="updateInfoDialog.closeDialog()" class="secondary">Cancel</button>
+      <button (click)="submitForm()" [disabled]="!form.valid || !errors.canSubmit || fetching"
+        [class.outline]="!form.valid || !errors.canSubmit || fetching">
+        @if(fetching) {
+          <app-loading-gif />
+        } @else {
+          {{ group.id ? 'Update' : 'Create' }}
+        }
+      </button>
+    </footer>
+  </article>
+</dialog>
+
+<style>
+</style>

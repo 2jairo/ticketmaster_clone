@@ -42,6 +42,71 @@
 
       <div>
         <div class="content">
+          <i class="fa-solid fa-map-pin"></i>
+          <p>Lat</p>
+          <input type="number" step="any" placeholder="latitude" formControlName="locationLat" autocomplete="off" />
+        </div>
+      </div>
+
+      <div>
+        <div class="content">
+          <i class="fa-solid fa-map-pin"></i>
+          <p>Lng</p>
+          <input type="number" step="any" placeholder="longitude" formControlName="locationLng" autocomplete="off" />
+        </div>
+      </div>
+
+      <div>
+        <div class="content space-between">
+          <p>Images ({{ images.controls.length }})</p>
+          <button type="button" (click)="addImage({ event: $event })">Add image</button>
+        </div>
+      </div>
+
+      <div formArrayName="images">
+        @for (img of images.controls; track $index) {
+          <div class="content">
+            <img [src]="img.value" alt="Concert image" />
+            <input [formControlName]="$index" placeholder="https://"
+              [attr.aria-invalid]="isInvalid(errors.images.idx === $index)" />
+
+            <div class="rm" (click)="removeImage($index)">
+              <i class="fa-solid fa-xmark"></i>
+            </div>
+          </div>
+
+          @if($index === errors.images.idx) {
+            <app-show-error [error]="errors.images.value" />
+          }
+        }
+
+        @if(-1 === errors.images.idx) {
+          <app-show-error [error]="errors.images.value" />
+        }
+      </div>
+
+      <div>
+        <div class="content">
+          <i class="fa-solid fa-map"></i>
+          <input type="text" placeholder="map image url (optional)" formControlName="mapImg" autocomplete="off"
+            [attr.aria-invalid]="isInvalid(errors.mapImg)" />
+        </div>
+
+        <app-show-error [error]="errors.mapImg" />
+      </div>
+
+      <div>
+        <div class="content">
+          <i class="fa-solid fa-image"></i>
+          <input type="text" placeholder="thumbnail image url (optional)" formControlName="thumbnailImg"
+            autocomplete="off" [attr.aria-invalid]="isInvalid(errors.thumbnailImg)" />
+        </div>
+
+        <app-show-error [error]="errors.thumbnailImg" />
+      </div>
+
+      <div>
+        <div class="content">
           <p>Start Date</p>
           <input type="datetime-local" formControlName="dateStart" />
         </div>
@@ -59,7 +124,7 @@
           <p>Status</p>
           <select formControlName="status">
             @for (s of CONCERT_STATUS; track s) {
-            <option [value]="s">{{ formatConcertStatus(s) }}</option>
+              <option [value]="s">{{ formatConcertStatus(s) }}</option>
             }
           </select>
         </div>
@@ -82,11 +147,11 @@
       @if(musicGroups.length > 0) {
       <div class="multi-select-container">
         @for (group of musicGroups; track group.slug) {
-        <label class="checkbox-item">
-          <input type="checkbox" [checked]="isGroupSelected(group.slug)" (change)="toggleGroup(group.slug)" />
-          <img [src]="group.image" [alt]="group.title" />
-          <span>{{ group.title }}</span>
-        </label>
+          <label class="checkbox-item">
+            <input type="checkbox" [checked]="isGroupSelected(group.slug)" (change)="toggleGroup(group.slug)" />
+            <img [src]="group.image" [alt]="group.title" />
+            <span>{{ group.title }}</span>
+          </label>
         }
       </div>
       }
@@ -99,15 +164,15 @@
       </div>
 
       @if(categories.length > 0) {
-      <div class="multi-select-container">
-        @for (category of categories; track category.slug) {
-        <label class="checkbox-item">
-          <input type="checkbox" [checked]="isCategorySelected(category.slug)"
-            (change)="toggleCategory(category.slug)" />
-          <span>{{ category.title }}</span>
-        </label>
-        }
-      </div>
+        <div class="multi-select-container">
+          @for (category of categories; track category.slug) {
+            <label class="checkbox-item">
+              <input type="checkbox" [checked]="isCategorySelected(category.slug)"
+                (change)="toggleCategory(category.slug)" />
+              <span>{{ category.title }}</span>
+            </label>
+          }
+        </div>
       }
     </form>
 
@@ -143,16 +208,6 @@
     padding: 0.5rem;
     cursor: pointer;
     border-radius: var(--pico-border-radius);
-    transition: background-color 0.2s;
-  }
-
-  .checkbox-item:hover {
-    background-color: var(--pico-card-background-color);
-  }
-
-  .checkbox-item input[type="checkbox"] {
-    cursor: pointer;
-    margin: 0;
   }
 
   .checkbox-item img {
@@ -160,18 +215,5 @@
     height: 32px;
     border-radius: 50%;
     object-fit: cover;
-  }
-
-  .checkbox-item span {
-    flex: 1;
-  }
-
-  .content.space-between {
-    justify-content: space-between;
-  }
-
-  .content.space-between button {
-    padding: 0.25rem 0.75rem;
-    font-size: 0.875rem;
   }
 </style>

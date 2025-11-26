@@ -30,11 +30,16 @@ export const createConcertResponseWrapper = (rawConcert: RawConcertResponse) => 
   const c = {
     ...rawConcert,
     dateStart: new Date(rawConcert.dateStart),
-    dateEnd: new Date(rawConcert.dateEnd)
+    dateEnd: new Date(rawConcert.dateEnd),
   }
 
   return {
     ...c,
+    tickets: {
+      ...c.tickets,
+      priceMax: c.tickets.priceMax / 100,
+      priceMin: c.tickets.priceMin / 100,
+    },
     formattedDateStart: formatDate(c.dateStart),
     formattedDateEnd: formatDate(c.dateEnd),
     soldPercent: () => soldPercent(c.tickets)
@@ -86,6 +91,7 @@ export const createConcertDetailsResponseWrapper = (rawConcert: RawConcertDetail
     formattedDateEnd: formatDate(c.dateEnd),
     tickets: c.tickets.map((t) => ({
       ...t,
+      price: t.price / 100,
       soldPercent: soldPercent(t)
     }))
   }

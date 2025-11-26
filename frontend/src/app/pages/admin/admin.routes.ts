@@ -23,6 +23,12 @@ export const ADMIN_ROUTES: Route[] = [
     data: setUserRoleGuardData({ roles: ['ROOT', 'ADMIN'] })
   },
   {
+    path: 'tickets',
+    loadComponent: () => import('../../components/admin-sections/concert-tickets/concert-tickets').then(c => c.ConcertTickets),
+    canActivate: [UserRoleGuard],
+    data: setUserRoleGuardData({ roles: ['ROOT', 'ADMIN'] })
+  },
+  {
     path: 'users',
     loadComponent: () => import('../../components/admin-sections/users/users').then(c => c.Users),
     canActivate: [UserRoleGuard],

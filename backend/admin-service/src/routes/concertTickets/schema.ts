@@ -8,7 +8,7 @@ const concertTicketResponse = S.object()
     .prop("available", S.number())
     .prop("price", S.number())
     .prop("location", S.string())
-    .prop("concertId", S.string())
+    .prop("concertSlug", S.string())
 
 export const CONCERT_TICKETS_PER_PAGE = 10
 
@@ -37,7 +37,6 @@ export interface createConcertTicketBody {
 
 const createConcertTicket: FastifySchema = {
     body: S.object()
-        .prop("sold", S.number())
         .prop("available", S.number())
         .prop("price", S.number())
         .prop("location", S.string())

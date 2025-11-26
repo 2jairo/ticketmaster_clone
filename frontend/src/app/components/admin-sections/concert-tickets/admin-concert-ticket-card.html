@@ -1,0 +1,56 @@
+<div class="card">
+  <div class="cardInfoHeader">
+    <div class="head">
+      <div>
+        <h3>{{ ticket.location }}</h3>
+        <code>Price: {{ ticket.price / 100 }}€</code>
+        <code [classList]="`available ${getAvailableStatus(ticket)}`">
+          Available: {{ formatQuantity(ticket.available) }}
+        </code>
+        <code>Sold: {{ formatQuantity(ticket.sold) }}</code>
+      </div>
+
+      <div>
+        <details #settings class="settings dropdown">
+          <summary>
+            <i class="fa-solid fa-gear"></i>
+          </summary>
+
+          <div class="content">
+            <div (click)="settingsDeleteTicket()">
+              <i class="fa-solid fa-trash"></i>
+              <p>Delete</p>
+            </div>
+          </div>
+        </details>
+
+        <div class="edit" (click)="openDialog($event)">
+          <i class="fa-solid fa-pen"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="body">
+      <p>Concert: {{ ticket.concertSlug }}</p>
+    </div>
+  </div>
+</div>
+
+
+<app-admin-concert-ticket-dialog
+  [group]="ticket"
+  (onUpdatedTicket)="pipeOnUpdated($event)"
+  (getOpenDialog)="setOpenDialog($event)"
+/>
+
+<style>
+  .available {
+    border: var(--pico-border-width) solid green;
+  }
+  .available.orange {
+    border: var(--pico-border-width) solid orange;
+  }
+  .available.red {
+    border: var(--pico-border-width) solid red;
+  }
+</style>

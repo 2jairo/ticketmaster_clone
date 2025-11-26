@@ -17,10 +17,24 @@ export const dashboardConcertTicketsRoutes = fp((fastify, options: RouteCommonOp
     async function getConcertTicketList(req: FastifyRequest<{ Querystring: Pagination }>, reply: FastifyReply) {
         const tickets = await fastify.prisma.concertTickets.findMany({
             skip: req.query.offset,
-            take: req.query.size
+            take: req.query.size,
+            include: {
+                concert: {
+                    select: { slug: true }
+                }
+            }
         })
 
-        reply.status(200).send(tickets)
+        const response = tickets.map(ticket => ({
+            id: ticket.id,
+            sold: ticket.sold,
+            available: ticket.available,
+            price: ticket.price,
+            location: ticket.location,
+            concertSlug: ticket.concert.slug
+        }))
+
+        reply.status(200).send(response)
     }
 
     // GET concert tickets by concert slug
@@ -44,7 +58,16 @@ export const dashboardConcertTicketsRoutes = fp((fastify, options: RouteCommonOp
             where: { concertId: concert.id }
         })
 
-        reply.status(200).send(tickets)
+        const response = tickets.map(ticket => ({
+            id: ticket.id,
+            sold: ticket.sold,
+            available: ticket.available,
+            price: ticket.price,
+            location: ticket.location,
+            concertSlug: slug
+        }))
+
+        reply.status(200).send(response)
     }
 
     // GET single concert ticket by ID
@@ -61,10 +84,22 @@ export const dashboardConcertTicketsRoutes = fp((fastify, options: RouteCommonOp
     ) {
         const { id } = req.params
         const ticket = await fastify.prisma.concertTickets.findUniqueOrThrow({
-            where: { id }
+            where: { id },
+            include: {
+                concert: {
+                    select: { slug: true }
+                }
+            }
         })
 
-        reply.status(200).send(ticket)
+        reply.status(200).send({
+            id: ticket.id,
+            sold: ticket.sold,
+            available: ticket.available,
+            price: ticket.price,
+            location: ticket.location,
+            concertSlug: ticket.concert.slug
+        })
     }
 
     // POST create concert ticket
@@ -92,7 +127,14 @@ export const dashboardConcertTicketsRoutes = fp((fastify, options: RouteCommonOp
             }
         })
         
-        reply.status(201).send(ticket)
+        reply.status(201).send({
+            id: ticket.id,
+            sold: ticket.sold,
+            available: ticket.available,
+            price: ticket.price,
+            location: ticket.location,
+            concertSlug: concertSlug
+        })
     }
 
     // PUT/PATCH update concert ticket
@@ -111,6 +153,7 @@ export const dashboardConcertTicketsRoutes = fp((fastify, options: RouteCommonOp
         const { concertSlug, ...ticketData } = req.body
         
         let updateData: any = ticketData
+        let responseConcertSlug = concertSlug
         
         if (concertSlug) {
             const concert = await fastify.prisma.concert.findUniqueOrThrow({
@@ -121,10 +164,22 @@ export const dashboardConcertTicketsRoutes = fp((fastify, options: RouteCommonOp
         
         const ticket = await fastify.prisma.concertTickets.update({ 
             where: { id }, 
-            data: updateData 
+            data: updateData,
+            include: {
+                concert: {
+                    select: { slug: true }
+                }
+            }
         })
 
-        reply.status(200).send(ticket)
+        reply.status(200).send({
+            id: ticket.id,
+            sold: ticket.sold,
+            available: ticket.available,
+            price: ticket.price,
+            location: ticket.location,
+            concertSlug: responseConcertSlug || ticket.concert.slug
+        })
     }
 
     // DELETE concert ticket

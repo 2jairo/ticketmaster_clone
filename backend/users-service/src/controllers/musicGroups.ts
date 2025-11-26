@@ -2,20 +2,6 @@ import asyncHandler from "express-async-handler";
 import { MusicGroupModel } from "../models/musicGroup";
 import { ErrKind, LocalError } from "../error/err";
 
-export const createMusicGroup = asyncHandler(async (req, res) => {
-    const group = new MusicGroupModel(req.body)
-    const savedGroup = await group.save()
-    res.status(201).send(savedGroup.toMusicGroupResponse())
-})
-
-export const createMultipleMusicGropus = asyncHandler(async (req, res) => {
-    for (const c of req.body) {
-        const group = new MusicGroupModel(c)
-        await group.save()
-    }
-    res.send('test')
-})
-
 
 export const getMusicGroupDetails = asyncHandler(async (req, res) => {
     const group = await MusicGroupModel.findOne({ slug: req.params.slug })

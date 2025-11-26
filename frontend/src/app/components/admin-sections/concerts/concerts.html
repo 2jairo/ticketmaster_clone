@@ -21,7 +21,7 @@
   @for (concert of concerts(); track concert.slug) {
     <app-admin-concert-card [concert]="concert" (onDeletedConcert)="deleteConcert($event)" (onUpdatedConcert)="updateConcert($event)" />
   } @empty {
-     @if(!loading) {
+    @if(!loading) {
       <p class="no-concerts">There are no concerts.</p>
     }
   }
