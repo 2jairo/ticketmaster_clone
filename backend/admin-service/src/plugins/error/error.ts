@@ -35,6 +35,9 @@ export const enum ErrKind {
   UserNotFound = 'UserNotFound',
   ConcertNotFound = 'ConcertNotFound',
   CommentNotFound = 'CommentNotFound',
+  CartNotFound = 'CartNotFound',
+  OrderNotFound = 'CartNotFound',
+  NotEnoughStock = 'NotEnoughStock',
   MusicGroupNotFound = 'MusicGroupNotFound',
   PasswordMismatch = 'PasswordMismatch',
 }

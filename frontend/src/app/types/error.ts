@@ -33,6 +33,7 @@ export enum ErrKind {
   UserNotFound = 'UserNotFound',
   ConcertNotFound = 'ConcertNotFound',
   CommentNotFound = 'CommentNotFound',
+  CartNotFound = 'CartNotFound',
   MusicGroupNotFound = 'MusicGroupNotFound',
   PasswordMismatch = 'PasswordMismatch',
 

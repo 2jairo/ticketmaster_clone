@@ -1,3 +1,5 @@
+<div id="card-element"></div>
+
 <main>
   <div class="header">
     <h2>Shopping Cart</h2>
@@ -54,7 +56,7 @@
               <p>Total</p>
               <p>{{ (getTotalPrice() / 100).toFixed(2) }}€</p>
             </div>
-            <button>Proceed to Checkout</button>
+            <button (click)="pay()">Proceed to Checkout</button>
           </div>
         </div>
       </div>
@@ -63,6 +65,9 @@
 </main>
 
 <style>
+  #card-element {
+    height: 500px;
+  }
   main {
     padding: 20px;
     max-width: 1400px;

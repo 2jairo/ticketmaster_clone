@@ -13,7 +13,7 @@ interface IShoppingCart {
     userId: Types.ObjectId;
     tickets: ICartItem[];
     merch: ICartItem[];
-    status: 'PENDING' | 'SUCCESS' | 'CANCELLED';
+    isActive: boolean
 }
 
 interface IShoppingCartMethods {
@@ -41,18 +41,17 @@ const shoppingCartSchema = new Schema<IShoppingCart>({
     },
     tickets: [cartItemSchema],
     merch: [cartItemSchema],
-    status: {
-        type: String,
-        enum: ['PENDING', 'SUCCESS', 'CANCELLED'],
-        default: 'PENDING',
-    },
+    isActive: {
+        type: Boolean,
+        default: true
+    }
 }, {
     timestamps: true,
 });
 
 shoppingCartSchema.pre(/^find/, function() {
     //@ts-ignore
-    this.where({ status: 'PENDING' });
+    this.where({ isActive: true });
 })
 
 shoppingCartSchema.methods.toUserResponse = async function() {

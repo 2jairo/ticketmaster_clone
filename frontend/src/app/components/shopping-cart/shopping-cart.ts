@@ -4,6 +4,8 @@ import { ShoppingCartResponse } from '../../types/shoppingCart';
 import { TicketCartItem } from './ticket-cart-item';
 import { MerchCartItem } from './merch-cart-item';
 import { LoadingGif } from '../loading-gif/loading-gif';
+import { StripeCardElement } from '@stripe/stripe-js';
+import { PaymentsService } from '../../services/payments.service';
 
 @Component({
   selector: 'app-shopping-cart-component',
@@ -12,11 +14,15 @@ import { LoadingGif } from '../loading-gif/loading-gif';
 })
 export class ShoppingCart implements OnInit {
   private cartService = inject(ShoppingCartService)
+  private paymentService = inject(PaymentsService)
 
   cart = signal<ShoppingCartResponse>({ tickets: [], merch: [] })
   loading = true
 
-  ngOnInit(): void {
+  cardElement!: StripeCardElement
+  cardMounted = false;
+
+  async ngOnInit() {
     this.cartService.populate().subscribe()
     this.cartService.cart.subscribe({
       next: (cart) => {
@@ -24,6 +30,14 @@ export class ShoppingCart implements OnInit {
         this.loading = false
       }
     })
+
+    this.cardElement = await this.paymentService.createCard()
+    this.cardElement.mount('#card-element');
+    this.cardMounted = true;
+  }
+
+  pay() {
+    this.paymentService.pay(this.cardElement).subscribe()
   }
 
   getTotalPrice(): number {

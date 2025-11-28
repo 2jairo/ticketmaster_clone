@@ -7,6 +7,7 @@ import { categoryWrapper } from 'schemas/category'
 import { ModelWrapper, PrismaModelWrappers } from 'schemas/wrapper'
 import slugify from 'slugify'
 import { concertModelWrapper } from 'schemas/concert'
+import { shoppingCartModelWrapper } from 'schemas/shoppingCart'
 
 declare module "fastify" {
     interface FastifyInstance {
@@ -76,6 +77,7 @@ export const prismaClientPlugin = fp(async (fastify) => {
         user: new ModelWrapper(prisma, 'user', (v) => userModelWrapper(fastify, v)),
         musicGroup: new ModelWrapper(prisma, 'musicGroup', (v) => musicGroupWrapper(fastify, v)),
         concert: new ModelWrapper(prisma, 'concert', (v) => concertModelWrapper(fastify, v)),
-        category: new ModelWrapper(prisma, 'category', (v) => categoryWrapper(fastify, v))
+        category: new ModelWrapper(prisma, 'category', (v) => categoryWrapper(fastify, v)),
+        shoppingCart: new ModelWrapper(prisma, 'shoppingCart', (v) => shoppingCartModelWrapper(fastify, v)),
     })
 })

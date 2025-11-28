@@ -14,6 +14,8 @@ import { dashboardMusicGroupsRoutes } from 'routes/musicGroups/groups'
 import { dashboardCategoriesRoutes } from 'routes/categories/category'
 import { dashboardConcertRotues } from 'routes/concerts/concerts'
 import { dashboardConcertTicketsRoutes } from 'routes/concertTickets/concertTickets'
+import { stripeRoutes } from 'routes/stripe/stripe'
+import { stripePlugin } from 'plugins/stripe/stripe'
 
 dotenv.config()
 
@@ -27,6 +29,7 @@ async function main() {
     await fastify.register(fastifyCookie)
     await fastify.register(jwtPlugin)
     await fastify.register(swaggerPlugin)
+    await fastify.register(stripePlugin)
 
     await fastify.register(authRoutes, { prefix: '/api/auth' })
     await fastify.register(dashboardUserRoutes, { prefix: '/api/dashboard/users' })
@@ -34,6 +37,7 @@ async function main() {
     await fastify.register(dashboardCategoriesRoutes, { prefix: '/api/dashboard/categories' })
     await fastify.register(dashboardConcertRotues, { prefix: '/api/dashboard/concerts' })
     await fastify.register(dashboardConcertTicketsRoutes, { prefix: '/api/dashboard/concert-tickets' })
+    await fastify.register(stripeRoutes, { prefix: '/api/payments' })
     
     try {
         await fastify.listen(config)

@@ -35,6 +35,7 @@ model User {
 
   comments Comment[] @relation("CommentAuthor")
   carts ShoppingCart[] @relation("CartOwner")
+  orders Order[] @relation("OrderOwner")
   @@map("users")
 }
 
@@ -125,10 +126,10 @@ model ConcertTickets {
   @@map("concerttickets")
 }
 
-enum CartStatus {
-  PENDING
-  SUCCESS
-  CANCELED
+
+type ShoppingCartItem {
+  itemId String //@db.OjectId
+  quantity Int
 }
 
 model ShoppingCart {
@@ -136,13 +137,57 @@ model ShoppingCart {
   v Int @map("__v") @default(0)
   userId String @db.ObjectId
   user User @relation("CartOwner", fields: [userId], references: [id])
-  ticketsId String[] @db.ObjectId
-  merch String[] @db.ObjectId
-  status CartStatus @default(PENDING)
+  tickets ShoppingCartItem[]
+  merch ShoppingCartItem[]
+  isActive Boolean @default(true)
 
   @@map("shoppingcarts")
 }
+
+
+enum OrderStatus {
+  PENDING
+  PAID
+  FAILED
+  CANCELED
+}
+
+model Order {
+  id String @id @map("_id") @default(auto()) @db.ObjectId
+  userId String @db.ObjectId
+  user User @relation("OrderOwner", fields: [userId], references: [id])
+  tickets ShoppingCartItem[]
+  merch ShoppingCartItem[]
+  status OrderStatus @default(PENDING)
+  totalAmmount Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  paymemt Payment? @relation("OrderPayment")
+
+  @@map("orders")
+}
  
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+}
+
+model Payment {
+  id String @id @map("_id") @default(auto()) @db.ObjectId
+  orderId String @db.ObjectId @unique
+  order Order @relation("OrderPayment", fields: [orderId], references: [id])
+  totalAmmount Int
+  method String
+  currency String
+  transactionRef String
+  status PaymentStatus @default(PENDING)
+  createdAt DateTime @default(now())
+  paidAt DateTime @default(now())
+
+  
+  @@map("payments")
+}
+
 type ConcertLocation {
   type String
   coordinates Float[]

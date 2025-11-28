@@ -1,4 +1,5 @@
 export const environment = {
+  STRIPE_PK: 'pk_test_51SX2VGKCK5VsHXUrs8uhl33hOCVyquG7omzzoZTMK2BxMXz5WvYzofm8Kaod3MgACCgGwxB13fmF5SnjuwTHo4lY00GQGVDQ29',
   USER_API_URL: 'http://127.0.0.1:3000/api',
   ADMIN_API_URL: 'http://127.0.0.1:3001/api',
   MERCH_API_URL: 'http://127.0.0.1:3002/api',
