@@ -101,6 +101,7 @@ export const stripeRoutes = fp(async (fastify, common: RouteCommonOptions) => {
                 //TODO: generate sells
             }
 
+            const ticketsSummary: { [concertId: string]: number } = {}
             for (const t of order.tickets) {
                 const ticket = await tx.concertTickets.findFirst({
                     where: { id: t.itemId }
@@ -136,9 +137,26 @@ export const stripeRoutes = fp(async (fastify, common: RouteCommonOptions) => {
                         }
                     }) 
                 })
+
+                if(!ticketsSummary[ticket.concertId]) ticketsSummary[ticket.concertId] = 0
+                ticketsSummary[ticket.concertId] += t.quantity
             }
 
-            // 3.- mark as paid
+            // 3.- update concert totalTicketsSold
+            for (const [concertId, quantity] of Object.entries(ticketsSummary)) {
+                await tx.concert.update({
+                    where: {
+                        id: concertId
+                    },
+                    data: {
+                        totalTicketsSold: {
+                            increment: quantity
+                        }
+                    }
+                })
+            }
+
+            // 4.- mark as paid
             await tx.order.update({
                 where: { id: order.id },
                 data: {
