@@ -19,12 +19,13 @@ export const stripeRoutes = fp(async (fastify, common: RouteCommonOptions) => {
         let event: Stripe.Event
 
         try {
-            event = fastify.stripe.webhooks.constructEvent(req.body as any, sig, webhookSecret);
+            event = fastify.stripe.webhooks.constructEvent(req.rawBody as any, sig, webhookSecret);
         } catch (err) {
             throw new LocalError(ErrKind.BadRequest, 400, (err as Error).message)
         }
 
-        if(event.type !== 'charge.succeeded' && event.type !== 'payment_intent.succeeded') {
+        // event.type !== 'charge.succeeded' && 
+        if(event.type !== 'payment_intent.succeeded') {
             return reply.status(200).send()
         }
         
@@ -46,7 +47,8 @@ export const stripeRoutes = fp(async (fastify, common: RouteCommonOptions) => {
                         totalAmmount: pi.amount,
                         method: 'stripe',
                         transactionRef,
-                        status: 'COMPLETED'
+                        status: 'COMPLETED',
+                        paidAt: new Date(),
                     }
                 })
             } else if(payment.status !== 'COMPLETED') {
@@ -57,6 +59,8 @@ export const stripeRoutes = fp(async (fastify, common: RouteCommonOptions) => {
                         paidAt: new Date()
                     }
                 })
+            } else {
+                return
             }
 
             // 2.- check order stock
@@ -87,11 +91,14 @@ export const stripeRoutes = fp(async (fastify, common: RouteCommonOptions) => {
                     data: {
                         stock: {
                             decrement: m.quantity
+                        },
+                        sold: {
+                            increment: m.quantity
                         }
                     }
                 })
                 
-                //TODO
+                //TODO: generate sells
             }
 
             for (const t of order.tickets) {
@@ -113,11 +120,22 @@ export const stripeRoutes = fp(async (fastify, common: RouteCommonOptions) => {
                     data: {
                         available: {
                             decrement: t.quantity
+                        },
+                        sold: {
+                            increment: t.quantity
                         }
                     }
-                }) 
+                })
 
-                //TODO: generate tickets
+                await tx.ticketSerial.createMany({
+                    data: Array.from({ length: t.quantity }, () => {
+                        return {
+                            status: 'ACTIVE',
+                            ticketId: ticket.id,
+                            userId: order.userId,
+                        }
+                    }) 
+                })
             }
 
             // 3.- mark as paid
@@ -142,7 +160,10 @@ export const stripeRoutes = fp(async (fastify, common: RouteCommonOptions) => {
     })
     async function createPaymentIntent(req: FastifyRequest, reply: FastifyReply) {
         const cart = await fastify.prismaW.shoppingCart.findFirst({
-            where: { userId: req.user.userId }
+            where: { 
+                userId: req.user.userId,
+                isActive: true
+            }
         })
 
         if(!cart) {

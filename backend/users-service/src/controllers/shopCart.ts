@@ -42,7 +42,7 @@ export const updateShoppingCart = asyncHandler(async (req, res) => {
         const newTickets = formatItems(tickets);
 
         for (const newItem of newTickets) {
-            if(newItem.quantity === 0) {
+            if(newItem.quantity <= 0) {
                 shoppingCart.tickets = shoppingCart.tickets.filter((t) => t.itemId.toString() !== newItem.itemId)
                 continue
             }
@@ -62,7 +62,7 @@ export const updateShoppingCart = asyncHandler(async (req, res) => {
         const newMerch = formatItems(merch);
 
         for (const newItem of newMerch) {
-            if(newItem.quantity === 0) {
+            if(newItem.quantity <= 0) {
                 shoppingCart.merch = shoppingCart.merch.filter((t) => t.itemId.toString() !== newItem.itemId)
                 continue
             }

@@ -36,6 +36,7 @@ model User {
   comments Comment[] @relation("CommentAuthor")
   carts ShoppingCart[] @relation("CartOwner")
   orders Order[] @relation("OrderOwner")
+  tickets TicketSerial[] @relation("UserTicketSerials")
   @@map("users")
 }
 
@@ -122,6 +123,7 @@ model ConcertTickets {
   location String
   concertId String @db.ObjectId
   concert Concert @relation("ConcertTickets", fields: [concertId], references: [id])
+  serialTickets TicketSerial[] @relation("ConcertTicketTicketSerial")
 
   @@map("concerttickets")
 }
@@ -161,7 +163,7 @@ model Order {
   status OrderStatus @default(PENDING)
   totalAmmount Int
   createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  updatedAt DateTime?
   paymemt Payment? @relation("OrderPayment")
 
   @@map("orders")
@@ -182,10 +184,31 @@ model Payment {
   transactionRef String
   status PaymentStatus @default(PENDING)
   createdAt DateTime @default(now())
-  paidAt DateTime @default(now())
+  paidAt DateTime?
 
   
   @@map("payments")
+}
+
+enum TicketSerialStatus {
+  ACTIVE
+  REDEEMED
+  INVALID
+}
+
+model TicketSerial {
+  id String @id @map("_id") @default(auto()) @db.ObjectId
+  userId String @db.ObjectId
+  user User @relation("UserTicketSerials", fields: [userId], references: [id])
+  ticketId String @db.ObjectId
+  ticket ConcertTickets @relation("ConcertTicketTicketSerial", fields: [ticketId], references: [id])
+  // concertId String @db.ObjectId
+  // concert Concert @relation("ConcertTicketSerials", fields: [concertId], references: [id])
+  status TicketSerialStatus
+  createdAt DateTime @default(now())
+  updatedAt DateTime?
+  
+	@@map("ticketserials")
 }
 
 type ConcertLocation {
@@ -218,6 +241,7 @@ model Concert {
   comments String[] @db.ObjectId
   isActive Boolean @default(true)
   status ConcertStatus @default(PENDING)
+  // ticketSerials TicketSerial[] @relation("ConcertTicketSerials")
 
   @@map("concerts")
 }
