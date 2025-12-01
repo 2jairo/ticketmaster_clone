@@ -1,8 +1,8 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpApiService } from './httpApi.service';
-import { loadStripe, Stripe, StripeCardElement } from '@stripe/stripe-js';
+import { loadStripe, Stripe, StripeCardElement, StripeCardNumberElement, StripeCardExpiryElement, StripeCardCvcElement, StripeElementStyle } from '@stripe/stripe-js';
 import { environment } from '../../environments/environment';
-import { from, map, switchMap, tap } from 'rxjs';
+import { from, map, switchMap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -33,14 +33,32 @@ export class PaymentsService {
     return elements.create('card');
   }
 
-  pay(cardElmt: StripeCardElement) {
+  async createCardElements() {
+    const stripe = await this.getStripe()
+    const elements = stripe.elements()
+
+    const style: StripeElementStyle = {
+      invalid: {
+        color: 'var(--pico-form-element-invalid-border-color)',
+        iconColor: 'var(--pico-form-element-invalid-border-color)'
+      }
+    }
+
+    return {
+      cardNumber: elements.create('cardNumber', { style }),
+      cardExpiry: elements.create('cardExpiry', { style }),
+      cardCvc: elements.create('cardCvc', { style })
+    }
+  }
+
+  pay(cardElement: StripeCardElement | StripeCardNumberElement) {
     return this.http.post<{ clientSecret: string }>(environment.ADMIN_API_URL, '/payments/create-payment-intent', undefined)
       .pipe(
         switchMap(resp =>
           from(
             this.getStripe().then((stripe) => {
               return stripe.confirmCardPayment(resp.clientSecret, {
-                payment_method: { card: cardElmt }
+                payment_method: { card: cardElement }
               });
             })
           )

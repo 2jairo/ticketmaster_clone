@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpApiService } from './httpApi.service';
-import { BehaviorSubject, tap } from 'rxjs';
+import { BehaviorSubject, ReplaySubject, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { ShoppingCartResponse, UpdateShoppingCartBody } from '../types/shoppingCart';
 
@@ -15,10 +15,14 @@ export class ShoppingCartService {
   })
   readonly cart = this.cartSubject.asObservable()
 
+  private cartFetchedSubject = new ReplaySubject<boolean>(1)
+  readonly cartFetched = this.cartFetchedSubject.asObservable()
+
   populate() {
     return this.http.get<ShoppingCartResponse>(environment.USER_API_URL, '/cart')
       .pipe(tap((resp) => {
         this.cartSubject.next(resp)
+        this.cartFetchedSubject.next(true)
       }))
   }
 
@@ -26,6 +30,7 @@ export class ShoppingCartService {
     return this.http.update<ShoppingCartResponse>(environment.USER_API_URL, '/cart', body)
       .pipe(tap((resp) => {
         this.cartSubject.next(resp)
+        this.cartFetchedSubject.next(true)
       }))
   }
 
@@ -33,6 +38,11 @@ export class ShoppingCartService {
     return this.http.post(environment.USER_API_URL, '/cart/clear', undefined)
       .pipe(tap((resp) => {
         this.cartSubject.next({ merch: [], tickets: [] })
+        this.cartFetchedSubject.next(true)
       }))
+  }
+
+  cleanCartWithoutHttp() {
+    this.cartSubject.next({ merch: [], tickets: [] })
   }
 }

@@ -1,0 +1,349 @@
+<main>
+  @if(paymentSuccess) {
+    <div class="success-message">
+      <i class="fa-solid fa-circle-check"></i>
+      <h2>Payment Successful!</h2>
+      <p>Thank you for your purchase. Redirecting...</p>
+    </div>
+  } @else {
+    <div class="payment-container">
+      <div class="payment-form">
+        <h2>Payment Details</h2>
+
+        @if(error) {
+          <app-show-error [generalError]="true" [error]="error" />
+        }
+
+        <form (submit)="pay(); $event.preventDefault()">
+          <div class="form-section">
+            <h3>Card Information</h3>
+
+            <div class="form-group">
+              <label for="card-number-element">Card Number</label>
+              <div class="stripe-element" id="card-number-element"></div>
+
+              <app-show-error [error]="cardNumberError" />
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="card-expiry-element">Expiry Date</label>
+                <div class="stripe-element" id="card-expiry-element"></div>
+
+                <app-show-error [error]="cardExpiryError" />
+              </div>
+
+              <div class="form-group">
+                <label for="card-cvc-element">CVC</label>
+                <div class="stripe-element" id="card-cvc-element"></div>
+
+                <app-show-error [error]="cardCvcError" />
+              </div>
+            </div>
+          </div>
+
+          <button type="submit">
+            @if(processing) {
+              <app-loading-gif />
+            } @else {
+              <i class="fa-solid fa-lock"></i>
+              Pay {{ (getTotalPrice() / 100).toFixed(2) }}€
+            }
+          </button>
+        </form>
+      </div>
+
+      <div class="order-summary">
+        <h3>Order Summary</h3>
+
+        <div class="summary-content">
+          <div class="summary-total">
+            @if(cart().tickets.length > 0) {
+              <div class="total-row">
+                <span>Tickets ({{ cart().tickets.length }})</span>
+                <span>{{ (getTicketsTotalPrice() / 100).toFixed(2) }}€</span>
+              </div>
+            }
+            @if(cart().merch.length > 0) {
+              <div class="total-row">
+                <span>Merch ({{ cart().merch.length }})</span>
+                <span>{{ (getMerchTotalPrice() / 100).toFixed(2) }}€</span>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="summary-content">
+          <div class="summary-total">
+            <div class="total-row">
+              <span>Subtotal</span>
+              <span>{{ (getTotalPrice() / 100).toFixed(2) }}€</span>
+            </div>
+
+            <div class="total-row">
+              <span>Tax</span>
+              <span>0.00€</span>
+            </div>
+
+            <div class="total-row final">
+              <span>Total</span>
+              <span>{{ (getTotalPrice() / 100).toFixed(2) }}€</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  }
+</main>
+
+<style>
+  main {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto !important;
+  }
+
+  .success-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    gap: 1rem;
+    color: var(--pico-primary);
+
+    i {
+      font-size: 5rem;
+    }
+
+    h2 {
+      margin: 0;
+      color: var(--pico-primary);
+    }
+
+    p {
+      color: var(--pico-muted-color);
+      font-size: 1.1rem;
+    }
+  }
+
+  .payment-container {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 2rem;
+  }
+
+  .payment-form {
+    background-color: var(--pico-form-element-background-color);
+    border: var(--pico-border-width) solid var(--pico-secondary-border);
+    border-radius: var(--pico-border-radius);
+    padding: 2rem;
+
+    h2 {
+      border-bottom: var(--pico-border-width) solid var(--pico-secondary-border);
+      padding-bottom: 1rem;
+    }
+  }
+
+  .form-section {
+    margin-bottom: 2rem;
+
+    h3 {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      color: var(--pico-muted-color);
+    }
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .stripe-element {
+    padding: 0.75rem;
+    border: var(--pico-border-width) solid var(--pico-secondary-border);
+    border-radius: var(--pico-border-radius);
+    background-color: var(--pico-background-color);
+    transition: border-color 0.2s;
+
+    &:focus-within {
+      border-color: var(--pico-primary);
+    }
+  }
+
+  button[type="submit"] {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 1.1rem;
+    padding: 1rem;
+  }
+
+  .order-summary {
+    background-color: var(--pico-form-element-background-color);
+    border: var(--pico-border-width) solid var(--pico-secondary-border);
+    border-radius: var(--pico-border-radius);
+    padding: 1.5rem;
+    height: fit-content;
+    position: sticky;
+    top: 80px;
+
+    h3 {
+      margin-top: 0;
+      margin-bottom: 1.5rem;
+      border-bottom: var(--pico-border-width) solid var(--pico-secondary-border);
+      padding-bottom: 0.5rem;
+    }
+  }
+
+  .empty-cart {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 2rem;
+    color: var(--pico-muted-color);
+
+    i {
+      font-size: 3rem;
+    }
+  }
+
+  .summary-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .summary-section {
+    h4 {
+      font-size: 0.95rem;
+      margin-bottom: 0.75rem;
+      color: var(--pico-muted-color);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  .summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background-color: var(--pico-background-color);
+    border-radius: var(--pico-border-radius);
+    margin-bottom: 0.5rem;
+
+    .item-info {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex: 1;
+    }
+
+    .item-image {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--pico-border-radius);
+      overflow: hidden;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+
+    .item-name {
+      margin: 0;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    .item-detail {
+      margin: 0;
+      font-size: 0.8rem;
+      color: var(--pico-muted-color);
+    }
+
+    .item-price {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-align: right;
+
+      .quantity {
+        margin: 0;
+        font-size: 0.85rem;
+        color: var(--pico-muted-color);
+      }
+
+      .price {
+        margin: 0;
+        font-weight: 600;
+      }
+    }
+  }
+
+  .summary-total {
+    border-top: var(--pico-border-width) solid var(--pico-secondary-border);
+    padding-top: 1rem;
+    margin-top: 1rem;
+
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+
+      &.final {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-top: 0.5rem;
+        padding-top: 0.5rem;
+        border-top: var(--pico-border-width) solid var(--pico-secondary-border);
+      }
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .payment-container {
+      grid-template-columns: 1fr;
+    }
+
+    .order-summary {
+      position: static;
+      order: -1;
+    }
+  }
+
+  @media (max-width: 768px) {
+    main {
+      padding: 1rem;
+    }
+
+    .payment-form {
+      padding: 1rem;
+    }
+
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

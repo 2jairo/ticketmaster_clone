@@ -5,16 +5,15 @@ import { TicketCartItem } from './ticket-cart-item';
 import { MerchCartItem } from './merch-cart-item';
 import { LoadingGif } from '../loading-gif/loading-gif';
 import { StripeCardElement } from '@stripe/stripe-js';
-import { PaymentsService } from '../../services/payments.service';
+import { RouterLink } from "@angular/router";
 
 @Component({
   selector: 'app-shopping-cart-component',
-  imports: [TicketCartItem, MerchCartItem, LoadingGif],
+  imports: [TicketCartItem, MerchCartItem, LoadingGif, RouterLink],
   templateUrl: './shopping-cart.html',
 })
 export class ShoppingCart implements OnInit {
   private cartService = inject(ShoppingCartService)
-  private paymentService = inject(PaymentsService)
 
   cart = signal<ShoppingCartResponse>({ tickets: [], merch: [] })
   loading = true
@@ -30,14 +29,6 @@ export class ShoppingCart implements OnInit {
         this.loading = false
       }
     })
-
-    this.cardElement = await this.paymentService.createCard()
-    this.cardElement.mount('#card-element');
-    this.cardMounted = true;
-  }
-
-  pay() {
-    this.paymentService.pay(this.cardElement).subscribe()
   }
 
   getTotalPrice(): number {

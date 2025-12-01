@@ -5,6 +5,7 @@ import { EVENTS_ROUTES } from './pages/events/events.routes';
 import { USER_ROUTES } from './pages/user/user.routes';
 import { ADMIN_ROUTES } from './pages/admin/admin.routes';
 import { CART_ROUTES } from './pages/cart/cart.routes';
+import { PAY_ROUTES } from './pages/pay/pay.routes';
 
 
 export const routes: Routes = [
@@ -37,6 +38,10 @@ export const routes: Routes = [
   {
     path: 'cart',
     children: CART_ROUTES,
+  },
+  {
+    path: 'pay',
+    children: PAY_ROUTES,
   },
 
   // role: admin
