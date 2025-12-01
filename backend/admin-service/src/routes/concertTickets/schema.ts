@@ -9,6 +9,7 @@ const concertTicketResponse = S.object()
     .prop("price", S.number())
     .prop("location", S.string())
     .prop("concertSlug", S.string())
+    .prop("concertTitle", S.string())
 
 export const CONCERT_TICKETS_PER_PAGE = 10
 
