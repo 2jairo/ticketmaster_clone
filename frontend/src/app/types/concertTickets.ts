@@ -6,6 +6,7 @@ export interface AdminDashboardConcertTicketResponse {
   price: number;
   location: string;
   concertSlug: string;
+  concertTitle: string
 }
 
 export interface AdminDashboardCreateConcertTicket {
@@ -23,5 +24,6 @@ export const DEFAULT_CONCERT_TICKET: AdminDashboardConcertTicketResponse = {
   available: 0,
   price: 0,
   location: '',
-  concertSlug: ''
+  concertSlug: '',
+  concertTitle: ''
 }
