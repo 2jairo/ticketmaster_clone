@@ -13,7 +13,7 @@ export class ConcertTicketCard {
   @Output() onUpdateQuantity = new EventEmitter<{ itemId: string, quantity: number }>()
 
   updateQuantity(newQuantity: number) {
-    this.onUpdateQuantity.emit({ itemId: this.currentTicket._id, quantity: newQuantity })
+    this.onUpdateQuantity.emit({ itemId: this.currentTicket._id, quantity: Number(newQuantity) })
 
     // if (newQuantity < 1) {
     //   this.removeItem()

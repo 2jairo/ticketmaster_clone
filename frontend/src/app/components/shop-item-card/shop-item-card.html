@@ -1,0 +1,143 @@
+<div class="merch-item">
+  <div class="images">
+    <app-carousel [images]="formatCarouselImages(merch.images)"></app-carousel>
+  </div>
+
+  <div class="merch-details">
+    <h3>{{ merch.title }}</h3>
+    <code class="category">{{ merch.category.title }}</code>
+
+    <div class="desc">
+      <p #desc class="description" [class.hideDesc]="hideDesc">{{ merch.description }}</p>
+
+      <div class="showLess" (click)="toggleHideDesc()">
+        @if(hideDesc) {
+          <i class="fa-solid fa-angles-down"></i>
+          <p>Show more</p>
+        } @else {
+          <i class="fa-solid fa-angles-up"></i>
+          <p>Show less</p>
+        }
+      </div>
+    </div>
+
+    <div class="merch-footer">
+      <span class="price">{{ (merch.price / 100).toFixed(2) }}€</span>
+      <span class="stock">{{ formatViews(merch.stock) }} in stock</span>
+    </div>
+  </div>
+
+  <div class="cart">
+    <div class="quantity-control">
+      <button
+        (click)="updateQuantity(quantity - 1)"
+        class="secondary outline"
+        [disabled]="quantity <= 0"
+      >
+        <i class="fa-solid fa-minus"></i>
+      </button>
+
+      <input
+        type="number"
+        [value]="quantity"
+        (change)="updateQuantity($any($event.target.value))"
+        min="1"
+        [max]="merch.stock"
+      />
+
+      <button
+        (click)="updateQuantity(quantity + 1)"
+        class="secondary outline"
+        [disabled]="quantity >= merch.stock"
+      >
+        <i class="fa-solid fa-plus"></i>
+      </button>
+    </div>
+
+    <!-- <div>
+      <button>Add to cart</button>
+    </div> -->
+  </div>
+</div>
+
+
+<style>
+  .merch-item {
+    max-width: 1200px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+    background-color: var(--pico-form-element-background-color);
+    border: var(--pico-border-width) solid var(--pico-secondary-border);
+    border-radius: var(--pico-border-radius);
+
+    .images {
+      width: 150px;
+      height: 150px;
+      border-radius: var(--pico-border-radius);
+    }
+  }
+
+  .showLess {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-radius: var(--pico-border-radius);
+    padding: 5px;
+    cursor: pointer;
+
+    p {
+      text-decoration: underline var(--pico-primary-underline);
+    }
+  }
+
+  .merch-details {
+    flex: 1;
+  }
+
+  .description {
+    flex: 1;
+    white-space: pre-line;
+  }
+  .description.hideDesc {
+    max-height: 100px;
+    overflow: hidden;
+  }
+
+  .cart {
+    display: flex;
+    gap: 20px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .quantity-control {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    button {
+      padding: 0.5rem;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    input {
+      width: 60px;
+      text-align: center;
+      padding: 0.5rem;
+      margin: 0;
+    }
+  }
+
+  .merch-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+</style>

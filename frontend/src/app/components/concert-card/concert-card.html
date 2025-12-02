@@ -12,7 +12,7 @@
     </div>
   </div>
 
-  <div class="text" (click)="navigateToDetails()">
+  <div class="text" routerLink="/details/{{ concert.slug }}">
     <div class="header">
       <h2>
         <a routerLink="/details/{{ concert.slug }}">{{ concert.title }}</a>

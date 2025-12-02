@@ -1,4 +1,4 @@
-import { Component, inject, Input, OnInit } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import type { ConcertResponseWrapper } from '../../types/concert';
 import { Router, RouterLink } from '@angular/router';
 import { Carousel } from "../carousel/carousel";
@@ -13,10 +13,6 @@ export class ConcertCard {
   @Input({ required: true }) concert!: ConcertResponseWrapper
 
   router = inject(Router)
-
-  navigateToDetails() {
-    this.router.navigate([`/details/${this.concert.slug}`])
-  }
 
   formatCarouselImages() {
     return this.concert.images.carousel.map((src) => ({ src }))

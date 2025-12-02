@@ -11,6 +11,7 @@ export interface MerchDashboardMerchandisingResponse {
   stock: number
   sold: number
   price: number
+  id: string
 }
 
 
@@ -26,6 +27,7 @@ export interface MerchDashboardCreateMerchandisingBody {
 export type MerchDashboardUpdateMerchandisingBody = Partial<MerchDashboardCreateMerchandisingBody>
 
 export const DEFAULT_MERCH: MerchDashboardMerchandisingResponse = {
+  id: '',
   title: '',
   slug: '',
   images: ['https://static.productionready.io/images/smiley-cyrus.jpg'],

@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, HostListener, inject, Input, OnInit, ViewChild } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { ConcertDetailsResponseWrapper } from '../../types/concert';
 import { ConcertTicketCard } from './concert-ticket-card';
 import { Carousel } from "../carousel/carousel";
@@ -23,7 +23,6 @@ export class ConcertDetails implements AfterViewInit, OnInit {
   @Input({ required: true }) concert!: ConcertDetailsResponseWrapper
   private profileService = inject(ProfileService)
   private cartService = inject(ShoppingCartService)
-  private router = inject(Router)
 
   cartItems: ShoppingCartResponse = { merch: [], tickets: [] }
   localTickets: { itemId: string, quantity: number }[] = []
@@ -54,10 +53,6 @@ export class ConcertDetails implements AfterViewInit, OnInit {
     return this.cartItems.tickets
       .find((t) => t.item.id == ticket._id)
       ?.quantity || 0
-  }
-
-  navigateToMerch() {
-    this.router.navigate(['/shop'])
   }
 
   updateLocalTickets(item: { itemId: string, quantity: number }) {
