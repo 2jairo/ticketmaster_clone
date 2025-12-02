@@ -3,7 +3,6 @@ import { IsString, IsArray, IsNotEmpty, Min, IsInt } from 'class-validator';
 import { MerchCategoryEntity } from './category.entity';
 
 export class MerchEntity {
-  @Exclude()
   @IsString()
   @IsNotEmpty()
   id: string
