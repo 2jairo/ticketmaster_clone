@@ -12,7 +12,6 @@ export class CategoryController {
   constructor(private readonly categoryService: CategoryService) { }
 
   @Get()
-  @AuthGuardDecorator({})
   async getCategories(
     @Query(new PaginationDefaultPageSize(999)) p: PaginationDto
   ) {
