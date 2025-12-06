@@ -37,6 +37,7 @@ services:
 
   admin-service:
     build: ../admin-service
+    container_name: admin-service
     expose:
       - 3001
     restart: unless-stopped
@@ -45,8 +46,10 @@ services:
     volumes:
       - ../admin-service/.env.production:/app/.env
 
+
   enterprise-service:
     build: ../enterprise-service
+    container_name: enterprise-service
     expose:
       - 3002 # gw
       - 3010 # auth
@@ -57,8 +60,10 @@ services:
     volumes:
       - ../enterprise-service/.env.production:/app/.env
 
+
   users-service:
     build: ../users-service
+    container_name: users-service
     expose:
       - 3000
     restart: unless-stopped
@@ -67,8 +72,10 @@ services:
     volumes:
       - ../users-service/.env.production:/app/.env
 
+
   frontend:
     build: ../../frontend
+    container_name: frontend
     expose:
       - 80
     restart: unless-stopped
@@ -76,6 +83,7 @@ services:
 
   nginx:
     image: fholzer/nginx-brotli:latest
+    container_name: nginx_rev_proxy
     ports:
       - 80:80
     restart: unless-stopped
