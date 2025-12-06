@@ -13,7 +13,7 @@ export class MerchController {
   constructor(private readonly merchService: MerchService) {}
 
   @Get()
-  @AuthGuardDecorator()
+  @AuthGuardDecorator({})
   async getMerch(
     @Query(new PaginationDefaultPageSize(50)) p: PaginationDto
   ) {
