@@ -21,6 +21,7 @@ declare module "fastify" {
 export type ExtendedPrismaClient = ReturnType<typeof getPrismaClient>
 
 const getPrismaClient = () => {
+    console.log(process.env.MONGO_URI)
     const updateUserVersion = Prisma.defineExtension({
         name: 'update __v',
         query: {

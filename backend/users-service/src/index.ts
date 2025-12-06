@@ -38,9 +38,10 @@ async function main() {
     
     
     const PORT = parseInt(process.env.PORT!) || 3000
-    
-    app.listen(PORT, '127.0.0.1', () => {
-        console.log(`Listening on localhost:${PORT}`)
+    const HOST = process.env.HOST!
+
+    app.listen(PORT, HOST, () => {
+        console.log(`Listening on ${HOST}:${PORT}`)
     })
 }
 

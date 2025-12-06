@@ -1,12 +1,6 @@
-generator adminClient {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
-  importFileExtension = ""
-}
-
 generator enterpriseClient {
   provider = "prisma-client"
-  output   = "../../enterprise-service/apps/shared2/src/generated/prisma"
+  output   = "../apps/shared2/src/generated/prisma"
   importFileExtension = ""
 }
 

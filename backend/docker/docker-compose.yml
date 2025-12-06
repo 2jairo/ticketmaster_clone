@@ -1,14 +1,13 @@
 services:
   mongo:
     image: mongo:8.0
-    container_name: mongo1
+    container_name: mongo
     ports:
       - 27017:27017
-    # command: ["mongod", "--bind_ip", "mongo1,localhost", "--replSet", "rs0"]
     command: >
       bash -c "
         mongod --replSet rs0 --bind_ip_all &
-        pid=$!;
+        pid=$$!;
 
         until mongosh --quiet --eval 'db.runCommand({ ping:1 })' >/dev/null 2>&1; do
           sleep 1;
@@ -18,10 +17,58 @@ services:
           try {
             rs.status();
           } catch (e) {
-            rs.initiate({_id: \"rs0\", members: [{_id: 0, host: \"localhost:27017\"}]});
+            rs.initiate({_id: \"rs0\", members: [{_id: 0, host: \"mongo:27017\"}]});
           }
         ';
-        wait $pid;
+        wait $$pid;
       "
     volumes:
       - ./mongo_data/data:/data/db
+
+  # stripe-listen:
+  #   image: stripe/stripe-cli
+  #   env_file:
+  #     - ../admin-service/.env.production
+  #   command: ["listen", "--api-key", "${STRIPE_SK}", "--forward-to", "admin-service:3001/webhook"]
+  #   volumes:
+  #     - stripe_data/config:/root.config/stripe/
+  #     - stripe_data/gpg:/root/.gnupg/
+  #     - stripe_data/pass:/root/.password-store/
+
+  admin-service:
+    build: ../admin-service
+    ports:
+      - 3001:3001
+    restart: unless-stopped
+    depends_on:
+      - mongo
+    volumes:
+      - ../admin-service/.env.production:/app/.env
+
+  enterprise-service:
+    build: ../enterprise-service
+    ports:
+      - 3002:3002 # gw
+      - 3010:3010 # auth
+      - 3011:3011 # merch
+    restart: unless-stopped
+    depends_on:
+      - mongo
+    volumes:
+      - ../enterprise-service/.env.production:/app/.env
+
+  users-service:
+    build: ../users-service
+    ports:
+      - 3000:3000
+    restart: unless-stopped
+    depends_on:
+      - mongo
+    volumes:
+      - ../users-service/.env.production:/app/.env
+
+  frontend:
+    build: ../../frontend
+    ports:
+      - 80:80
+    restart: unless-stopped

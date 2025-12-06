@@ -4,7 +4,6 @@ import { ConcertDetailsResponseWrapper } from '../../types/concert';
 import { ConcertTicketCard } from './concert-ticket-card';
 import { Carousel } from "../carousel/carousel";
 import * as L from 'leaflet'
-import 'leaflet/dist/leaflet.css'
 import { CommentList } from '../comment-list/comment-list';
 import { Pagination } from '../categories/filters';
 import { ProfileService } from '../../services/profile.service';

@@ -1,0 +1,27 @@
+services:
+  mongo:
+    image: mongo:8.0
+    container_name: mongo
+    ports:
+      - 27017:27017
+    # command: ["mongod", "--bind_ip", "mongo,localhost", "--replSet", "rs0"]
+    command: >
+      bash -c "
+        mongod --replSet rs0 --bind_ip_all &
+        pid=$$!;
+
+        until mongosh --quiet --eval 'db.runCommand({ ping:1 })' >/dev/null 2>&1; do
+          sleep 1;
+        done;
+
+        mongosh --quiet --eval '
+          try {
+            rs.status();
+          } catch (e) {
+            rs.initiate({_id: \"rs0\", members: [{_id: 0, host: \"localhost:27017\"}]});
+          }
+        ';
+        wait $$pid;
+      "
+    volumes:
+      - ./mongo_data2/data:/data/db

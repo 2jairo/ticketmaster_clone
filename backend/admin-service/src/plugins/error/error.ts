@@ -1,3 +1,4 @@
+import { FastifyError } from 'fastify'
 import fp from 'fastify-plugin'
 
 export const enum ErrKind {
@@ -66,13 +67,12 @@ export class LocalError {
 
 export const errorHandler = fp((fastify) => {
     fastify.setErrorHandler((err, req, reply) => {
-        console.log({err})
-
         if(err instanceof LocalError) {
             reply.status(err.statusCode).send(err.toJSON())
+            return
         }
 
-        let localErr = new LocalError(ErrKind.InternalServerError, 500, err.message)
+        let localErr = new LocalError(ErrKind.InternalServerError, 500, (err as FastifyError).message)
         reply.status(localErr.statusCode).send(localErr.toJSON())
     })
 
