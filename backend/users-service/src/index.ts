@@ -1,6 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv'
+import compression from 'compression'
 import { connectMongoDb } from './config/mongoConnection'
 import concertsRoutes from './routes/concertRoutes'
 import categoryRoutes from './routes/categoryRoutes'
@@ -18,6 +19,7 @@ async function main() {
     await connectMongoDb(process.env.MONGO_URI!)
     const app = express()
     
+    app.use(compression())
     app.use(cors({
         origin: ['http://127.0.0.1:4200'],
         credentials: true,

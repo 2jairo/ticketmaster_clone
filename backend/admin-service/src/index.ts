@@ -9,6 +9,7 @@ import { prismaClientPlugin } from 'plugins/prisma/prisma'
 import { jwtPlugin } from 'plugins/jwt/jwt'
 import { corsPlugin } from 'plugins/cors/cors'
 import fastifyCookie from '@fastify/cookie'
+import fastifyCompress from '@fastify/compress'
 import { dashboardUserRoutes } from 'routes/users/users'
 import { dashboardMusicGroupsRoutes } from 'routes/musicGroups/groups'
 import { dashboardCategoriesRoutes } from 'routes/categories/category'
@@ -23,6 +24,7 @@ async function main() {
     const fastify = Fastify(getFastifyInstanceConfig())
     const config = getFastifyListenConfig()
 
+    await fastify.register(fastifyCompress)
     await fastify.register(errorHandler)
     await fastify.register(prismaClientPlugin)
     await fastify.register(corsPlugin)

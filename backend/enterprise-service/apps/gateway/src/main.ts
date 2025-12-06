@@ -2,11 +2,14 @@ import { NestFactory } from '@nestjs/core';
 import { GatewayModule } from './gateway.module';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import dotenv from 'dotenv'
+import compression from 'compression';
 
 dotenv.config()
 
 async function bootstrap() {
   const app = await NestFactory.create(GatewayModule);
+  
+  app.use(compression());
 
   const server = app.getHttpAdapter()
   const host = process.env.HOST!

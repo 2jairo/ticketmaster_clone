@@ -37,8 +37,8 @@ services:
 
   admin-service:
     build: ../admin-service
-    ports:
-      - 3001:3001
+    expose:
+      - 3001
     restart: unless-stopped
     depends_on:
       - mongo
@@ -47,10 +47,10 @@ services:
 
   enterprise-service:
     build: ../enterprise-service
-    ports:
-      - 3002:3002 # gw
-      - 3010:3010 # auth
-      - 3011:3011 # merch
+    expose:
+      - 3002 # gw
+      - 3010 # auth
+      - 3011 # merch
     restart: unless-stopped
     depends_on:
       - mongo
@@ -59,8 +59,8 @@ services:
 
   users-service:
     build: ../users-service
-    ports:
-      - 3000:3000
+    expose:
+      - 3000
     restart: unless-stopped
     depends_on:
       - mongo
@@ -69,6 +69,20 @@ services:
 
   frontend:
     build: ../../frontend
+    expose:
+      - 80
+    restart: unless-stopped
+
+
+  nginx:
+    image: fholzer/nginx-brotli:latest
     ports:
       - 80:80
     restart: unless-stopped
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - frontend
+      - users-service
+      - admin-service
+      - enterprise-service
