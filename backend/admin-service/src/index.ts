@@ -18,7 +18,7 @@ import { dashboardConcertTicketsRoutes } from 'routes/concertTickets/concertTick
 import { stripeRoutes } from 'routes/stripe/stripe'
 import { stripePlugin } from 'plugins/stripe/stripe'
 
-dotenv.config()
+dotenv.config({ path: ['.env', '.env.stripe'] })
 
 async function main() {
     const fastify = Fastify(getFastifyInstanceConfig())

@@ -25,15 +25,14 @@ services:
     volumes:
       - ./mongo_data/data:/data/db
 
-  # stripe-listen:
-  #   image: stripe/stripe-cli
-  #   env_file:
-  #     - ../admin-service/.env.production
-  #   command: ["listen", "--api-key", "${STRIPE_SK}", "--forward-to", "admin-service:3001/webhook"]
-  #   volumes:
-  #     - stripe_data/config:/root.config/stripe/
-  #     - stripe_data/gpg:/root/.gnupg/
-  #     - stripe_data/pass:/root/.password-store/
+  stripe-listen:
+    build: ../stripe
+    container_name: stripe-listen
+    restart: unless-stopped
+    env_file:
+      - ../admin-service/.env.production
+    volumes:
+      - ../stripe/shared/.env.stripe:/shared/.env.stripe
 
   admin-service:
     build: ../admin-service
@@ -43,8 +42,10 @@ services:
     restart: unless-stopped
     depends_on:
       - mongo
+      - stripe-listen
     volumes:
       - ../admin-service/.env.production:/app/.env
+      - ../stripe/shared/.env.stripe:/app/.env.stripe
 
 
   enterprise-service:
