@@ -3,6 +3,7 @@ import { RouteCommonOptions } from 'types/routesCommon'
 import { FastifyReply, FastifyRequest } from 'fastify'
 import Stripe from 'stripe'
 import { ErrKind, LocalError } from 'plugins/error/error'
+import { concertModelGetEmbeddings } from 'schemas/concert'
 
 export const stripeRoutes = fp(async (fastify, common: RouteCommonOptions) => {
     fastify.route({
@@ -144,7 +145,7 @@ export const stripeRoutes = fp(async (fastify, common: RouteCommonOptions) => {
 
             // 3.- update concert totalTicketsSold
             for (const [concertId, quantity] of Object.entries(ticketsSummary)) {
-                await tx.concert.update({
+                const result = await tx.concert.update({
                     where: {
                         id: concertId
                     },
@@ -152,6 +153,18 @@ export const stripeRoutes = fp(async (fastify, common: RouteCommonOptions) => {
                         totalTicketsSold: {
                             increment: quantity
                         }
+                    }
+                })
+
+                const { embedding } = await concertModelGetEmbeddings(true, result, tx.concertTickets.findMany, fastify)
+
+                await tx.concertEmbeddings.update({
+                    where: {
+                        concertId
+                    },
+                    data: {
+                        totalTicketsSold: result.totalTicketsSold,
+                        embedding
                     }
                 })
             }

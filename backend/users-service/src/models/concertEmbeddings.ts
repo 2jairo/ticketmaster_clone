@@ -27,10 +27,17 @@ const ConcertEmbedding = new mongoose.Schema({
     },
     embedding: [{
         type: Number
-    }]
+    }],
+    isActive: {
+        type: Boolean,
+        default: true
+    }
 })
 
-
+ConcertEmbedding.pre(/^find/, function() {
+    //@ts-ignore
+    this.where({ isActive: true });
+})
 
 
 export const ConcertEmbeddingModel = mongoose.model<ConcertEmbedding & IConcertEmbeddingSchemaMethods>('ConcertEmbedding', ConcertEmbedding)

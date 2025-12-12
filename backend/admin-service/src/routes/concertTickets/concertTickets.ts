@@ -5,6 +5,8 @@ import { ADMIN_ROOT } from 'schemas/user'
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { Pagination } from 'types/pagination'
 import { ConcertTicketsUncheckedUpdateInput } from 'generated/prisma/models'
+import { ErrKind, LocalError } from 'plugins/error/error'
+import { ConcertModelWrapper } from 'schemas/concert'
 
 export const dashboardConcertTicketsRoutes = fp((fastify, options: RouteCommonOptions) => {
     // GET all concert tickets (with pagination)
@@ -122,7 +124,7 @@ export const dashboardConcertTicketsRoutes = fp((fastify, options: RouteCommonOp
     ) {
         const { concertSlug, ...ticketData } = req.body
         
-        const concert = await fastify.prisma.concert.findUniqueOrThrow({
+        const concert = await fastify.prismaW.concert.findUniqueOrThrow({
             where: { slug: concertSlug }
         })
         
@@ -140,6 +142,18 @@ export const dashboardConcertTicketsRoutes = fp((fastify, options: RouteCommonOp
                 }
             }
         })
+
+        const { embedding, tickets } = await concert.getEmbeddings()
+        await fastify.prisma.concertEmbeddings.update({
+            where: {
+                concertId: concert.id
+            },
+            data: {
+                cheapestTicketPrice: tickets.cheapest,
+                highestTicketPrice: tickets.highest,
+                embedding
+            }
+        })
         
         reply.status(201).send({
             ...ticket,
@@ -148,7 +162,7 @@ export const dashboardConcertTicketsRoutes = fp((fastify, options: RouteCommonOp
         })
     }
 
-    // PUT/PATCH update concert ticket
+    // PUT update concert ticket
     fastify.route({
         method: 'PUT',
         url: `${options.prefix}/:id`,
@@ -162,15 +176,18 @@ export const dashboardConcertTicketsRoutes = fp((fastify, options: RouteCommonOp
     ) {
         const { id } = req.params
         const { concertSlug, ...ticketData } = req.body
+        let concert: ConcertModelWrapper | null = null
         
         let updateData: ConcertTicketsUncheckedUpdateInput = ticketData
-        
-        if (concertSlug) {
-            const concert = await fastify.prisma.concert.findUniqueOrThrow({
+
+        if(concertSlug) {
+            concert = await fastify.prismaW.concert.findUniqueOrThrow({
                 where: { slug: concertSlug }
             })
+            
             updateData = { ...ticketData, concertId: concert.id }
         }
+
         
         const ticket = await fastify.prisma.concertTickets.update({ 
             where: { id }, 
@@ -184,6 +201,31 @@ export const dashboardConcertTicketsRoutes = fp((fastify, options: RouteCommonOp
                 }
             }
         })
+
+        concert = concert === undefined
+            ? await fastify.prismaW.concert.findFirst({
+                where: {
+                    id: ticket.concertId
+                }
+            })
+            : concert
+
+        if(!concert) {
+            throw new LocalError(ErrKind.ConcertNotFound, 404)
+        }
+
+        const { embedding, tickets } = await concert.getEmbeddings()
+        await fastify.prisma.concertEmbeddings.update({
+            where: {
+                concertId: concert.id
+            },
+            data: {
+                cheapestTicketPrice: tickets.cheapest,
+                highestTicketPrice: tickets.highest,
+                embedding
+            }
+        })
+
 
         reply.status(200).send({
             ...ticket,
@@ -206,9 +248,32 @@ export const dashboardConcertTicketsRoutes = fp((fastify, options: RouteCommonOp
     ) {
         const { id } = req.params
 
-        await fastify.prisma.concertTickets.delete({
+        const ticket = await fastify.prisma.concertTickets.delete({
             where: { id } 
         })
+
+        const concert = await fastify.prismaW.concert.findFirst({
+            where: {
+                id: ticket.concertId
+            }
+        })
+        if(!concert) {
+            throw new LocalError(ErrKind.ConcertNotFound, 404)
+        }
+
+        const { embedding, tickets } = await concert.getEmbeddings()
+
+        await fastify.prisma.concertEmbeddings.update({
+            where: {
+                concertId: concert.id
+            },
+            data: {
+                cheapestTicketPrice: tickets.cheapest,
+                highestTicketPrice: tickets.highest,
+                embedding
+            }
+        })
+
         reply.status(204).send()
     }
 })

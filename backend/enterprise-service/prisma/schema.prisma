@@ -247,7 +247,11 @@ model ConcertEmbeddings {
   title String
   description String
   locationName String
+  totalTicketsSold Int @default(0)
+  cheapestTicketPrice Int?
+  highestTicketPrice Int?
   embedding Float[]
+  isActive Boolean @default(true)
 
   @@map("concertembeddings")
 }

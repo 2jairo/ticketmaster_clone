@@ -45,6 +45,25 @@ async function main() {
     // without compress
     await fastify.register(stripePlugin)
 
+    // const conc = await fastify.prismaW.concert.findMany()
+    // for (const c of conc) {
+    //     const { embedding, tickets } = await c.getEmbeddings()
+
+    //     await fastify.prisma.concertEmbeddings.create({
+    //         data: {
+    //             concertId: c.id,
+    //             description: c.description,
+    //             locationName: c.locationName,
+    //             title: c.title,
+    //             embedding,
+    //             totalTicketsSold: c.totalTicketsSold,
+    //             cheapestTicketPrice: tickets.cheapest,
+    //             highestTicketPrice: tickets.highest,
+    //             isActive: c.isActive && c.status === 'ACCEPTED'      
+    //         }
+    //     })
+    // }
+
     try {
         await fastify.listen(config)
         console.log(`Server running in http://${config.host}:${config.port}`);

@@ -4,12 +4,6 @@ generator adminClient {
   importFileExtension = ""
 }
 
-generator enterpriseClient {
-  provider = "prisma-client"
-  output   = "../../enterprise-service/apps/shared2/src/generated/prisma"
-  importFileExtension = ""
-}
-
 datasource db {
   provider = "mongodb"
   url      = env("MONGO_URI")
@@ -253,7 +247,11 @@ model ConcertEmbeddings {
   title String
   description String
   locationName String
+  totalTicketsSold Int @default(0)
+  cheapestTicketPrice Int?
+  highestTicketPrice Int?
   embedding Float[]
+  isActive Boolean @default(true)
 
   @@map("concertembeddings")
 }

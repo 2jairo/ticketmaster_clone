@@ -73,17 +73,17 @@ export const dashboardConcertRotues = fp((fastify, options: RouteCommonOptions) 
 			}
 		})
 
-		if(concert.isActive && concert.status === 'ACCEPTED') {
-			await fastify.prisma.concertEmbeddings.create({
-				data: {
-					concertId: concert.id,
-					title: concert.title,
-					description: concert.description,
-					locationName: concert.locationName,
-					embedding: await concert.getEmbeddings()
-				}
-			})
-		}
+		const { embedding } = await concert.getEmbeddings(false)
+		await fastify.prisma.concertEmbeddings.create({
+			data: {
+				concertId: concert.id,
+				title: concert.title,
+				description: concert.description,
+				locationName: concert.locationName,
+				embedding,
+				isActive: concert.isActive && concert.status === 'ACCEPTED'
+			}
+		})
 
 
 		reply.status(201).send(await concert.withPopulatedFields())
@@ -132,35 +132,25 @@ export const dashboardConcertRotues = fp((fastify, options: RouteCommonOptions) 
 				categories: categoryIds,
 				groups: groupIds
 			}
+		})		
+
+		const { embedding, tickets } = await concert.getEmbeddings()
+		await fastify.prisma.concertEmbeddings.update({
+			where: {
+				concertId: concert.id,
+				isActive: true
+			},
+			data: {
+				title: concert.title,
+				description: concert.description,
+				locationName: concert.locationName,
+				embedding,
+				cheapestTicketPrice: tickets.cheapest,
+				highestTicketPrice: tickets.highest,
+				isActive: concert.isActive && concert.status === 'ACCEPTED'
+			}
 		})
-
-		if(concert.isActive && concert.status === 'ACCEPTED') {
-			await fastify.prisma.concertEmbeddings.upsert({
-				create: {
-					concertId: concert.id,
-					title: concert.title,
-					description: concert.description,
-					locationName: concert.locationName,
-					embedding: await concert.getEmbeddings(),
-				},
-				update: {
-					title: concert.title,
-					description: concert.description,
-					locationName: concert.locationName,
-					embedding: await concert.getEmbeddings()
-				},
-				where: {
-					concertId: concert.id
-				}
-			})
-		} else {
-			await fastify.prisma.concertEmbeddings.deleteMany({
-				where: {
-					concertId: concert.id
-				}
-			})
-		}
-
+		
 		reply.status(200).send(await concert.withPopulatedFields())
 	}
 
@@ -177,9 +167,12 @@ export const dashboardConcertRotues = fp((fastify, options: RouteCommonOptions) 
 			where: { slug } 
 		})
 
-		await fastify.prisma.concertEmbeddings.deleteMany({
+		await fastify.prisma.concertEmbeddings.updateMany({
 			where: {
-				concertId : concert.id
+				concertId: concert.id
+			},
+			data: {
+				isActive: false
 			}
 		})
 
