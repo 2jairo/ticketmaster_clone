@@ -241,3 +241,13 @@ model Concert {
 
   @@map("concerts")
 }
+
+model ConcertEmbeddings {
+  concertId String @id @db.ObjectId @map("_id")
+  title String
+  description String
+  locationName String
+  embedding Float[]
+
+  @@map("concertembeddings")
+}

@@ -11,6 +11,7 @@ export class MinMaxInput {
   @Input() minLimit = 0;
   @Input() maxLimit = 1000;
   @Input() step = 10;
+  @Input() disabled = false;
 
   @Input() min = 100;
   @Input() max = 700;

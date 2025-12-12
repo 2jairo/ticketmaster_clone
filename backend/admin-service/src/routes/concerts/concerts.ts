@@ -72,7 +72,20 @@ export const dashboardConcertRotues = fp((fastify, options: RouteCommonOptions) 
 				comments: []
 			}
 		})
-        
+
+		if(concert.isActive && concert.status === 'ACCEPTED') {
+			await fastify.prisma.concertEmbeddings.create({
+				data: {
+					concertId: concert.id,
+					title: concert.title,
+					description: concert.description,
+					locationName: concert.locationName,
+					embedding: await concert.getEmbeddings()
+				}
+			})
+		}
+
+
 		reply.status(201).send(await concert.withPopulatedFields())
 	}
 
@@ -121,6 +134,33 @@ export const dashboardConcertRotues = fp((fastify, options: RouteCommonOptions) 
 			}
 		})
 
+		if(concert.isActive && concert.status === 'ACCEPTED') {
+			await fastify.prisma.concertEmbeddings.upsert({
+				create: {
+					concertId: concert.id,
+					title: concert.title,
+					description: concert.description,
+					locationName: concert.locationName,
+					embedding: await concert.getEmbeddings(),
+				},
+				update: {
+					title: concert.title,
+					description: concert.description,
+					locationName: concert.locationName,
+					embedding: await concert.getEmbeddings()
+				},
+				where: {
+					concertId: concert.id
+				}
+			})
+		} else {
+			await fastify.prisma.concertEmbeddings.deleteMany({
+				where: {
+					concertId: concert.id
+				}
+			})
+		}
+
 		reply.status(200).send(await concert.withPopulatedFields())
 	}
 
@@ -133,9 +173,16 @@ export const dashboardConcertRotues = fp((fastify, options: RouteCommonOptions) 
 	async function deleteConcert(req: FastifyRequest<{ Params: { slug: string } }>, reply: FastifyReply) {
 		const { slug } = req.params
 
-		await fastify.prismaW.concert.delete({
+		const concert = await fastify.prismaW.concert.delete({
 			where: { slug } 
 		})
+
+		await fastify.prisma.concertEmbeddings.deleteMany({
+			where: {
+				concertId : concert.id
+			}
+		})
+
 		reply.status(204).send()
 	}
 })

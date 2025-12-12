@@ -1,6 +1,21 @@
 <div class="rangeContainer">
-  <input type="range" [(ngModel)]="min" [min]="minLimit" [max]="maxLimit" [step]="step" (input)="onRangeChange('min')" />
-  <input type="range" [(ngModel)]="max" [min]="minLimit" [max]="maxLimit" [step]="step" (input)="onRangeChange('max')" />
+  <input type="range"
+    [disabled]="disabled"
+    [(ngModel)]="min"
+    [min]="minLimit"
+    [max]="maxLimit"
+    [step]="step"
+    (input)="onRangeChange('min')"
+  />
+  <input
+    type="range"
+    [disabled]="disabled"
+    [(ngModel)]="max"
+    [min]="minLimit"
+    [max]="maxLimit"
+    [step]="step"
+    (input)="onRangeChange('max')"
+  />
 </div>
 
 <style>

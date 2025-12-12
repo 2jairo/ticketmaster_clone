@@ -55,6 +55,15 @@ export class FiltersOptions implements OnInit {
     this.filtersChange.emit(this.filters)
   }
 
+  onTitleChange(ev: Event) {
+    const value = (ev.currentTarget as HTMLInputElement).value
+    if(value) {
+      this.filters = new ConcertFilters()
+      this.filters.title = value
+    }
+    this.sendFilters()
+  }
+
   sendFilters() {
     clearTimeout(this.debounceTimeout)
 

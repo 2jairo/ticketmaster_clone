@@ -1,13 +1,13 @@
 <div class="filtersContainer">
   <label>
     <div class="inputContainer">
-      <input type="text" placeholder="Title" (input)="sendFilters()" [(ngModel)]="filters.title"/>
+      <input type="text" placeholder="Title" (input)="onTitleChange($event)" [(ngModel)]="filters.title"/>
     </div>
   </label>
 
   <label>
     <div class="inputContainer">
-      <select [(ngModel)]="filters.category" (input)="sendFilters()">
+      <select [(ngModel)]="filters.category" [disabled]="filters.title ? true : false" (input)="sendFilters()">
         <option [defaultSelected]="true" value="">Category</option>
 
         @for (cat of categories; track cat.slug) {
@@ -25,6 +25,7 @@
 
     <div class="inputContainer padding">
       <app-min-max-input
+        [disabled]="filters.title ? true : false"
         (minMaxChange)="minMaxChange($event, 'price')"
         [step]="10"
         [max]="filters.priceMax || filters.PRICE_MAX"
@@ -43,6 +44,7 @@
 
     <div class="inputContainer padding">
       <app-min-max-input
+        [disabled]="filters.title ? true : false"
         (minMaxChange)="minMaxChange($event, 'date')"
         [step]="8640000"
         [max]="filters.dateEnd ? filters.dateEnd.num : filters.DATE_MAX.num"
@@ -55,7 +57,7 @@
 
   <label>
     <div class="inputContainer">
-      <select [(ngModel)]="filters.sortBy" (input)="sendFilters()">
+      <select [(ngModel)]="filters.sortBy" [disabled]="filters.title ? true : false" (input)="sendFilters()">
         <option value="" [defaultSelected]="true">Sort by</option>
 
         <option value="nearest">Nearest</option>

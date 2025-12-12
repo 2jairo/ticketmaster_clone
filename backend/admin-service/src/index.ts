@@ -17,6 +17,7 @@ import { dashboardConcertRotues } from 'routes/concerts/concerts'
 import { dashboardConcertTicketsRoutes } from 'routes/concertTickets/concertTickets'
 import { stripeRoutes } from 'routes/stripe/stripe'
 import { stripePlugin } from 'plugins/stripe/stripe'
+import { axiosPlugin } from 'plugins/axios/axios'
 
 dotenv.config({ path: ['.env', '.env.stripe'] })
 
@@ -24,14 +25,13 @@ async function main() {
     const fastify = Fastify(getFastifyInstanceConfig())
     const config = getFastifyListenConfig()
 
-    await fastify.register(fastifyCompress)
     await fastify.register(errorHandler)
     await fastify.register(prismaClientPlugin)
     await fastify.register(corsPlugin)
     await fastify.register(fastifyCookie)
     await fastify.register(jwtPlugin)
     await fastify.register(swaggerPlugin)
-    await fastify.register(stripePlugin)
+    await fastify.register(axiosPlugin)
 
     await fastify.register(authRoutes, { prefix: '/api/auth' })
     await fastify.register(dashboardUserRoutes, { prefix: '/api/dashboard/users' })
@@ -40,7 +40,11 @@ async function main() {
     await fastify.register(dashboardConcertRotues, { prefix: '/api/dashboard/concerts' })
     await fastify.register(dashboardConcertTicketsRoutes, { prefix: '/api/dashboard/concert-tickets' })
     await fastify.register(stripeRoutes, { prefix: '/api/payments' })
-    
+    await fastify.register(fastifyCompress, { global: true, threshold: 1024 })
+
+    // without compress
+    await fastify.register(stripePlugin)
+
     try {
         await fastify.listen(config)
         console.log(`Server running in http://${config.host}:${config.port}`);
