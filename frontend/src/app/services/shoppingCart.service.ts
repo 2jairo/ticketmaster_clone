@@ -3,6 +3,7 @@ import { HttpApiService } from './httpApi.service';
 import { BehaviorSubject, ReplaySubject, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { ShoppingCartResponse, UpdateShoppingCartBody } from '../types/shoppingCart';
+import { OrderResponse } from '../types/orders';
 
 @Injectable({
   providedIn: 'root'
@@ -40,6 +41,10 @@ export class ShoppingCartService {
         this.cartSubject.next({ merch: [], tickets: [] })
         this.cartFetchedSubject.next(true)
       }))
+  }
+
+  getOrders() {
+    return this.http.get<OrderResponse[]>(environment.ADMIN_API_URL, '/dashboard/orders')
   }
 
   cleanCartWithoutHttp() {

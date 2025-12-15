@@ -18,6 +18,7 @@ import { dashboardConcertTicketsRoutes } from 'routes/concertTickets/concertTick
 import { stripeRoutes } from 'routes/stripe/stripe'
 import { stripePlugin } from 'plugins/stripe/stripe'
 import { axiosPlugin } from 'plugins/axios/axios'
+import { dashboardOrderRoutes } from 'routes/orders/orders'
 
 dotenv.config({ path: ['.env', '.env.stripe'] })
 
@@ -38,6 +39,7 @@ async function main() {
     await fastify.register(dashboardMusicGroupsRoutes, { prefix: '/api/dashboard/groups' })
     await fastify.register(dashboardCategoriesRoutes, { prefix: '/api/dashboard/categories' })
     await fastify.register(dashboardConcertRotues, { prefix: '/api/dashboard/concerts' })
+    await fastify.register(dashboardOrderRoutes, { prefix: '/api/dashboard/orders' })
     await fastify.register(dashboardConcertTicketsRoutes, { prefix: '/api/dashboard/concert-tickets' })
     await fastify.register(stripeRoutes, { prefix: '/api/payments' })
     await fastify.register(fastifyCompress, { global: true, threshold: 1024 })

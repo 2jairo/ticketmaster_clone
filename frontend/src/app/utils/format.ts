@@ -87,3 +87,15 @@ export const formatConcertStatus = (s: 'ACCEPTED' | 'PENDING' | 'REJECTED') => {
   if(s === 'REJECTED') return 'Rejected'
   return 'Pending'
 }
+
+export const formatOrderStatus = (status: 'CANCELED' | 'FAILED' | 'PAID' | 'PENDING') => {
+  if(status === 'CANCELED') return 'Canceled'
+  if(status === 'FAILED') return 'Failed'
+  if(status === 'PAID') return 'Paid'
+  //if(status === 'PENDING')
+  return 'Pending'
+}
+
+export const formatPaymentStatus = (status: 'PENDING' | 'COMPLETED') => {
+  return status === 'COMPLETED' ? 'Completed' : 'Pending'
+}

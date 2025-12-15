@@ -1,1 +1,68 @@
-<p>orders works!</p>
+<div class="ordersPage">
+	<section class="hero">
+		<p class="eyebrow">ORDERS</p>
+		<h2>Your tickets & merch</h2>
+		<p class="muted">Track payment status, totals, and line items for every purchase.</p>
+	</section>
+
+	@if(orders.length) {
+		<div class="ordersList">
+			@for (order of orders; track order.id) {
+				<app-order-card [order]="order" />
+			}
+		</div>
+	} @else {
+		<article class="empty">
+			<h4>No orders yet</h4>
+			<p class="muted">When you buy tickets or merch, the receipts will show up here.</p>
+			<a routerLink="/events" role="button">Browse events</a>
+		</article>
+	}
+</div>
+
+
+<style>
+	.ordersPage {
+		padding: 20px;
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+	}
+
+	.hero {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		max-width: 720px;
+	}
+
+	.eyebrow {
+		font-size: 0.9rem;
+		color: var(--pico-muted-color);
+	}
+
+	.muted {
+		color: var(--pico-secondary-border);
+	}
+
+	.ordersList {
+    display: flex;
+    flex-direction: column;
+		gap: 20px;
+	}
+
+	.empty {
+		border: var(--pico-border-width) solid var(--pico-secondary-border);
+		border-radius: var(--pico-border-radius);
+		padding: 24px;
+		background-color: var(--pico-form-element-background-color);
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		align-items: flex-start;
+	}
+
+	.empty a[role="button"] {
+		margin-top: 4px;
+	}
+</style>

@@ -8,6 +8,7 @@ import { ModelWrapper, PrismaModelWrappers } from 'schemas/wrapper'
 import slugify from 'slugify'
 import { concertModelWrapper } from 'schemas/concert'
 import { shoppingCartModelWrapper } from 'schemas/shoppingCart'
+import { orderWrapper } from 'schemas/order'
 
 declare module "fastify" {
     interface FastifyInstance {
@@ -80,5 +81,6 @@ export const prismaClientPlugin = fp(async (fastify) => {
         concert: new ModelWrapper(prisma, 'concert', (v) => concertModelWrapper(fastify, v)),
         category: new ModelWrapper(prisma, 'category', (v) => categoryWrapper(fastify, v)),
         shoppingCart: new ModelWrapper(prisma, 'shoppingCart', (v) => shoppingCartModelWrapper(fastify, v)),
+        order: new ModelWrapper(prisma, 'order', (v) => orderWrapper(fastify, v))
     })
 })

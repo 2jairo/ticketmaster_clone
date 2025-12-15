@@ -4,6 +4,7 @@ import { CategoryWrapper } from "./category";
 import { ExtendedPrismaClient } from '../plugins/prisma/prisma'
 import { ConcertModelWrapper } from "./concert";
 import { ShoppingCartModelWrapper } from "./shoppingCart";
+import { OrderWrapper } from "./order";
 
 export interface PrismaModelWrappers {
     user: UserModelWrapper
@@ -13,6 +14,7 @@ export interface PrismaModelWrappers {
     category: CategoryWrapper
     concert: ConcertModelWrapper
     shoppingCart: ShoppingCartModelWrapper
+    order: OrderWrapper
 }
 
 export class ModelWrapper<

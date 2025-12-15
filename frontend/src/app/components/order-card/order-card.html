@@ -1,0 +1,201 @@
+<article class="orderCard">
+  <section class="orderHead">
+    <div>
+      <p class="eyebrow">Order ({{ order.id }})</p>
+      <p class="muted">Placed {{ order.createdAt | date:'medium' }}</p>
+      <p>{{ formatOrderStatus(order.status) }}</p>
+    </div>
+
+    <div class="total">
+      <p class="eyebrow">Total</p>
+      <h3>{{ formatCurrency(order.totalAmmount) }}</h3>
+
+      @if(order.paymemt?.transactionRef) {
+        <p class="muted">Ref: {{ order.paymemt?.transactionRef }}</p>
+      }
+    </div>
+  </section>
+
+  @if(order.tickets.length) {
+    <section class="items">
+      <div class="sectionHead">
+        <h5>Tickets</h5>
+        <small>{{ order.tickets.length }} item{{ order.tickets.length === 1 ? '' : 's' }}</small>
+      </div>
+
+      <div class="itemList">
+        @for (ticket of order.tickets; track ticket.id) {
+          <div class="item">
+            <div class="itemInfo">
+              <p>{{ ticket.concertTitle }}</p>
+              <p class="muted">{{ ticket.location }}</p>
+              <p class="meta">Qty {{ ticket.quantity }} | {{ formatCurrency(ticket.price) }}</p>
+            </div>
+            <div class="itemTotal">
+              <span>{{ formatCurrency(ticket.quantity * ticket.price) }}</span>
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+  }
+
+  @if(order.merch.length) {
+    <section class="items">
+      <div class="sectionHead">
+        <h5>Merch</h5>
+        <small>{{ order.merch.length }} item{{ order.merch.length === 1 ? '' : 's' }}</small>
+      </div>
+
+      <div class="itemList">
+        @for (item of order.merch; track item.id) {
+          <div class="item">
+            <div class="itemInfo">
+              <p class="eyebrow">{{ item.title }}</p>
+              <p class="muted">Slug: {{ item.slug }}</p>
+              <p class="meta">Qty {{ item.quantity }} | {{ formatCurrency(item.price) }} each</p>
+            </div>
+            <div class="itemTotal">
+              <span>{{ formatCurrency(item.quantity * item.price) }}</span>
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+  }
+
+  <footer class="metaRow">
+    <div>
+      <p class="eyebrow">Payment</p>
+      @if(order.paymemt) {
+        <p>{{ formatPaymentStatus(order.paymemt.status) }} via {{ order.paymemt.method }}</p>
+        <p class="muted">{{ order.paymemt.paidAt ? (order.paymemt.paidAt | date:'medium') : 'Waiting for payment' }}</p>
+      } @else {
+        <p>Pending</p>
+      }
+    </div>
+  </footer>
+</article>
+
+
+<style>
+  .orderCard {
+    max-width: 1200px;
+    margin: 0 auto !important;
+    background-color: var(--pico-form-element-background-color);
+    border: var(--pico-border-width) solid var(--pico-secondary-border);
+    border-radius: var(--pico-border-radius);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .orderHead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .statusStack {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .total {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .items {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-top: var(--pico-border-width) solid var(--pico-secondary-border);
+    padding-top: 10px;
+  }
+
+  .sectionHead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--pico-muted-color);
+  }
+
+  .itemList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .item {
+    padding: 10px;
+    border-radius: var(--pico-border-radius);
+    background-color: var(--pico-card-background-color);
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .itemInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .itemTotal {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    min-width: 120px;
+    font-weight: 600;
+  }
+
+  .meta {
+    color: var(--pico-h6-color);
+    font-size: 0.95rem;
+  }
+
+  .metaRow {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    border-radius: var(--pico-border-radius);
+    gap: 12px;
+  }
+
+  .eyebrow {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--pico-muted-color);
+  }
+
+  .muted {
+    color: var(--pico-secondary-border);
+  }
+
+  @media (max-width: 900px) {
+    .orderHead {
+      grid-template-columns: 1fr;
+    }
+
+    .total {
+      text-align: left;
+    }
+
+    .item {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .itemTotal {
+      width: 100%;
+      justify-content: flex-start;
+    }
+  }
+</style>
