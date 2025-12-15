@@ -41,6 +41,9 @@ export class PaymentsService {
       invalid: {
         color: 'var(--pico-form-element-invalid-border-color)',
         iconColor: 'var(--pico-form-element-invalid-border-color)'
+      },
+      base: {
+        color: 'white'
       }
     }
 

@@ -45,13 +45,13 @@ export const concertModelGetEmbeddings = async (fetchTickets = true, m: ConcertM
     }
 
     const input = `
-            TITLE: ${m.title},
-            description: ${m.description},
-            location: ${m.locationName},
-            ticketsSold: ${m.totalTicketsSold},
-            cheapest price: ${tickets.cheapest ? (tickets.cheapest / 100).toFixed(2) : 'null'},
-            highest price: ${tickets.highest ? (tickets.highest / 100).toFixed(2) : 'null'}
-        `
+        TITLE: ${m.title},
+        description: ${m.description},
+        location: ${m.locationName}
+        ticketsSold: ${m.totalTicketsSold},
+        highest price: ${tickets.highest ? (tickets.highest / 100).toFixed(2) : 'null'}
+        cheapest price: ${tickets.cheapest ? (tickets.cheapest / 100).toFixed(2) : 'null'},
+    `
 
     const resp = await fastify.axios.lmStudio.post<getEmbeddingsResponse>('/v1/embeddings', {
         model: process.env.LMSTUDIO_EMBEDDING_MODEL!,

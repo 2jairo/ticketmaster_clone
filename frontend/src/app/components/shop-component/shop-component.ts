@@ -7,6 +7,7 @@ import { environment } from '../../../environments/environment';
 import { ShopItemCard } from "../shop-item-card/shop-item-card";
 import { ShoppingCartResponse } from '../../types/shoppingCart';
 import { ShoppingCartService } from '../../services/shoppingCart.service';
+import { ShopFilters } from '../../types/filters';
 
 @Component({
   selector: 'app-shop-component',
@@ -27,17 +28,40 @@ export class ShopComponent implements OnInit {
   cartItems: ShoppingCartResponse = { merch: [], tickets: [] }
   localMerch: { itemId: string, quantity: number }[] = []
 
+  filters = new ShopFilters()
+
   ngOnInit(): void {
-    this.loadMerchandise()
+    this.getUrlFilters()
+    this.loadMerchandise(this.filters)
+
     this.cartService.cart.subscribe((c) => {
       this.cartItems = c
     })
   }
 
-  loadMerchandise() {
+  getUrlFilters() {
+    const queryParams = new URLSearchParams(window.location.search);
+    const filters = new ShopFilters()
+
+    for (const [key, value] of queryParams.entries()) {
+      if(key === 'concert') {
+        filters[key] = value
+      }
+      else if(key === 'priceMax' || key === 'priceMin') {
+        filters.setPrice(key, value)
+      }
+      else if(key === 'withStock') {
+        filters.withStock = value === 'true'
+      }
+    }
+
+    this.filters = filters
+  }
+
+  loadMerchandise(filters: ShopFilters) {
     this.fetching = true
 
-    this.merchService.getMerchandising({ size: environment.CONCERTS_PAGE_SIZE, offset: this.offset })
+    this.merchService.getMerchandising(filters, { size: environment.CONCERTS_PAGE_SIZE, offset: this.offset })
       .pipe(tap(() => {
         this.fetching = false
       }))
@@ -92,7 +116,7 @@ export class ShopComponent implements OnInit {
 
     this.currentPage = page
     this.offset = (page - 1) * environment.CONCERTS_PAGE_SIZE
-    this.loadMerchandise()
+    this.loadMerchandise(this.filters)
     window.scrollTo({ top: 0 })
   }
 }

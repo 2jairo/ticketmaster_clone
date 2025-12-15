@@ -41,11 +41,11 @@ async function main() {
     await fastify.register(dashboardConcertRotues, { prefix: '/api/dashboard/concerts' })
     await fastify.register(dashboardOrderRoutes, { prefix: '/api/dashboard/orders' })
     await fastify.register(dashboardConcertTicketsRoutes, { prefix: '/api/dashboard/concert-tickets' })
-    await fastify.register(stripeRoutes, { prefix: '/api/payments' })
     await fastify.register(fastifyCompress, { global: true, threshold: 1024 })
-
-    // without compress
+    
     await fastify.register(stripePlugin)
+    await fastify.register(stripeRoutes, { prefix: '/api/payments' })
+    // without compress
 
     // const conc = await fastify.prismaW.concert.findMany()
     // for (const c of conc) {

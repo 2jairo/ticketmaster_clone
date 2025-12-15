@@ -7,6 +7,7 @@ import { DEFAULT_MERCH, MerchDashboardMerchandisingResponse } from '../../../typ
 import { AdminMerchCard } from './admin-merch-card';
 import { AdminMerchDialog } from './admin-merch-dialog';
 import { LoadingGif } from "../../loading-gif/loading-gif";
+import { ShopFilters } from '../../../types/filters';
 
 @Component({
   selector: 'app-merchandising',
@@ -39,7 +40,7 @@ export class Merchandising implements OnInit {
     if (this.loading || this.allLoaded) return
 
     this.loading = true
-    this.merchService.getMerchandising(this.pagination).subscribe({
+    this.merchService.getMerchandising(new ShopFilters(), this.pagination).subscribe({
       next: (newMerch) => {
         if (newMerch.length === 0) {
           this.allLoaded = true

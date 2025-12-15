@@ -70,3 +70,35 @@ export class ConcertFilters {
     return filters
   }
 }
+
+
+export class ShopFilters {
+  readonly PRICE_MIN = 0
+  readonly PRICE_MAX = 3000
+
+  title?: string
+  concert?: string
+  priceMax?: number
+  priceMin?: number
+  withStock?: boolean
+
+  setPrice(key: 'priceMax' | 'priceMin', value: string | number) {
+    const n = typeof value === 'number' ? value : parseInt(value)
+
+    if(!isNaN(n)) {
+      this[key] = Math.min(this.PRICE_MAX, Math.max(this.PRICE_MIN, n))
+    }
+  }
+
+  toQueryFilters() {
+    const filters: Record<string, any> = {}
+
+    if (this.title) filters["title"] = this.title
+    if (this.concert) filters["concert"] = this.concert
+    if (this.priceMax !== undefined) filters["priceMax"] = this.priceMax
+    if (this.priceMin !== undefined) filters["priceMin"] = this.priceMin
+    if (this.withStock !== undefined) filters["withStock"] = this.withStock
+
+    return filters
+  }
+}

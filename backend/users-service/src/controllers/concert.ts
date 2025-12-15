@@ -21,7 +21,7 @@ export const getConcerts = asyncHandler(async (req, res) => {
     const offset = Number(offsetParam) || 0
     const limit = Number(size) || CONCERTS_PAGE_SIZE
 
-    if(title && typeof title === 'string' && title.length > 5) {
+    if(title && typeof title === 'string' && title.length >= 5) {
         const queryEmbeddings = await llmStudio.getEmbeddings(title)
         
         const embeddings = (await ConcertEmbeddingModel.find())
@@ -30,6 +30,7 @@ export const getConcerts = asyncHandler(async (req, res) => {
             })
             .sort((a, b) => b.similarity - a.similarity)
         
+        console.log(embeddings.map(e => ({ s: e.similarity, t: e.d.title })))
         const embeddingOrder = embeddings
             .slice(offset, offset + limit)
             .map((e) => e.d._id.toString())

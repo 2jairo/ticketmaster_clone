@@ -16,6 +16,18 @@
     </div>
   </section>
 
+  <section class="metaRow">
+    <div>
+      <p class="eyebrow">Payment</p>
+      @if(order.paymemt) {
+        <p>{{ formatPaymentStatus(order.paymemt.status) }} via {{ order.paymemt.method }}</p>
+        <p class="muted">{{ order.paymemt.paidAt ? (order.paymemt.paidAt | date:'medium') : 'Waiting for payment' }}</p>
+      } @else {
+        <p>Pending</p>
+      }
+    </div>
+  </section>
+
   @if(order.tickets.length) {
     <section class="items">
       <div class="sectionHead">
@@ -63,18 +75,6 @@
       </div>
     </section>
   }
-
-  <footer class="metaRow">
-    <div>
-      <p class="eyebrow">Payment</p>
-      @if(order.paymemt) {
-        <p>{{ formatPaymentStatus(order.paymemt.status) }} via {{ order.paymemt.method }}</p>
-        <p class="muted">{{ order.paymemt.paidAt ? (order.paymemt.paidAt | date:'medium') : 'Waiting for payment' }}</p>
-      } @else {
-        <p>Pending</p>
-      }
-    </div>
-  </footer>
 </article>
 
 
@@ -164,8 +164,9 @@
   .metaRow {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    border-radius: var(--pico-border-radius);
     gap: 12px;
+    border-top: var(--pico-border-width) solid var(--pico-secondary-border);
+    padding-top: 10px;
   }
 
   .eyebrow {
