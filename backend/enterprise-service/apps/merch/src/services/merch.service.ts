@@ -31,6 +31,9 @@ export class MerchService {
         categoryId: category.id,
         price: dto.price,
         stock: dto.stock,
+      },
+      include: {
+        category: true
       }
     })
   }
@@ -47,6 +50,9 @@ export class MerchService {
       data: {
         ...rest,
         categoryId: category.id
+      },
+      include: {
+        category: true
       }
     })
   }

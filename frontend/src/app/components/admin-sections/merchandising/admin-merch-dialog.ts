@@ -49,6 +49,7 @@ export class AdminMerchDialog implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.categories = [this.group.category]
+
     this.formPatchValue(this.group)
     this.form.setValidators((group) => {
       if (!this.group?.slug) return null
@@ -127,7 +128,7 @@ export class AdminMerchDialog implements OnInit, AfterViewInit {
 
     if (!this.group?.slug) {
       const props = this.form.value
-      props.price = props.price !== undefined ? props.price : Math.round((this.form.value.price || 0) * 100)
+      props.price = props.price === undefined ? 0 : Math.round((this.form.value.price || 0) * 100)
 
       this.merchService.createMerchandise(props as MerchDashboardCreateMerchandisingBody).subscribe({
         error: (e: HttpErrorResponse) => this.handleHttpErrors(e),

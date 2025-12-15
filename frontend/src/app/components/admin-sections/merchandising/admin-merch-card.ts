@@ -30,7 +30,6 @@ export class AdminMerchCard {
   }
 
   settingsDeleteMerch() {
-    console.log(this.merch)
     this.merchService.deleteMerchanside(this.merch.slug).subscribe(() => {
       this.settingsDialog.nativeElement.open = false
       this.onDeletedMerch.emit({ slug: this.merch.slug })

@@ -5,7 +5,7 @@ import { formatOrderStatus, formatPaymentStatus } from '../../utils/format';
 
 @Component({
   selector: 'app-order-card',
-  imports: [CurrencyPipe, DatePipe],
+  imports: [DatePipe],
   templateUrl: './order-card.html'
 })
 export class OrderCard {

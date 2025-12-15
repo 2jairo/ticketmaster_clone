@@ -18,7 +18,6 @@ export class UserRoleGuard implements CanActivate {
     return this.userAuthService.isAuthenticated.pipe(
       take(1),
       map((logged) => {
-        console.log('roles', roles, logged.role)
         const includes = logged.role
           ? roles.includes(logged.role)
           : false

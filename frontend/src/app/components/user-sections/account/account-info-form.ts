@@ -132,7 +132,6 @@ export class AccountInfoForm implements OnInit {
 
     this.userAuthService.updateCredentials(this.credentialsForm.value as ChangeCredentialsRequestBody)
       .pipe(tap(() => {
-        console.log('this.fetching = false')
         this.fetching = false
       }))
       .subscribe({
