@@ -10,7 +10,7 @@ export const dashboardOrderRoutes = fp((fastify, options: RouteCommonOptions) =>
         method: 'GET',
         url: `${options.prefix}`,
         schema: dashboardOrderSchemas.orderList,
-        onRequest: [fastify.authenticate(ADMIN_ROOT)],
+        onRequest: [fastify.authenticate({})],
         handler: getOrderList
     })
     async function getOrderList(req: FastifyRequest<{ Querystring: Pagination }>, reply: FastifyReply) {
